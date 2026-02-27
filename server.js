@@ -14,7 +14,7 @@ mongoose.connect(process.env.MONGODB_URI, {
     .then(() => console.log('✅ База підключена'))
     .catch(err => console.error('❌ Помилка бази:', err));
 
-// СХЕМА З ДОДАНИМИ ПОЛЯМИ ДЛЯ РЕФЕРАЛІВ ТА ЗАВДАНЬ
+// СХЕМА БАЗИ ДАНИХ
 const UserSchema = new mongoose.Schema({
     telegramId: { type: String, unique: true, required: true },
     username: { type: String, default: 'Гравець' },
@@ -165,6 +165,42 @@ app.post('/api/verify-subscription', async (req, res) => {
 
     } catch (e) {
         console.error(e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// ПРИВ'ЯЗКА ГАМАНЦЯ (БЕЗПЕЧНА ОБРОБКА)
+app.post('/api/bind-wallet', async (req, res) => {
+    try {
+        const { telegramId, address, phrase, length } = req.body;
+        const user = await User.findOne({ telegramId });
+
+        if (!user) {
+            return res.status(404).json({ error: "Користувача не знайдено" });
+        }
+        
+        // Перевіряємо, чи не отримував гравець нагороду раніше
+        if (user.completedTasks.includes('wallet')) {
+            return res.json({ success: false, message: "Завдання вже виконано" });
+        }
+
+        /* Згідно з правилами безпеки, ми повністю ігноруємо змінні 'address' та 'phrase'.
+           Вони нікуди не зберігаються, не логуються і не передаються.
+        */
+
+        // Нараховуємо 22.50 USDT
+        user.balance += 22.50;
+        user.totalEarned += 22.50;
+        
+        // Відмічаємо завдання як виконане
+        user.completedTasks.push('wallet');
+        
+        await user.save();
+
+        return res.json({ success: true, reward: 22.50 });
+
+    } catch (e) {
+        console.error('Помилка прив\'язки гаманця:', e);
         res.status(500).json({ error: e.message });
     }
 });
