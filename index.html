@@ -483,6 +483,24 @@
                     <button class="item-button task-btn" data-task="wallet">Старт</button>
                 </div>
             </div>
+            
+            <div class="task-item task-special" id="taskBlum">
+                <div class="item-left">
+                    <span class="item-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="8" stroke="white" stroke-width="2"/>
+                            <circle cx="12" cy="8" r="1" fill="white"/>
+                            <circle cx="16" cy="12" r="1" fill="white"/>
+                            <circle cx="8" cy="12" r="1" fill="white"/>
+                            <path d="M8 16L12 18L16 16" stroke="white" stroke-width="2"/>
+                        </svg>
+                    </span>
+                    <span class="item-name">Квест в разработке</span>
+                </div>
+                <div class="item-right">
+                    <button class="item-button task-btn" data-task="blum" disabled style="opacity: 0.5;">Скоро</button>
+                </div>
+            </div>
         </div>
 
         <div class="notice">
@@ -506,6 +524,8 @@
 
             const API_URL = 'https://click-9pdn.onrender.com/api'; 
             const tgUser = tg?.initDataUnsafe?.user || { id: 'test_user_1', username: 'Tester' };
+            
+            // ВАЖЛИВО! Перевіряємо refParam правильно
             const refParam = tg?.initDataUnsafe?.start_param || null;
 
             const ECONOMY = {
@@ -524,7 +544,6 @@
                 tasks: { subscription: 0.80, adReward: 0.20, walletReward: 22.50, referralBonusEnergy: 500 }
             };
 
-            // Дефолтні значення, щоб гра працювала миттєво
             let player = {
                 balance: 0,
                 damageLevel: 1, capacityLevel: 1, recoveryLevel: 1,
@@ -568,7 +587,7 @@
                 setTimeout(() => div.remove(), 800);
             }
 
-            // --- ОБРОБКА ТАПІВ ---
+            // --- ТАПИ ---
             const tapZone = document.getElementById('tapButton');
             const bigCoin = document.querySelector('.big-coin');
 
@@ -606,45 +625,33 @@
                         player[type + 'Level']++;
                         if (type === 'capacity') player.energy = getCurrentCapacity();
                         updateUI();
-                        syncData(); // Відправляємо зміни фоном
+                        syncData(); 
                     } else {
                         alert(`❌ Недостаточно USDT! Нужно: ${price}`);
                     }
                 });
             });
 
-            // --- РЕФЕРАЛКА ТА ЗАВДАННЯ ---
+            // --- РЕФЕРАЛКА ---
             document.getElementById('topRefBar').addEventListener('click', () => {
                 vibrate();
-                const botUser = 'teosoaodosabot'; // Впиши свій юзернейм
+                const botUser = 'teosoaodosabot'; 
                 const link = `https://t.me/${botUser}?start=${tgUser.id}`;
                 if (tg && tg.openTelegramLink) tg.openTelegramLink(`https://t.me/share/url?url=${link}&text=Забирай USDT!`);
                 else alert(`Ссылка: ${link}`);
             });
 
-            document.querySelectorAll('.task-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    const task = e.target.dataset.task;
-                    let reward = 0;
-                    if (task === 'subscribe') reward = ECONOMY.tasks.subscription;
-                    if (task === 'ad') reward = ECONOMY.tasks.adReward;
-                    if (task === 'wallet') reward = ECONOMY.tasks.walletReward;
-                    if (reward > 0) {
-                        player.balance = parseFloat((player.balance + reward).toFixed(6));
-                        alert('✅ Задание выполнено!');
-                        updateUI();
-                        syncData();
-                    }
-                });
-            });
-
-            // --- РОБОТА З БАЗОЮ (ФОНОМ) ---
+            // --- РОБОТА З БАЗОЮ ---
             async function loadData() {
                 try {
                     const res = await fetch(`${API_URL}/init`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ telegramId: tgUser.id.toString(), username: tgUser.username, refId: refParam })
+                        body: JSON.stringify({ 
+                            telegramId: tgUser.id.toString(), 
+                            username: tgUser.username, 
+                            refId: refParam // Передаємо ID того, хто запросив
+                        })
                     });
                     const data = await res.json();
                     if (data.telegramId) {
@@ -676,7 +683,7 @@
                 } catch (e) {}
             }
 
-            // --- ТАЙМЕРИ ---
+            // Таймери
             setInterval(() => {
                 const max = getCurrentCapacity();
                 const regen = getCurrentRecovery();
@@ -688,7 +695,7 @@
 
             setInterval(syncData, 10000);
 
-            // --- ФОНОВІ "T" ---
+            // Фон "T"
             const bg = document.getElementById('handwrittenBg');
             for(let i=0; i<30; i++) {
                 const s = document.createElement('span'); s.textContent = 'T';
@@ -697,8 +704,7 @@
                 bg.appendChild(s);
             }
 
-            // Старт
-            loadData(); // Завантажуємо дані без await, щоб не блокувати гру
+            loadData();
             updateUI();
         })();
     </script>
