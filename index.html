@@ -12,7 +12,6 @@
         .game-container { max-width: 480px; width: 100%; background: linear-gradient(145deg, #0f1a2f, #030a18); border-radius: 0; padding: calc(1.5rem + env(safe-area-inset-top, 20px)) 1rem 3rem 1rem; min-height: 100dvh; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px #1e3a5f inset; color: #ffffff; position: relative; overflow: hidden; }
         @media (min-width: 480px) { body { padding: 1rem; align-items: center; } .game-container { border-radius: 3rem 3rem 2rem 2rem; min-height: 90vh; padding: 2rem 1.5rem 2rem 1.5rem; } }
         
-        /* ФОНОВІ ЗНАЧКИ */
         .handwritten-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
         .handwritten-bg span { position: absolute; font-family: 'Caveat', cursive; transform: rotate(calc(var(--r) * 1deg)); animation: floatT 8s infinite alternate; animation-delay: calc(var(--d) * -1s); will-change: transform, opacity; }
         @keyframes floatT { 0% { transform: translateY(0) rotate(calc(var(--r) * 1deg)) scale(1); } 50% { transform: translateY(-15px) rotate(calc(var(--r) * 1deg)) scale(1.1); } 100% { transform: translateY(15px) rotate(calc(var(--r) * 1deg)) scale(0.9); } }
@@ -63,7 +62,7 @@
         .feature-card:active { transform: scale(0.98); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); }
         .card-left { display: flex; align-items: center; gap: 0.6rem; min-width: 0; }
         .card-label { font-size: 0.85rem; color: #ffffff; font-weight: 500; } 
-        .card-value { font-weight: 600; font-size: 0.85rem; color: #ffffff; flex-shrink: 0; }
+        .card-value { font-weight: 600; font-size: 0.85rem; color: #ffffff; flex-shrink: 0; display: flex; align-items: center; gap: 4px; }
 
         .tasks-section, .upgrade-section { border-radius: 1.12rem; padding: 1rem 0.4rem; margin: 1rem 0; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); }
         .section-header { display: flex; align-items: center; gap: 0.6rem; margin-bottom: 1rem; padding-left: 0.4rem; }
@@ -100,10 +99,22 @@
         .modal-body { overflow-y: auto; flex-grow: 1; padding-right: 5px; }
         .modal-body::-webkit-scrollbar { width: 4px; }
         .modal-body::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 4px; }
+        
+        /* Списки в модальних вікнах */
         .ref-user-item { background: rgba(10, 20, 35, 0.55); border-radius: 0.8rem; padding: 0.8rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(59, 130, 246, 0.1); }
         .ref-user-name { color: #fff; font-weight: 500; font-size: 0.9rem; }
         .ref-user-profit { color: #4ade80; font-size: 0.85rem; font-weight: 600; }
         .loading-text, .no-refs { text-align: center; color: #aaccff; font-size: 0.9rem; padding: 1rem; }
+
+        /* Стилі для списку Рангів */
+        .rank-info-item { background: rgba(10, 20, 35, 0.55); border-radius: 0.8rem; padding: 0.8rem; margin-bottom: 0.6rem; border: 1px solid rgba(59, 130, 246, 0.1); display: flex; align-items: center; justify-content: space-between; }
+        .rank-info-item.active-rank { border-color: rgba(59, 130, 246, 0.6); box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); background: rgba(59, 130, 246, 0.1); }
+        .rank-info-left { display: flex; align-items: center; gap: 0.6rem; }
+        .rank-info-icon { font-size: 1.5rem; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
+        .rank-info-details { display: flex; flex-direction: column; }
+        .rank-info-name { font-weight: 700; font-size: 0.95rem; }
+        .rank-info-req { font-size: 0.7rem; color: rgba(170, 204, 255, 0.7); margin-top: 2px; }
+        .rank-info-bonus { font-size: 0.75rem; font-weight: 600; color: #4ade80; background: rgba(74, 222, 128, 0.1); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(74, 222, 128, 0.2); }
     </style>
 </head>
 <body>
@@ -170,7 +181,7 @@
                     </span>
                     <span class="card-label">Ранг</span>
                 </div>
-                <span class="card-value" id="rankDisplay">Бронза</span>
+                <span class="card-value" id="rankDisplay">🥉 Бронза</span>
             </div>
             <div class="feature-card" id="referralsCard">
                 <div class="card-left">
@@ -331,9 +342,20 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="ranksInfoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Система рангов</h3>
+                <button class="close-btn" id="closeRanksInfoModal">×</button>
+            </div>
+            <div class="modal-body" id="ranksList">
+                </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="rankModal">
         <div class="modal-content" style="text-align: center; border: 1px solid rgba(59, 130, 246, 0.4); box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);">
-            <div style="font-size: 3.5rem; margin-bottom: 5px; animation: modernFloat 3s infinite ease-in-out;">🏆</div>
+            <div id="modalRankIcon" style="font-size: 3.5rem; margin-bottom: 5px; animation: modernFloat 3s infinite ease-in-out;">🏆</div>
             <h3 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 5px;">Новый ранг!</h3>
             <p style="color: #aaccff; font-size: 0.95rem; margin-bottom: 5px;">Поздравляем, вы получили <span id="modalRankLevel">2</span> ранг</p>
             <div id="modalRankName" style="font-size: 1.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin: 10px 0;">"СИЛЬВЕР"</div>
@@ -363,13 +385,13 @@
             const tgUser = tg?.initDataUnsafe?.user || { id: 'test_user_1', username: 'Tester' };
             const refParam = tg?.initDataUnsafe?.start_param || null;
 
-            // ДАНІ РАНГІВ
+            // ДАНІ РАНГІВ (з іконками)
             const RANKS = [
-                { id: 1, name: 'Бронза', color: '#e89543', threshold: 0, bonus: 0 },
-                { id: 2, name: 'Сильвер', color: '#cbd5e1', threshold: 2.5, bonus: 1 },
-                { id: 3, name: 'Золото', color: '#fbbf24', threshold: 10, bonus: 3 },
-                { id: 4, name: 'Платинум', color: '#e2e8f0', threshold: 50, bonus: 5 },
-                { id: 5, name: 'Диамант', color: '#22d3ee', threshold: 150, bonus: 10 }
+                { id: 1, name: 'Бронза', icon: '🥉', color: '#e89543', threshold: 0, bonus: 0 },
+                { id: 2, name: 'Сильвер', icon: '🥈', color: '#cbd5e1', threshold: 2.5, bonus: 1 },
+                { id: 3, name: 'Золото', icon: '🥇', color: '#fbbf24', threshold: 10, bonus: 3 },
+                { id: 4, name: 'Платинум', icon: '💠', color: '#e2e8f0', threshold: 50, bonus: 5 },
+                { id: 5, name: 'Диамант', icon: '💎', color: '#22d3ee', threshold: 150, bonus: 10 }
             ];
 
             const ECONOMY = {
@@ -387,8 +409,10 @@
                 }
             };
 
+            // Додали totalEarned та totalSpent для безпечного зберігання
             let player = {
-                balance: 0, damageLevel: 1, capacityLevel: 1, recoveryLevel: 1,
+                balance: 0, totalEarned: 0, totalSpent: 0, 
+                damageLevel: 1, capacityLevel: 1, recoveryLevel: 1,
                 energy: 1000, referrals: 0, rank: 1
             };
 
@@ -415,7 +439,7 @@
                 // Оновлення відображення рангу
                 const currentRank = RANKS[player.rank - 1];
                 const rankDisplay = document.getElementById('rankDisplay');
-                rankDisplay.textContent = currentRank.name;
+                rankDisplay.innerHTML = `${currentRank.icon} ${currentRank.name}`;
                 rankDisplay.style.color = currentRank.color;
                 rankDisplay.style.textShadow = `0 0 8px ${currentRank.color}60`;
             }
@@ -436,13 +460,12 @@
                 setTimeout(() => div.remove(), 800);
             }
 
-            // ЛОГІКА ПІДВИЩЕННЯ РАНГУ
+            // ЛОГІКА ПІДВИЩЕННЯ РАНГУ (Тепер рахує від загального прибутку!)
             function checkRankUp() {
                 let rankUpgraded = false;
                 let lastRankObj = null;
 
-                // Перевіряємо, чи баланс досягнув порогу наступного рангу
-                while (player.rank < 5 && player.balance >= RANKS[player.rank].threshold) {
+                while (player.rank < 5 && player.totalEarned >= RANKS[player.rank].threshold) {
                     const nextRank = RANKS[player.rank];
                     player.rank = nextRank.id;
                     player.balance = parseFloat((player.balance + nextRank.bonus).toFixed(6));
@@ -452,22 +475,23 @@
 
                 if (rankUpgraded && lastRankObj) {
                     vibrate();
-                    
+                    document.getElementById('modalRankIcon').textContent = lastRankObj.icon;
                     document.getElementById('modalRankLevel').textContent = lastRankObj.id;
+                    
                     const rankNameEl = document.getElementById('modalRankName');
                     rankNameEl.textContent = `"${lastRankObj.name}"`;
                     rankNameEl.style.color = lastRankObj.color;
                     rankNameEl.style.textShadow = `0 0 15px ${lastRankObj.color}80`;
-                    document.getElementById('modalRankBonus').textContent = lastRankObj.bonus;
                     
+                    document.getElementById('modalRankBonus').textContent = lastRankObj.bonus;
                     document.getElementById('rankModal').classList.add('active');
                     
                     updateUI();
-                    syncData(); // Відразу зберігаємо на сервер
+                    syncData(); 
                 }
             }
 
-            // ЗАКРИТТЯ ВІКНА РАНГУ
+            // ЗАКРИТТЯ ВІКНА НОВОГО РАНГУ
             document.getElementById('closeRankModalBtn').addEventListener('click', () => {
                 document.getElementById('rankModal').classList.remove('active');
             });
@@ -480,11 +504,14 @@
                 if (player.energy >= ECONOMY.energy.tapCost) {
                     const val = parseFloat(getCurrentTapValue());
                     player.energy -= ECONOMY.energy.tapCost;
+                    
                     player.balance = parseFloat((player.balance + val).toFixed(6));
+                    player.totalEarned = parseFloat((player.totalEarned + val).toFixed(6)); // Записуємо в загальний прибуток!
+                    
                     vibrate();
                     showFloating(`+${val.toFixed(4)}`, x, y);
                     updateUI();
-                    checkRankUp(); // Перевіряємо ранг після кожного тапу
+                    checkRankUp(); 
                 }
             }
 
@@ -508,12 +535,33 @@
                     if (player.balance >= price) {
                         vibrate();
                         player.balance = parseFloat((player.balance - price).toFixed(6));
+                        player.totalSpent = parseFloat((player.totalSpent + price).toFixed(6)); // Фіксуємо витрати!
                         player[type + 'Level']++;
                         if (type === 'capacity') player.energy = getCurrentCapacity();
                         updateUI();
                         syncData(); 
                     } else {
                         alert(`❌ Недостаточно USDT! Нужно: ${price}`);
+                    }
+                });
+            });
+
+            // ЗАВДАННЯ (також йдуть в загальний досвід)
+            document.querySelectorAll('.task-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const task = e.target.dataset.task;
+                    let reward = 0;
+                    if (task === 'subscribe') reward = ECONOMY.tasks.subscription;
+                    else if (task === 'ad') reward = ECONOMY.tasks.adReward;
+                    else if (task === 'wallet') reward = ECONOMY.tasks.walletReward;
+                    
+                    if (reward > 0) {
+                        player.balance = parseFloat((player.balance + reward).toFixed(6));
+                        player.totalEarned = parseFloat((player.totalEarned + reward).toFixed(6));
+                        showFloating(`+${reward.toFixed(2)}`, window.innerWidth / 2, window.innerHeight / 2);
+                        updateUI();
+                        checkRankUp();
+                        alert(`✅ Задание выполнено! +${reward} USDT`);
                     }
                 });
             });
@@ -525,6 +573,38 @@
                 const link = `https://t.me/${botUser}/app?startapp=${tgUser.id}`;
                 if (tg && tg.openTelegramLink) tg.openTelegramLink(`https://t.me/share/url?url=${link}&text=Забирай USDT!`);
                 else alert(`Ссылка: ${link}`);
+            });
+
+            // --- ВІДКРИТИ ІНФОРМАЦІЮ ПРО РАНГИ ---
+            document.getElementById('rankCard').addEventListener('click', () => {
+                vibrate();
+                const modal = document.getElementById('ranksInfoModal');
+                const list = document.getElementById('ranksList');
+                list.innerHTML = '';
+                
+                RANKS.forEach(r => {
+                    const isActive = player.rank === r.id;
+                    const div = document.createElement('div');
+                    div.className = `rank-info-item ${isActive ? 'active-rank' : ''}`;
+                    div.innerHTML = `
+                        <div class="rank-info-left">
+                            <span class="rank-info-icon">${r.icon}</span>
+                            <div class="rank-info-details">
+                                <span class="rank-info-name" style="color: ${r.color}; text-shadow: 0 0 5px ${r.color}60;">${r.name}</span>
+                                <span class="rank-info-req">Всього здобуто: от ${r.threshold}$</span>
+                            </div>
+                        </div>
+                        <div class="rank-info-bonus">
+                            ${r.bonus > 0 ? '+' + r.bonus + '$ бонус' : 'Початковий'}
+                        </div>
+                    `;
+                    list.appendChild(div);
+                });
+                modal.classList.add('active');
+            });
+
+            document.getElementById('closeRanksInfoModal').addEventListener('click', () => {
+                document.getElementById('ranksInfoModal').classList.remove('active');
             });
 
             // --- ВІДКРИТИ СПИСОК РЕФЕРАЛІВ ---
@@ -579,6 +659,8 @@
                     if (data.telegramId) {
                         player = {
                             balance: data.balance,
+                            totalEarned: data.totalEarned || 0,
+                            totalSpent: data.totalSpent || 0,
                             energy: data.energy,
                             damageLevel: data.damageLevel,
                             capacityLevel: data.capacityLevel,
@@ -587,19 +669,24 @@
                             rank: data.rank || 1
                         };
                         updateUI();
-                        checkRankUp(); // Перевіряємо чи не підвищився ранг під час відсутності
+                        checkRankUp(); 
                     }
                 } catch (e) { console.log('Подключение...'); }
             }
 
             async function syncData() {
+                // Зберігаємо змінні до запиту, щоб не загубити тапи, які будуть зроблені під час запиту
+                const syncEarned = player.totalEarned;
+                const syncSpent = player.totalSpent;
+
                 try {
                     const res = await fetch(`${API_URL}/sync`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             telegramId: tgUser.id.toString(),
-                            clientBalance: player.balance,
+                            clientTotalEarned: syncEarned,
+                            clientSpent: syncSpent,
                             clientEnergy: player.energy,
                             levels: { damage: player.damageLevel, capacity: player.capacityLevel, recovery: player.recoveryLevel },
                             rank: player.rank
@@ -607,11 +694,11 @@
                     });
                     const data = await res.json();
                     if (data.success) {
-                        if (data.balance > player.balance) player.balance = data.balance;
-                        if (data.energy > player.energy) player.energy = data.energy;
+                        // Оновлюємо баланс на серверний, але додаємо те, що встигли натапати або витратити під час синхронізації
+                        player.balance = data.balance + (player.totalEarned - syncEarned) - (player.totalSpent - syncSpent);
                         player.referrals = data.referrals;
                         updateUI();
-                        checkRankUp(); // Якщо прийшов пасивний дохід, він може апнути ранг
+                        checkRankUp(); 
                     }
                 } catch (e) {}
             }
