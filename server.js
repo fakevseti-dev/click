@@ -11,6 +11,7 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('✅ База підключена'))
     .catch(err => console.error('❌ Помилка бази:', err));
 
+// Схема пользователя с новыми полями для рефералов
 const UserSchema = new mongoose.Schema({
     telegramId: { type: String, unique: true, required: true },
     username: { type: String, default: 'Гравець' },
@@ -20,35 +21,37 @@ const UserSchema = new mongoose.Schema({
     capacityLevel: { type: Number, default: 1 },
     recoveryLevel: { type: Number, default: 1 },
     referrals: { type: Number, default: 0 },
+    invitedBy: { type: String, default: null }, // ID того, кто пригласил
+    earnedForInviter: { type: Number, default: 0 }, // Сколько USDT этот игрок принес пригласившему
+    pendingEnergyBonus: { type: Number, default: 0 }, // Ожидаемый бонус энергии
     lastSync: { type: Date, default: Date.now }
 });
 
 const User = mongoose.model('User', UserSchema);
 
-// ГОЛОВНА ЛОГІКА РЕФЕРАЛІВ
+// ІНІЦІАЛІЗАЦІЯ КОРИСТУВАЧА
 app.post('/api/init', async (req, res) => {
     try {
         const { telegramId, username, refId } = req.body;
         let user = await User.findOne({ telegramId });
         
         if (!user) {
-            // Новий користувач
             user = new User({ telegramId, username: username || 'Гравець' });
-            await user.save();
-            console.log(`🆕 Створено користувача: ${telegramId}`);
-
-            // Зараховуємо реферала, якщо є refId і це не сам гравець
+            
+            // Якщо є реферал і це не сам гравець
             if (refId && refId !== telegramId && refId !== "null") {
                 const inviter = await User.findOne({ telegramId: refId });
                 if (inviter) {
                     inviter.referrals += 1;
-                    // Можна додати бонус запрошувачу: inviter.balance += 5;
+                    inviter.pendingEnergyBonus += 500; // Нараховуємо 500 енергії запрошувачу
                     await inviter.save();
+                    
+                    user.invitedBy = refId; // Зберігаємо, чий це реферал
                     console.log(`👥 Реферал +1 для ${refId} від ${telegramId}`);
-                } else {
-                    console.log(`⚠️ Запрошувача з ID ${refId} не знайдено`);
                 }
             }
+            await user.save();
+            console.log(`🆕 Створено користувача: ${telegramId}`);
         }
         res.json(user);
     } catch (e) { 
@@ -57,18 +60,67 @@ app.post('/api/init', async (req, res) => {
     }
 });
 
+// СИНХРОНІЗАЦІЯ ТА 10% ДОХОДУ
 app.post('/api/sync', async (req, res) => {
     try {
-        const { telegramId, balance, energy, levels } = req.body;
-        await User.findOneAndUpdate({ telegramId }, { 
-            balance, energy, 
-            damageLevel: levels.damage, 
-            capacityLevel: levels.capacity, 
-            recoveryLevel: levels.recovery,
-            lastSync: Date.now() 
+        const { telegramId, clientBalance, clientEnergy, levels } = req.body;
+        const user = await User.findOne({ telegramId });
+        
+        if (!user) return res.status(404).json({ error: "User not found" });
+
+        // Рахуємо, скільки гравець натапав/заробив з минулої синхронізації
+        const farmedBalance = Math.max(0, clientBalance - user.balance);
+
+        // Якщо заробив і є запрошувач - даємо йому 10% пасивного доходу
+        if (farmedBalance > 0 && user.invitedBy) {
+            const bonus = farmedBalance * 0.10; // 10%
+            await User.findOneAndUpdate(
+                { telegramId: user.invitedBy },
+                { $inc: { balance: bonus } }
+            );
+            user.earnedForInviter += bonus; // Зберігаємо статистику прибутку
+        }
+
+        // Оновлюємо баланс (якщо йому самому накапало від його рефералів, баланс не зіб'ється)
+        const newBalance = user.balance + farmedBalance;
+        
+        // Оновлюємо енергію з урахуванням бонусу за нових рефералів
+        let newEnergy = clientEnergy;
+        if (user.pendingEnergyBonus > 0) {
+            const capacityMultipliers = [1.0, 1.3, 1.6, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0];
+            const maxEnergy = Math.floor(1000 * capacityMultipliers[levels.capacity - 1]);
+            // Не даємо вийти за ліміт
+            newEnergy = Math.min(maxEnergy, clientEnergy + user.pendingEnergyBonus);
+            user.pendingEnergyBonus = 0; // Бонус видано
+        }
+
+        user.balance = newBalance;
+        user.energy = newEnergy;
+        user.damageLevel = levels.damage;
+        user.capacityLevel = levels.capacity;
+        user.recoveryLevel = levels.recovery;
+        user.lastSync = Date.now();
+        
+        await user.save();
+
+        res.json({ 
+            success: true, 
+            balance: newBalance,
+            energy: newEnergy,
+            referrals: user.referrals
         });
-        res.json({ success: true });
     } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ОТРИМАННЯ СПИСКУ РЕФЕРАЛІВ
+app.get('/api/referralsList/:telegramId', async (req, res) => {
+    try {
+        const { telegramId } = req.params;
+        const refs = await User.find({ invitedBy: telegramId }).select('username earnedForInviter');
+        res.json(refs);
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
 });
 
 app.get('/api/admin/users', async (req, res) => {
