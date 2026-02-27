@@ -18,7 +18,6 @@
         
         .game-container::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, transparent 30%, rgba(3, 7, 18, 0.7) 90%); pointer-events: none; z-index: 0; }
 
-        /* КНОПКА ИНСТРУКЦИИ (Книжечка) */
         .info-btn { position: absolute; top: calc(1rem + env(safe-area-inset-top, 20px)); right: 1.5rem; background: rgba(20, 40, 70, 0.55); border: 1px solid rgba(59, 130, 246, 0.3); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #aaccff; cursor: pointer; z-index: 50; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.1s ease; }
         .info-btn:active { transform: scale(0.9); }
 
@@ -59,17 +58,8 @@
         .top-ref-left { display: flex; align-items: center; gap: 0.6rem; }
         .top-ref-left span { font-size: 0.95rem; color: #ffffff; font-weight: 500; }
         
-        /* НОВЫЙ ДИЗАЙН КНОПОК ПРИГЛАСИТЬ ДРУГА */
         .top-ref-right { display: flex; align-items: center; gap: 6px; }
-        .ref-bonus-badge { 
-            display: flex; align-items: center; gap: 4px; 
-            padding: 0.4rem 0.6rem; border-radius: 1.5rem; 
-            font-size: 0.8rem; font-weight: 600; 
-            backdrop-filter: blur(2px); 
-            background: rgba(59, 130, 246, 0.05); 
-            border: 1px solid rgba(59, 130, 246, 0.25); 
-            color: #aaccff; 
-        }
+        .ref-bonus-badge { display: flex; align-items: center; gap: 4px; padding: 0.4rem 0.6rem; border-radius: 1.5rem; font-size: 0.8rem; font-weight: 600; backdrop-filter: blur(2px); background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.25); color: #aaccff; }
         .badge-energy { box-shadow: 0 0 6px rgba(249, 115, 22, 0.25), inset 0 0 5px rgba(59, 130, 246, 0.1); }
         .badge-money { box-shadow: 0 0 6px rgba(74, 222, 128, 0.35), inset 0 0 5px rgba(59, 130, 246, 0.1); }
 
@@ -99,11 +89,11 @@
 
         .item-button { background: rgba(59, 130, 246, 0.05); color: #aaccff; font-weight: 500; font-size: 0.7rem; padding: 0.35rem 0.7rem; border-radius: 1.5rem; border: 1px solid rgba(59, 130, 246, 0.25); box-shadow: 0 0 5px rgba(59, 130, 246, 0.1), inset 0 0 8px rgba(59, 130, 246, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.1); backdrop-filter: blur(2px); cursor: pointer; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .item-button:active { transform: scale(0.92); background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.4); box-shadow: 0 0 8px rgba(59, 130, 246, 0.2), inset 0 0 12px rgba(59, 130, 246, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.15); color: #ffffff; }
+        .item-button:disabled { opacity: 0.5; pointer-events: none; border-color: transparent; box-shadow: none; color: #888; }
 
         .task-special { background: linear-gradient(145deg, #2a4a8a, #1a3a6a); border: 1px solid #3b82f6; }
         .notice { text-align: center; font-size: 0.65rem; color: #aaccff; margin-top: 1rem; border-top: 1px dashed rgba(59, 130, 246, 0.3); padding-top: 0.8rem; }
 
-        /* --- ЭКРАН ЗАГРУЗКИ --- */
         .loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #030712; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
         .loading-logo { width: 90px; height: 90px; margin-bottom: 25px; background: linear-gradient(145deg, #1e3a5f, #0f1a2f); border: 2px solid rgba(59,130,246,0.5); border-radius: 25px; display: flex; align-items: center; justify-content: center; animation: pulseGlowLoad 1.5s infinite alternate; box-shadow: 0 0 30px rgba(59,130,246,0.3); }
         .loading-logo svg { width: 45px; height: 45px; }
@@ -113,7 +103,6 @@
         .loading-progress { width: 0%; height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa); border-radius: 10px; animation: loadAnim 2.5s ease-out forwards; box-shadow: 0 0 10px #3b82f6; }
         @keyframes loadAnim { 0% { width: 0%; } 100% { width: 100%; } }
 
-        /* --- МОДАЛЬНЫЕ ОКНА --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 10000; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-content { background: linear-gradient(145deg, #0f1a2f, #030a18); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 1.5rem; width: 90%; max-width: 400px; padding: 1.5rem; box-shadow: 0 15px 30px rgba(0,0,0,0.5); transform: scale(0.9); transition: 0.3s; max-height: 85vh; display: flex; flex-direction: column; }
@@ -129,7 +118,7 @@
         .ref-user-item { background: rgba(10, 20, 35, 0.55); border-radius: 0.8rem; padding: 0.8rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(59, 130, 246, 0.1); }
         .ref-user-name { color: #fff; font-weight: 500; font-size: 0.9rem; }
         .ref-user-profit { color: #4ade80; font-size: 0.85rem; font-weight: 600; }
-        .loading-text, .no-refs { text-align: center; color: #aaccff; font-size: 0.9rem; padding: 1rem; }
+        .loading-text-small, .no-refs { text-align: center; color: #aaccff; font-size: 0.9rem; padding: 1rem; }
 
         .rank-info-item { background: rgba(10, 20, 35, 0.55); border-radius: 0.8rem; padding: 0.8rem; margin-bottom: 0.6rem; border: 1px solid rgba(59, 130, 246, 0.1); display: flex; align-items: center; justify-content: space-between; }
         .rank-info-item.active-rank { border-color: rgba(59, 130, 246, 0.6); box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); background: rgba(59, 130, 246, 0.1); }
@@ -331,7 +320,7 @@
                 </div>
                 <div class="item-right">
                     <span class="task-reward">+0.80 USDT</span>
-                    <button class="item-button task-btn" data-task="subscribe">Старт</button>
+                    <button class="item-button task-btn" id="btnTaskSubscribe" data-task="subscribe">Старт</button>
                 </div>
             </div>
             
@@ -367,28 +356,27 @@
                     <button class="item-button task-btn" data-task="wallet">Старт</button>
                 </div>
             </div>
-            
-            <div class="task-item task-special" id="taskBlum">
-                <div class="item-left">
-                    <span class="item-icon">
-                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12" cy="12" r="8" stroke="white" stroke-width="2"/>
-                            <circle cx="12" cy="8" r="1" fill="white"/>
-                            <circle cx="16" cy="12" r="1" fill="white"/>
-                            <circle cx="8" cy="12" r="1" fill="white"/>
-                            <path d="M8 16L12 18L16 16" stroke="white" stroke-width="2"/>
-                        </svg>
-                    </span>
-                    <span class="item-name">Квест в разработке</span>
-                </div>
-                <div class="item-right">
-                    <button class="item-button task-btn" data-task="blum" disabled style="opacity: 0.5;">Скоро</button>
-                </div>
-            </div>
         </div>
 
         <div class="notice">
             ⚡ Trust Wallet · Tap to earn
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="subscribeModal">
+        <div class="modal-content" style="text-align: center;">
+            <div class="modal-header">
+                <h3>Задание: Подписка</h3>
+                <button class="close-btn" id="closeSubscribeModal">×</button>
+            </div>
+            <div class="modal-body" style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.5; padding-top: 10px;">
+                <div style="font-size: 3rem; margin-bottom: 10px; color: #3b82f6;">📢</div>
+                <p style="margin-bottom: 20px;">Подпишись на наш официальный Telegram канал, чтобы быть в курсе новостей и получить <b>+0.80 USDT</b> на баланс!</p>
+                
+                <button class="item-button" onclick="tg.openTelegramLink('t.me/test_trust_sub')" style="width: 100%; padding: 1rem; font-size: 1rem; background: linear-gradient(145deg, #2a4a8a, #1a3a6a); color: #fff; margin-bottom: 15px; border-color: #3b82f6;">1. Перейти в канал</button>
+                
+                <button id="verifySubBtn" class="item-button" style="width: 100%; padding: 1rem; font-size: 1rem; background: rgba(16, 185, 129, 0.2); color: #4ade80; border-color: rgba(16, 185, 129, 0.4);">2. Проверить подписку</button>
+            </div>
         </div>
     </div>
 
@@ -400,32 +388,22 @@
             </div>
             <div class="modal-body" style="font-size: 0.9rem; color: #cbd5e1; line-height: 1.5;">
                 <p style="margin-bottom: 15px;">Добро пожаловать в <b>Trust Tap</b>! Зарабатывай реальный USDT, просто кликая по экрану.</p>
-                
                 <div style="margin-bottom: 12px; background: rgba(10,20,35,0.5); padding: 10px; border-radius: 8px; border: 1px solid rgba(59,130,246,0.1);">
                     <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">👆 Тапай и зарабатывай</div>
-                    Кликай по логотипу в центре экрана, чтобы зарабатывать USDT. Каждое нажатие тратит энергию.
+                    Кликай по логотипу в центре экрана, чтобы зарабатывать USDT.
                 </div>
-                
                 <div style="margin-bottom: 12px; background: rgba(10,20,35,0.5); padding: 10px; border-radius: 8px; border: 1px solid rgba(59,130,246,0.1);">
                     <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">🚀 Улучшения</div>
-                    Прокачивай урон за клик, емкость энергии и скорость её восстановления, чтобы фармить быстрее.
+                    Прокачивай урон за клик, емкость энергии и скорость её восстановления.
                 </div>
-                
                 <div style="margin-bottom: 12px; background: rgba(10,20,35,0.5); padding: 10px; border-radius: 8px; border: 1px solid rgba(59,130,246,0.1);">
                     <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">🏆 Ранги</div>
-                    Твой ранг растет в зависимости от <b>общего</b> заработка за всё время. Достигая новых рангов, ты получаешь USDT бонусы! Покупки в магазине не снижают твой ранг.
+                    Твой ранг растет в зависимости от <b>общего</b> заработка.
                 </div>
-                
                 <div style="margin-bottom: 12px; background: rgba(10,20,35,0.5); padding: 10px; border-radius: 8px; border: 1px solid rgba(59,130,246,0.1);">
                     <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">👥 Реферальная система</div>
-                    Приглашай друзей и получай <b>10%</b> от всех их доходов навсегда! И сразу +500 энергии за каждого друга!
+                    Приглашай друзей и получай <b>10%</b> от всех их доходов!
                 </div>
-
-                <div style="margin-bottom: 12px; background: rgba(10,20,35,0.5); padding: 10px; border-radius: 8px; border: 1px solid rgba(59,130,246,0.1);">
-                    <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">💳 Вывод</div>
-                    В будущем ты сможешь вывести заработанные USDT напрямую на свой криптокошелек (Trust Wallet и др.).
-                </div>
-                
                 <button id="startGameBtn" class="item-button" style="width: 100%; margin-top: 10px; padding: 0.9rem; font-size: 1rem; background: rgba(59, 130, 246, 0.2); color: #fff;">Понятно, в игру!</button>
             </div>
         </div>
@@ -438,7 +416,7 @@
                 <button class="close-btn" id="closeReferralsModal">×</button>
             </div>
             <div class="modal-body" id="referralsList">
-                <div class="loading-text">Загрузка...</div>
+                <div class="loading-text-small">Загрузка...</div>
             </div>
         </div>
     </div>
@@ -449,8 +427,7 @@
                 <h3>Система рангов</h3>
                 <button class="close-btn" id="closeRanksInfoModal">×</button>
             </div>
-            <div class="modal-body" id="ranksList">
-                </div>
+            <div class="modal-body" id="ranksList"></div>
         </div>
     </div>
 
@@ -460,11 +437,9 @@
             <h3 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 5px;">Новый ранг!</h3>
             <p style="color: #aaccff; font-size: 0.95rem; margin-bottom: 5px;">Поздравляем, вы получили <span id="modalRankLevel">2</span> ранг</p>
             <div id="modalRankName" style="font-size: 1.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin: 10px 0;">"СИЛЬВЕР"</div>
-            
             <div style="background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.3); padding: 12px; border-radius: 12px; margin-top: 10px; display: inline-block;">
                 <span style="color: #4ade80; font-weight: 600; font-size: 1.1rem;">Бонус: +<span id="modalRankBonus">1</span>$ USDT</span>
             </div>
-            
             <button id="closeRankModalBtn" class="item-button" style="width: 100%; margin-top: 1.5rem; padding: 0.9rem; font-size: 0.95rem; background: rgba(59, 130, 246, 0.15); color: #fff; border-color: rgba(59, 130, 246, 0.5);">Забрать награду</button>
         </div>
     </div>
@@ -473,13 +448,8 @@
         (function() {
             let tg = window.Telegram?.WebApp || null;
             if (tg) {
-                tg.ready();
-                tg.expand();
-                tg.disableVerticalSwipes();
-                requestAnimationFrame(() => {
-                    window.scrollTo(0, 1);
-                    setTimeout(() => window.scrollTo(0, 0), 50);
-                });
+                tg.ready(); tg.expand(); tg.disableVerticalSwipes();
+                requestAnimationFrame(() => { window.scrollTo(0, 1); setTimeout(() => window.scrollTo(0, 0), 50); });
             }
 
             const API_URL = 'https://click-9pdn.onrender.com/api'; 
@@ -488,14 +458,7 @@
             const tgInitData = tg?.initData || ''; 
             let sessionId = null; 
 
-            // СУПЕР КРАСИВЫЕ 3D ИКОНКИ ДЛЯ РАНГОВ (Без цифр, в нашем дизайне)
-            const createIcon = (color) => `<svg viewBox="0 0 24 24" width="22" height="22" style="display:inline-block; margin-right: 4px; vertical-align:-5px; filter:drop-shadow(0 0 4px ${color});">
-                <path d="M12 2 L2 8 L12 14 L22 8 Z" fill="#ffffff" opacity="0.9"/>
-                <path d="M2 8 L2 16 L12 22 L12 14 Z" fill="${color}" opacity="0.3"/>
-                <path d="M22 8 L22 16 L12 22 L12 14 Z" fill="${color}" opacity="0.7"/>
-                <path d="M12 2 L2 8 L2 16 L12 22 L22 16 L22 8 Z" fill="none" stroke="${color}" stroke-width="1.5"/>
-                <path d="M2 8 L12 14 L22 8 M12 14 L12 22" fill="none" stroke="${color}" stroke-width="1.5" opacity="0.7"/>
-            </svg>`;
+            const createIcon = (color) => `<svg viewBox="0 0 24 24" width="22" height="22" style="display:inline-block; margin-right: 4px; vertical-align:-5px; filter:drop-shadow(0 0 4px ${color});"><path d="M12 2 L2 8 L12 14 L22 8 Z" fill="#ffffff" opacity="0.9"/><path d="M2 8 L2 16 L12 22 L12 14 Z" fill="${color}" opacity="0.3"/><path d="M22 8 L22 16 L12 22 L12 14 Z" fill="${color}" opacity="0.7"/><path d="M12 2 L2 8 L2 16 L12 22 L22 16 L22 8 Z" fill="none" stroke="${color}" stroke-width="1.5"/><path d="M2 8 L12 14 L22 8 M12 14 L12 22" fill="none" stroke="${color}" stroke-width="1.5" opacity="0.7"/></svg>`;
 
             const RANKS = [
                 { id: 1, name: 'Бронза', icon: createIcon('#e89543'), color: '#e89543', threshold: 0, bonus: 0 },
@@ -517,23 +480,19 @@
                     damage: [2.5, 5.0, 10.0, 20.0, 40.0, 80.0, 160.0, 320.0, 640.0, 1280.0],
                     capacity: [3.0, 6.0, 12.0, 24.0, 48.0, 96.0, 192.0, 384.0, 768.0, 1536.0],
                     recovery: [1.5, 3.0, 6.0, 12.0, 24.0, 48.0, 96.0, 192.0, 384.0, 768.0]
-                }
+                },
+                tasks: { subscription: 0.80, adReward: 0.20, walletReward: 22.50 }
             };
 
             let player = {
                 balance: 0, totalEarned: 0, totalSpent: 0, 
                 damageLevel: 1, capacityLevel: 1, recoveryLevel: 1,
-                energy: 1000, referrals: 0, rank: 1
+                energy: 1000, referrals: 0, rank: 1, completedTasks: []
             };
 
-            // ЛОГИКА ЗАГРУЗКИ И ОБУЧЕНИЯ
             let appLoaded = false;
             let minTimePassed = false;
-            
-            setTimeout(() => { 
-                minTimePassed = true; 
-                checkHideLoading(); 
-            }, 2000); 
+            setTimeout(() => { minTimePassed = true; checkHideLoading(); }, 2000); 
 
             function checkHideLoading() {
                 if (appLoaded && minTimePassed) {
@@ -549,19 +508,15 @@
                 }
             }
 
-            // КНОПКИ ГАЙДА
-            document.getElementById('openGuideBtn').addEventListener('click', () => {
-                vibrate();
-                document.getElementById('guideModal').classList.add('active');
-            });
-            document.getElementById('closeGuideBtn').addEventListener('click', () => {
-                document.getElementById('guideModal').classList.remove('active');
-            });
-            document.getElementById('startGameBtn').addEventListener('click', () => {
-                vibrate();
-                document.getElementById('guideModal').classList.remove('active');
-            });
-
+            // Модалки
+            document.getElementById('openGuideBtn').addEventListener('click', () => { vibrate(); document.getElementById('guideModal').classList.add('active'); });
+            document.getElementById('closeGuideBtn').addEventListener('click', () => { document.getElementById('guideModal').classList.remove('active'); });
+            document.getElementById('startGameBtn').addEventListener('click', () => { vibrate(); document.getElementById('guideModal').classList.remove('active'); });
+            document.getElementById('closeRanksInfoModal').addEventListener('click', () => { document.getElementById('ranksInfoModal').classList.remove('active'); });
+            document.getElementById('closeReferralsModal').addEventListener('click', () => { document.getElementById('referralsModal').classList.remove('active'); });
+            document.getElementById('closeRankModalBtn').addEventListener('click', () => { document.getElementById('rankModal').classList.remove('active'); });
+            
+            // Логика UI
             function formatUSDT(value) { return parseFloat(value || 0).toFixed(6); }
             function getCurrentTapValue() { return (ECONOMY.usdt.baseTapValue * ECONOMY.upgrades.damage[player.damageLevel - 1]).toFixed(6); }
             function getCurrentCapacity() { return Math.floor(ECONOMY.energy.baseCapacity * ECONOMY.upgrades.capacity[player.capacityLevel - 1]); }
@@ -569,15 +524,14 @@
 
             function updateUI() {
                 document.getElementById('balanceDisplay').textContent = formatUSDT(player.balance);
-                const maxEnergy = getCurrentCapacity();
                 document.getElementById('energyDisplay').textContent = Math.floor(player.energy);
-                document.getElementById('energyBarFill').style.width = `${(player.energy / maxEnergy) * 100}%`;
+                document.getElementById('energyBarFill').style.width = `${(player.energy / getCurrentCapacity()) * 100}%`;
                 document.getElementById('regenTip').textContent = `+${getCurrentRecovery().toFixed(1)}/сек`;
                 document.getElementById('tapValueDisplay').textContent = `${getCurrentTapValue()} USDT за тап`;
                 document.getElementById('refCount').textContent = player.referrals;
                 document.getElementById('damageValue').textContent = `${ECONOMY.upgrades.damage[player.damageLevel-1].toFixed(1)}x`;
                 document.getElementById('damageLevel').textContent = `ур. ${player.damageLevel}`;
-                document.getElementById('capacityValue').textContent = maxEnergy;
+                document.getElementById('capacityValue').textContent = getCurrentCapacity();
                 document.getElementById('capacityLevel').textContent = `ур. ${player.capacityLevel}`;
                 document.getElementById('recoveryValue').textContent = `${getCurrentRecovery().toFixed(1)}/сек`;
                 document.getElementById('recoveryLevel').textContent = `ур. ${player.recoveryLevel}`;
@@ -587,89 +541,63 @@
                 rankDisplay.innerHTML = `${currentRank.icon} <span style="margin-left:2px">${currentRank.name}</span>`;
                 rankDisplay.style.color = currentRank.color;
                 rankDisplay.style.textShadow = `0 0 8px ${currentRank.color}60`;
+
+                // Блокировка кнопки если задание выполнено
+                if(player.completedTasks && player.completedTasks.includes('subscribe')) {
+                    const btn = document.getElementById('btnTaskSubscribe');
+                    btn.textContent = "Выполнено";
+                    btn.disabled = true;
+                }
             }
 
-            function vibrate() {
-                try {
-                    if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-                    else if (navigator.vibrate) navigator.vibrate(10);
-                } catch(e) {}
-            }
+            function vibrate() { try { if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light'); else if (navigator.vibrate) navigator.vibrate(10); } catch(e) {} }
 
             function showFloating(text, x, y) {
-                const div = document.createElement('div');
-                div.className = 'floating-value';
-                div.textContent = text;
+                const div = document.createElement('div'); div.className = 'floating-value'; div.textContent = text;
                 div.style.left = `${x}px`; div.style.top = `${y}px`;
-                document.body.appendChild(div);
-                setTimeout(() => div.remove(), 800);
+                document.body.appendChild(div); setTimeout(() => div.remove(), 800);
             }
 
             function checkRankUp() {
-                let rankUpgraded = false;
-                let lastRankObj = null;
-
+                let rankUpgraded = false; let lastRankObj = null;
                 while (player.rank < 5 && player.totalEarned >= RANKS[player.rank].threshold) {
                     const nextRank = RANKS[player.rank];
                     player.rank = nextRank.id;
                     player.balance = parseFloat((player.balance + nextRank.bonus).toFixed(6));
                     player.totalEarned = parseFloat((player.totalEarned + nextRank.bonus).toFixed(6));
-                    lastRankObj = nextRank;
-                    rankUpgraded = true;
+                    lastRankObj = nextRank; rankUpgraded = true;
                 }
-
                 if (rankUpgraded && lastRankObj) {
                     vibrate();
                     document.getElementById('modalRankIcon').innerHTML = lastRankObj.icon;
                     document.getElementById('modalRankLevel').textContent = lastRankObj.id;
-                    
                     const rankNameEl = document.getElementById('modalRankName');
                     rankNameEl.textContent = `"${lastRankObj.name}"`;
                     rankNameEl.style.color = lastRankObj.color;
                     rankNameEl.style.textShadow = `0 0 15px ${lastRankObj.color}80`;
-                    
                     document.getElementById('modalRankBonus').textContent = lastRankObj.bonus;
                     document.getElementById('rankModal').classList.add('active');
-                    
-                    updateUI();
-                    syncData(); 
+                    updateUI(); syncData(); 
                 }
             }
 
-            document.getElementById('closeRankModalBtn').addEventListener('click', () => {
-                document.getElementById('rankModal').classList.remove('active');
-            });
-
+            // Тапы
             const tapZone = document.getElementById('tapButton');
             const bigCoin = document.querySelector('.big-coin');
-
             function handleTap(x, y) {
                 if (player.energy >= ECONOMY.energy.tapCost) {
                     const val = parseFloat(getCurrentTapValue());
                     player.energy -= ECONOMY.energy.tapCost;
-                    
                     player.balance = parseFloat((player.balance + val).toFixed(6));
                     player.totalEarned = parseFloat((player.totalEarned + val).toFixed(6)); 
-                    
-                    vibrate();
-                    showFloating(`+${val.toFixed(4)}`, x, y);
-                    updateUI();
-                    checkRankUp(); 
+                    vibrate(); showFloating(`+${val.toFixed(4)}`, x, y);
+                    updateUI(); checkRankUp(); 
                 }
             }
+            tapZone.addEventListener('touchstart', (e) => { e.preventDefault(); bigCoin.classList.add('pressed'); for (let i = 0; i < e.changedTouches.length; i++) handleTap(e.changedTouches[i].clientX, e.changedTouches[i].clientY); }, { passive: false });
+            tapZone.addEventListener('touchend', (e) => { if (e.touches.length === 0) bigCoin.classList.remove('pressed'); });
 
-            tapZone.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                bigCoin.classList.add('pressed');
-                for (let i = 0; i < e.changedTouches.length; i++) {
-                    handleTap(e.changedTouches[i].clientX, e.changedTouches[i].clientY);
-                }
-            }, { passive: false });
-
-            tapZone.addEventListener('touchend', (e) => {
-                if (e.touches.length === 0) bigCoin.classList.remove('pressed');
-            });
-
+            // Улучшения
             document.querySelectorAll('.upgrade-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const type = e.target.dataset.type;
@@ -680,232 +608,111 @@
                         player.totalSpent = parseFloat((player.totalSpent + price).toFixed(6)); 
                         player[type + 'Level']++;
                         if (type === 'capacity') player.energy = getCurrentCapacity();
-                        updateUI();
-                        syncData(); 
-                    } else {
-                        alert(`❌ Недостаточно USDT! Нужно: ${price}`);
-                    }
+                        updateUI(); syncData(); 
+                    } else { alert(`❌ Недостаточно USDT! Нужно: ${price}`); }
                 });
             });
 
+            // ЗАДАНИЯ И ПРОВЕРКА ПОДПИСКИ
             document.querySelectorAll('.task-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const task = e.target.dataset.task;
-                    let reward = 0;
-                    if (task === 'subscribe') reward = ECONOMY.tasks.subscription;
-                    else if (task === 'ad') reward = ECONOMY.tasks.adReward;
-                    else if (task === 'wallet') reward = ECONOMY.tasks.walletReward;
+                    vibrate();
                     
-                    if (reward > 0) {
-                        player.balance = parseFloat((player.balance + reward).toFixed(6));
-                        player.totalEarned = parseFloat((player.totalEarned + reward).toFixed(6));
-                        showFloating(`+${reward.toFixed(2)}`, window.innerWidth / 2, window.innerHeight / 2);
-                        updateUI();
-                        checkRankUp();
-                        alert(`✅ Задание выполнено! +${reward} USDT`);
+                    if (task === 'subscribe') {
+                        document.getElementById('subscribeModal').classList.add('active');
+                    } else {
+                        // Обычные задания (пока без проверок)
+                        let reward = task === 'ad' ? ECONOMY.tasks.adReward : (task === 'wallet' ? ECONOMY.tasks.walletReward : 0);
+                        if (reward > 0) {
+                            player.balance = parseFloat((player.balance + reward).toFixed(6));
+                            player.totalEarned = parseFloat((player.totalEarned + reward).toFixed(6));
+                            showFloating(`+${reward.toFixed(2)}`, window.innerWidth / 2, window.innerHeight / 2);
+                            updateUI(); checkRankUp(); syncData();
+                            alert(`✅ Задание выполнено! +${reward} USDT`);
+                        }
                     }
                 });
             });
 
+            // Логика модалки подписки
+            document.getElementById('closeSubscribeModal').addEventListener('click', () => {
+                document.getElementById('subscribeModal').classList.remove('active');
+            });
+
+            document.getElementById('verifySubBtn').addEventListener('click', async () => {
+                const btn = document.getElementById('verifySubBtn');
+                btn.textContent = "Проверяем...";
+                btn.disabled = true;
+
+                try {
+                    const res = await fetch(`${API_URL}/verify-subscription`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ telegramId: tgUser.id.toString() })
+                    });
+                    const data = await res.json();
+
+                    if (data.success) {
+                        player.balance = parseFloat((player.balance + ECONOMY.tasks.subscription).toFixed(6));
+                        player.totalEarned = parseFloat((player.totalEarned + ECONOMY.tasks.subscription).toFixed(6));
+                        if(!player.completedTasks) player.completedTasks = [];
+                        player.completedTasks.push('subscribe');
+                        
+                        updateUI(); checkRankUp(); syncData();
+                        document.getElementById('subscribeModal').classList.remove('active');
+                        alert('✅ Подписка подтверждена! Начислено +0.80 USDT');
+                    } else {
+                        btn.textContent = "2. Проверить подписку";
+                        btn.disabled = false;
+                        alert('❌ Вы еще не подписались на канал!');
+                    }
+                } catch (e) {
+                    btn.textContent = "2. Проверить подписку";
+                    btn.disabled = false;
+                    alert('Ошибка сервера при проверке!');
+                }
+            });
+
+            // Остальная логика
             document.getElementById('topRefBar').addEventListener('click', () => {
-                vibrate();
-                const botUser = 'teosoaodosabot'; 
-                const link = `https://t.me/${botUser}/app?startapp=${tgUser.id}`;
+                vibrate(); const botUser = 'teosoaodosabot'; const link = `https://t.me/${botUser}/app?startapp=${tgUser.id}`;
                 if (tg && tg.openTelegramLink) tg.openTelegramLink(`https://t.me/share/url?url=${link}&text=Забирай USDT!`);
                 else alert(`Ссылка: ${link}`);
             });
 
-            // ОКНО ИНФОРМАЦИИ О РАНГАХ (Полностью на русском)
-            document.getElementById('rankCard').addEventListener('click', () => {
-                vibrate();
-                const modal = document.getElementById('ranksInfoModal');
-                const list = document.getElementById('ranksList');
-                list.innerHTML = '';
-                
-                RANKS.forEach(r => {
-                    const isActive = player.rank === r.id;
-                    const div = document.createElement('div');
-                    div.className = `rank-info-item ${isActive ? 'active-rank' : ''}`;
-                    
-                    const reqText = r.threshold > 0 ? `От ${r.threshold}$ общего заработка` : `Выдается сразу`;
-                    const bonusText = r.bonus > 0 ? `+${r.bonus}$ бонус` : `Начальный`;
+            document.getElementById('rankCard').addEventListener('click', () => { vibrate(); const modal = document.getElementById('ranksInfoModal'); const list = document.getElementById('ranksList'); list.innerHTML = ''; RANKS.forEach(r => { const isActive = player.rank === r.id; const div = document.createElement('div'); div.className = `rank-info-item ${isActive ? 'active-rank' : ''}`; const reqText = r.threshold > 0 ? `От ${r.threshold}$ общего заработка` : `Выдается сразу`; const bonusText = r.bonus > 0 ? `+${r.bonus}$ бонус` : `Начальный`; div.innerHTML = `<div class="rank-info-left"><span class="rank-info-icon" style="display:flex; align-items:center;">${r.icon}</span><div class="rank-info-details"><span class="rank-info-name" style="color: ${r.color}; text-shadow: 0 0 5px ${r.color}60;">${r.name}</span><span class="rank-info-req">${reqText}</span></div></div><div class="rank-info-bonus">${bonusText}</div>`; list.appendChild(div); }); modal.classList.add('active'); });
 
-                    div.innerHTML = `
-                        <div class="rank-info-left">
-                            <span class="rank-info-icon" style="display:flex; align-items:center;">${r.icon}</span>
-                            <div class="rank-info-details">
-                                <span class="rank-info-name" style="color: ${r.color}; text-shadow: 0 0 5px ${r.color}60;">${r.name}</span>
-                                <span class="rank-info-req">${reqText}</span>
-                            </div>
-                        </div>
-                        <div class="rank-info-bonus">
-                            ${bonusText}
-                        </div>
-                    `;
-                    list.appendChild(div);
-                });
-                modal.classList.add('active');
-            });
-
-            document.getElementById('closeRanksInfoModal').addEventListener('click', () => {
-                document.getElementById('ranksInfoModal').classList.remove('active');
-            });
-
-            document.getElementById('referralsCard').addEventListener('click', async () => {
-                vibrate();
-                const modal = document.getElementById('referralsModal');
-                const listContainer = document.getElementById('referralsList');
-                modal.classList.add('active');
-                listContainer.innerHTML = '<div class="loading-text">Загрузка...</div>';
-                
-                try {
-                    const res = await fetch(`${API_URL}/referralsList/${tgUser.id}`);
-                    const refs = await res.json();
-                    
-                    if (refs.length === 0) {
-                        listContainer.innerHTML = '<div class="no-refs">У вас пока нет рефералов 😔</div>';
-                        return;
-                    }
-                    
-                    listContainer.innerHTML = '';
-                    refs.forEach(r => {
-                        const div = document.createElement('div');
-                        div.className = 'ref-user-item';
-                        div.innerHTML = `
-                            <span class="ref-user-name">@${r.username || 'Игрок'}</span>
-                            <span class="ref-user-profit">+${r.earnedForInviter.toFixed(4)} $</span>
-                        `;
-                        listContainer.appendChild(div);
-                    });
-                } catch (e) {
-                    listContainer.innerHTML = '<div class="loading-text" style="color:#ef4444;">Ошибка загрузки</div>';
-                }
-            });
-
-            document.getElementById('closeReferralsModal').addEventListener('click', () => {
-                document.getElementById('referralsModal').classList.remove('active');
-            });
+            document.getElementById('referralsCard').addEventListener('click', async () => { vibrate(); const modal = document.getElementById('referralsModal'); const listContainer = document.getElementById('referralsList'); modal.classList.add('active'); listContainer.innerHTML = '<div class="loading-text-small">Загрузка...</div>'; try { const res = await fetch(`${API_URL}/referralsList/${tgUser.id}`); const refs = await res.json(); if (refs.length === 0) { listContainer.innerHTML = '<div class="no-refs">У вас пока нет рефералов 😔</div>'; return; } listContainer.innerHTML = ''; refs.forEach(r => { const div = document.createElement('div'); div.className = 'ref-user-item'; div.innerHTML = `<span class="ref-user-name">@${r.username || 'Игрок'}</span><span class="ref-user-profit">+${r.earnedForInviter.toFixed(4)} $</span>`; listContainer.appendChild(div); }); } catch (e) { listContainer.innerHTML = '<div class="loading-text-small" style="color:#ef4444;">Ошибка загрузки</div>'; } });
 
             async function loadData() {
                 try {
-                    const res = await fetch(`${API_URL}/init`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ 
-                            telegramId: tgUser.id.toString(), 
-                            username: tgUser.username, 
-                            refId: refParam,
-                            initData: tgInitData 
-                        })
-                    });
+                    const res = await fetch(`${API_URL}/init`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ telegramId: tgUser.id.toString(), username: tgUser.username, refId: refParam, initData: tgInitData }) });
                     const data = await res.json();
-                    
-                    if (data.error) {
-                        console.error("Ошибка входа:", data.error);
-                    } else if (data.telegramId) {
+                    if (!data.error && data.telegramId) {
                         sessionId = data.sessionId; 
-                        player = {
-                            balance: data.balance,
-                            totalEarned: data.totalEarned || 0,
-                            totalSpent: data.totalSpent || 0,
-                            energy: data.energy,
-                            damageLevel: data.damageLevel,
-                            capacityLevel: data.capacityLevel,
-                            recoveryLevel: data.recoveryLevel,
-                            referrals: data.referrals,
-                            rank: data.rank || 1
-                        };
-                        updateUI();
-                        checkRankUp(); 
+                        player = { balance: data.balance, totalEarned: data.totalEarned || 0, totalSpent: data.totalSpent || 0, energy: data.energy, damageLevel: data.damageLevel, capacityLevel: data.capacityLevel, recoveryLevel: data.recoveryLevel, referrals: data.referrals, rank: data.rank || 1, completedTasks: data.completedTasks || [] };
+                        updateUI(); checkRankUp(); 
                     }
-                } catch (e) { 
-                    console.log('Подключение...'); 
-                } finally {
-                    appLoaded = true;
-                    checkHideLoading();
-                }
+                } catch (e) { console.log('Подключение...'); } finally { appLoaded = true; checkHideLoading(); }
             }
 
             async function syncData() {
                 if (!sessionId) return; 
-
-                const syncEarned = player.totalEarned;
-                const syncSpent = player.totalSpent;
-
                 try {
-                    const res = await fetch(`${API_URL}/sync`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            telegramId: tgUser.id.toString(),
-                            clientTotalEarned: syncEarned,
-                            clientSpent: syncSpent,
-                            clientEnergy: player.energy,
-                            levels: { damage: player.damageLevel, capacity: player.capacityLevel, recovery: player.recoveryLevel },
-                            rank: player.rank,
-                            initData: tgInitData,
-                            sessionId: sessionId 
-                        })
-                    });
+                    const res = await fetch(`${API_URL}/sync`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ telegramId: tgUser.id.toString(), clientTotalEarned: player.totalEarned, clientSpent: player.totalSpent, clientEnergy: player.energy, levels: { damage: player.damageLevel, capacity: player.capacityLevel, recovery: player.recoveryLevel }, rank: player.rank, initData: tgInitData, sessionId: sessionId }) });
                     const data = await res.json();
-                    
-                    if (data.error === "conflict") {
-                        alert('⚠️ ' + data.message + '\nОбновите страницу!');
-                        sessionId = null; 
-                        return;
-                    }
-
-                    if (data.success) {
-                        player.balance = data.balance + (player.totalEarned - syncEarned) - (player.totalSpent - syncSpent);
-                        player.referrals = data.referrals;
-                        updateUI();
-                        checkRankUp(); 
-                    }
+                    if (data.error === "conflict") { alert('⚠️ ' + data.message + '\nОбновите страницу!'); sessionId = null; return; }
+                    if (data.success) { player.balance = data.balance + (player.totalEarned - player.totalEarned) - (player.totalSpent - player.totalSpent); player.referrals = data.referrals; updateUI(); checkRankUp(); }
                 } catch (e) {}
             }
 
-            document.addEventListener("visibilitychange", function() {
-                if (document.visibilityState === 'hidden') {
-                    syncData();
-                }
-            });
-
-            setInterval(() => {
-                const max = getCurrentCapacity();
-                const regen = getCurrentRecovery();
-                if (player.energy < max) {
-                    player.energy = Math.min(max, player.energy + regen);
-                    updateUI();
-                }
-            }, 1000);
-
+            document.addEventListener("visibilitychange", function() { if (document.visibilityState === 'hidden') syncData(); });
+            setInterval(() => { const max = getCurrentCapacity(); const regen = getCurrentRecovery(); if (player.energy < max) { player.energy = Math.min(max, player.energy + regen); updateUI(); } }, 1000);
             setInterval(syncData, 30000);
 
-            const bg = document.getElementById('handwrittenBg');
-            bg.innerHTML = '';
-            const totalT = 80; 
-            for(let i = 0; i < totalT; i++) {
-                const s = document.createElement('span'); 
-                s.textContent = 'T';
-                s.style.left = Math.random() * 100 + '%'; 
-                s.style.top = Math.random() * 100 + '%';
-                s.style.setProperty('--r', Math.random() * 60 - 30); 
-                s.style.setProperty('--d', Math.random() * 8);
-                
-                if (Math.random() < 0.20) {
-                    s.style.opacity = (0.5 + Math.random() * 0.4).toFixed(2);
-                    s.style.fontSize = (1.2 + Math.random() * 1.5) + 'rem';
-                    s.style.color = '#aaccff'; 
-                    s.style.textShadow = '0 0 10px #3b82f6, 0 0 15px #ffffff';
-                    s.style.fontWeight = '600';
-                    s.style.zIndex = '1';
-                } else {
-                    s.style.opacity = (0.15 + Math.random() * 0.25).toFixed(2);
-                    s.style.fontSize = (0.8 + Math.random() * 1.2) + 'rem';
-                    s.style.color = '#3b82f6';
-                }
-                bg.appendChild(s);
-            }
+            const bg = document.getElementById('handwrittenBg'); bg.innerHTML = '';
+            for(let i = 0; i < 80; i++) { const s = document.createElement('span'); s.textContent = 'T'; s.style.left = Math.random() * 100 + '%'; s.style.top = Math.random() * 100 + '%'; s.style.setProperty('--r', Math.random() * 60 - 30); s.style.setProperty('--d', Math.random() * 8); if (Math.random() < 0.20) { s.style.opacity = (0.5 + Math.random() * 0.4).toFixed(2); s.style.fontSize = (1.2 + Math.random() * 1.5) + 'rem'; s.style.color = '#aaccff'; s.style.textShadow = '0 0 10px #3b82f6, 0 0 15px #ffffff'; s.style.fontWeight = '600'; s.style.zIndex = '1'; } else { s.style.opacity = (0.15 + Math.random() * 0.25).toFixed(2); s.style.fontSize = (0.8 + Math.random() * 1.2) + 'rem'; s.style.color = '#3b82f6'; } bg.appendChild(s); }
 
             loadData();
         })();
