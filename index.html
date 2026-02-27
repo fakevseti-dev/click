@@ -5,11 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>TRUST TAP • CRYPTO WALLET GAME</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
-        /* Existing styles remain the same */
         * {
             margin: 0;
             padding: 0;
@@ -842,29 +839,6 @@
                 });
             }
 
-            // Firebase Configuration
-            const firebaseConfig = {
-                apiKey: "AIzaSyBYIO9gOIG_loRVVjfYt1x4i6ZqpobH_vM", // Замените на свои данные
-                authDomain: "jamesguru-9cdcd.firebaseapp.com",
-                databaseURL: "https://jamesguru-9cdcd-default-rtdb.europe-west1.firebasedatabase.app",
-                projectId: "jamesguru-9cdcd",
-                storageBucket: "jamesguru-9cdcd.firebasestorage.app",
-                messagingSenderId: "114795022166",
-                appId: "1:114795022166:web:17348f5349510c60e038f7"
-            };
-
-            // Initialize Firebase
-            let database = null;
-            try {
-                firebase.initializeApp(firebaseConfig);
-                database = firebase.database();
-                console.log("Firebase initialized");
-            } catch (e) {
-                console.error("Firebase initialization failed:", e);
-                // Fallback to localStorage if Firebase fails
-                console.log("Using localStorage fallback");
-            }
-
             // Get user ID from Telegram or generate one
             let userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             let userName = 'User';
@@ -922,7 +896,8 @@
                 },
                 totalTaps: 0,
                 lastActive: Date.now(),
-                createdAt: Date.now()
+                createdAt: Date.now(),
+                referralProcessed: false
             };
 
             // Helper functions
@@ -942,85 +917,109 @@
                 return ECONOMY.energy.baseRecovery * ECONOMY.upgrades.recovery[player.recoveryLevel - 1]; 
             }
 
-            // Save player data
+            // ============= ПРОСТАЯ БАЗА ДАННЫХ =============
+            // Используем localStorage как основное хранилище
+
+            // Ключ для хранения всех пользователей
+            const STORAGE_KEY = 'trust_tap_users';
+
+            // Получить всех пользователей
+            function getAllUsers() {
+                try {
+                    const data = localStorage.getItem(STORAGE_KEY);
+                    return data ? JSON.parse(data) : {};
+                } catch (e) {
+                    console.error('Error reading from localStorage:', e);
+                    return {};
+                }
+            }
+
+            // Сохранить всех пользователей
+            function saveAllUsers(users) {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
+                } catch (e) {
+                    console.error('Error saving to localStorage:', e);
+                }
+            }
+
+            // Сохранить данные игрока
             function savePlayerData() {
                 try {
                     // Update last active
                     player.lastActive = Date.now();
                     
-                    // Save to localStorage as backup
+                    // Save to localStorage for this user (backup)
                     localStorage.setItem('trustTap_player_' + userId, JSON.stringify(player));
                     
-                    // Save to Firebase if available
-                    if (database) {
-                        const updates = {};
-                        updates['users/' + userId] = player;
-                        updates['users/' + userId + '/lastActive'] = Date.now();
+                    // Save to global users database
+                    const allUsers = getAllUsers();
+                    allUsers[userId] = { ...player }; // Сохраняем копию
+                    saveAllUsers(allUsers);
+                    
+                    // Handle referral for new users
+                    if (referrerId && !player.referralProcessed && allUsers[referrerId]) {
+                        // Add referral to referrer
+                        allUsers[referrerId].referrals = (allUsers[referrerId].referrals || 0) + 1;
                         
-                        // Update total stats
-                        updates['stats/lastUpdate'] = Date.now();
+                        // Give referral bonus to new user
+                        player.energy += ECONOMY.tasks.referralBonusEnergy;
+                        player.referralProcessed = true;
                         
-                        database.ref().update(updates);
+                        // Update player in allUsers
+                        allUsers[userId] = { ...player };
                         
-                        // Update global counters
-                        database.ref('stats/totalUsers').transaction(function(current) {
-                            return (current || 0) + 1;
-                        });
+                        // Save all changes
+                        saveAllUsers(allUsers);
+                        
+                        // Update local backup for referrer
+                        localStorage.setItem('trustTap_player_' + referrerId, JSON.stringify(allUsers[referrerId]));
+                        
+                        console.log('✅ Referral processed!');
                     }
+                    
+                    console.log('💾 Data saved locally');
                 } catch (e) {
                     console.error("Error saving player data:", e);
                 }
             }
 
-            // Load player data
+            // Загрузить данные игрока
             function loadPlayerData() {
                 return new Promise((resolve) => {
                     try {
-                        // Try to load from Firebase first
-                        if (database) {
-                            database.ref('users/' + userId).once('value', (snapshot) => {
-                                if (snapshot.exists()) {
-                                    const data = snapshot.val();
-                                    player = { ...player, ...data };
-                                    
-                                    // Ensure energy doesn't exceed capacity
-                                    const maxEnergy = getCurrentCapacity();
-                                    if (player.energy > maxEnergy) {
-                                        player.energy = maxEnergy;
-                                    }
-                                    
-                                    resolve();
-                                } else {
-                                    // New user - check if referred
-                                    if (referrerId) {
-                                        // Add referral to referrer
-                                        database.ref('users/' + referrerId + '/referrals').transaction(function(current) {
-                                            return (current || 0) + 1;
-                                        });
-                                        
-                                        // Give referral bonus
-                                        player.energy += ECONOMY.tasks.referralBonusEnergy;
-                                    }
-                                    
-                                    savePlayerData();
-                                    resolve();
-                                }
-                            });
+                        // Try to load from global users database first
+                        const allUsers = getAllUsers();
+                        
+                        if (allUsers[userId]) {
+                            // User exists in global DB
+                            player = { ...player, ...allUsers[userId] };
+                            console.log('✅ User loaded from global DB');
                         } else {
-                            // Fallback to localStorage
+                            // New user - check local backup
                             const saved = localStorage.getItem('trustTap_player_' + userId);
                             if (saved) {
                                 const data = JSON.parse(saved);
                                 player = { ...player, ...data };
+                                console.log('✅ User loaded from backup');
+                            } else {
+                                console.log('🆕 New user created');
                                 
-                                // Ensure energy doesn't exceed capacity
-                                const maxEnergy = getCurrentCapacity();
-                                if (player.energy > maxEnergy) {
-                                    player.energy = maxEnergy;
+                                // Handle referral for new user
+                                if (referrerId && allUsers[referrerId]) {
+                                    // We'll process referral in savePlayerData
+                                    player.referralProcessed = false;
                                 }
                             }
-                            resolve();
                         }
+                        
+                        // Ensure energy doesn't exceed capacity
+                        const maxEnergy = getCurrentCapacity();
+                        if (player.energy > maxEnergy) {
+                            player.energy = maxEnergy;
+                        }
+                        
+                        resolve();
                     } catch (e) {
                         console.error("Error loading player data:", e);
                         resolve();
@@ -1041,39 +1040,35 @@
             };
 
             function loadAdminData() {
-                if (!database) return;
+                // Load all users from localStorage
+                const allUsers = getAllUsers();
+                adminData.users = allUsers;
                 
-                // Load all users
-                database.ref('users').once('value', (snapshot) => {
-                    const users = snapshot.val() || {};
-                    adminData.users = users;
-                    
-                    // Calculate stats
-                    const now = Date.now();
-                    const dayAgo = now - 24 * 60 * 60 * 1000;
-                    
-                    let totalBalance = 0;
-                    let totalTaps = 0;
-                    let totalReferrals = 0;
-                    let activeToday = 0;
-                    
-                    Object.values(users).forEach(user => {
-                        totalBalance += user.balance || 0;
-                        totalTaps += user.totalTaps || 0;
-                        totalReferrals += user.referrals || 0;
-                        if (user.lastActive > dayAgo) activeToday++;
-                    });
-                    
-                    adminData.stats = {
-                        totalUsers: Object.keys(users).length,
-                        activeToday: activeToday,
-                        totalBalance: totalBalance,
-                        totalTaps: totalTaps,
-                        totalReferrals: totalReferrals
-                    };
-                    
-                    updateAdminUI();
+                // Calculate stats
+                const now = Date.now();
+                const dayAgo = now - 24 * 60 * 60 * 1000;
+                
+                let totalBalance = 0;
+                let totalTaps = 0;
+                let totalReferrals = 0;
+                let activeToday = 0;
+                
+                Object.values(allUsers).forEach(user => {
+                    totalBalance += user.balance || 0;
+                    totalTaps += user.totalTaps || 0;
+                    totalReferrals += user.referrals || 0;
+                    if (user.lastActive > dayAgo) activeToday++;
                 });
+                
+                adminData.stats = {
+                    totalUsers: Object.keys(allUsers).length,
+                    activeToday: activeToday,
+                    totalBalance: totalBalance,
+                    totalTaps: totalTaps,
+                    totalReferrals: totalReferrals
+                };
+                
+                updateAdminUI();
             }
 
             function updateAdminUI() {
@@ -1086,27 +1081,29 @@
                 
                 // Update users list
                 const usersList = document.getElementById('usersList');
-                usersList.innerHTML = '';
-                
-                const searchTerm = document.getElementById('userSearch')?.value?.toLowerCase() || '';
-                
-                Object.entries(adminData.users).forEach(([id, user]) => {
-                    if (searchTerm && !id.includes(searchTerm) && !user.userName?.toLowerCase().includes(searchTerm)) {
-                        return;
-                    }
+                if (usersList) {
+                    usersList.innerHTML = '';
                     
-                    const userEl = document.createElement('div');
-                    userEl.className = 'user-item';
-                    userEl.innerHTML = `
-                        <div class="user-info">
-                            <div class="user-id">${id}</div>
-                            <div class="user-details">${user.userName || 'Unknown'} • Уровни: ${user.damageLevel || 1}/${user.capacityLevel || 1}/${user.recoveryLevel || 1}</div>
-                        </div>
-                        <div class="user-balance">${(user.balance || 0).toFixed(2)} USDT</div>
-                    `;
-                    userEl.onclick = () => showUserDetails(id, user);
-                    usersList.appendChild(userEl);
-                });
+                    const searchTerm = document.getElementById('userSearch')?.value?.toLowerCase() || '';
+                    
+                    Object.entries(adminData.users).forEach(([id, user]) => {
+                        if (searchTerm && !id.includes(searchTerm) && !user.userName?.toLowerCase().includes(searchTerm)) {
+                            return;
+                        }
+                        
+                        const userEl = document.createElement('div');
+                        userEl.className = 'user-item';
+                        userEl.innerHTML = `
+                            <div class="user-info">
+                                <div class="user-id">${id}</div>
+                                <div class="user-details">${user.userName || 'Unknown'} • Уровни: ${user.damageLevel || 1}/${user.capacityLevel || 1}/${user.recoveryLevel || 1}</div>
+                            </div>
+                            <div class="user-balance">${(user.balance || 0).toFixed(2)} USDT</div>
+                        `;
+                        userEl.onclick = () => showUserDetails(id, user);
+                        usersList.appendChild(userEl);
+                    });
+                }
                 
                 // Update task stats
                 let subscribeCount = 0, adCount = 0, walletCount = 0;
@@ -1122,13 +1119,15 @@
                 
                 // Update referral select
                 const select = document.getElementById('referralUserSelect');
-                select.innerHTML = '<option value="">Выберите пользователя</option>';
-                Object.entries(adminData.users).forEach(([id, user]) => {
-                    const option = document.createElement('option');
-                    option.value = id;
-                    option.textContent = `${id} - ${user.userName || 'Unknown'} (реф: ${user.referrals || 0})`;
-                    select.appendChild(option);
-                });
+                if (select) {
+                    select.innerHTML = '<option value="">Выберите пользователя</option>';
+                    Object.entries(adminData.users).forEach(([id, user]) => {
+                        const option = document.createElement('option');
+                        option.value = id;
+                        option.textContent = `${id} - ${user.userName || 'Unknown'} (реф: ${user.referrals || 0})`;
+                        select.appendChild(option);
+                    });
+                }
             }
 
             function showUserDetails(userId, userData) {
@@ -1182,9 +1181,13 @@
                 document.getElementById('recoveryLevel').textContent = `ур. ${player.recoveryLevel}`;
                 
                 // Update task button states
-                document.querySelector('[data-task="subscribe"]').textContent = player.tasks.subscribe ? '✅' : 'Старт';
-                document.querySelector('[data-task="ad"]').textContent = player.tasks.ad ? '✅' : 'Старт';
-                document.querySelector('[data-task="wallet"]').textContent = player.tasks.wallet ? '✅' : 'Старт';
+                const subscribeBtn = document.querySelector('[data-task="subscribe"]');
+                const adBtn = document.querySelector('[data-task="ad"]');
+                const walletBtn = document.querySelector('[data-task="wallet"]');
+                
+                if (subscribeBtn) subscribeBtn.textContent = player.tasks.subscribe ? '✅' : 'Старт';
+                if (adBtn) adBtn.textContent = player.tasks.ad ? '✅' : 'Старт';
+                if (walletBtn) walletBtn.textContent = player.tasks.wallet ? '✅' : 'Старт';
             }
 
             // Floating animation
@@ -1418,8 +1421,8 @@
                 const adminTabs = document.querySelectorAll('.admin-tab');
                 const userSearch = document.getElementById('userSearch');
                 
-                // Check if user is admin (you can set specific user IDs here)
-                const ADMIN_IDS = ['7734938819', '987654321']; // Замените на реальные ID админов
+                // Check if user is admin
+                const ADMIN_IDS = ['7734938819', '987654321']; // Замените на свои ID
                 const isAdmin = ADMIN_IDS.includes(userId);
                 
                 if (isAdmin) {
@@ -1456,23 +1459,30 @@
                     });
                     
                     // User search
-                    userSearch?.addEventListener('input', () => {
-                        updateAdminUI();
-                    });
+                    if (userSearch) {
+                        userSearch.addEventListener('input', () => {
+                            updateAdminUI();
+                        });
+                    }
                     
                     // Referral tree
-                    document.getElementById('referralUserSelect').addEventListener('change', (e) => {
-                        const selectedUserId = e.target.value;
-                        if (!selectedUserId || !adminData.users[selectedUserId]) return;
-                        
-                        buildReferralTree(selectedUserId);
-                    });
+                    const referralSelect = document.getElementById('referralUserSelect');
+                    if (referralSelect) {
+                        referralSelect.addEventListener('change', (e) => {
+                            const selectedUserId = e.target.value;
+                            if (!selectedUserId || !adminData.users[selectedUserId]) return;
+                            
+                            buildReferralTree(selectedUserId);
+                        });
+                    }
                 } else {
                     adminBtn.style.display = 'none';
                 }
                 
                 function buildReferralTree(userId) {
                     const tree = document.getElementById('referralTree');
+                    if (!tree) return;
+                    
                     const user = adminData.users[userId];
                     if (!user) return;
                     
