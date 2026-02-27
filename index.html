@@ -616,7 +616,7 @@
             // --- РЕФЕРАЛКА ТА ЗАВДАННЯ ---
             document.getElementById('topRefBar').addEventListener('click', () => {
                 vibrate();
-                const botUser = 'TrustTap_Bot'; // Впиши свій юзернейм
+                const botUser = 'teosoaodosabot'; // Впиши свій юзернейм
                 const link = `https://t.me/${botUser}?start=${tgUser.id}`;
                 if (tg && tg.openTelegramLink) tg.openTelegramLink(`https://t.me/share/url?url=${link}&text=Забирай USDT!`);
                 else alert(`Ссылка: ${link}`);
