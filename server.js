@@ -7,12 +7,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Підключення до бази даних MongoDB
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('✅ База підключена'))
-    .catch(err => console.error('❌ Помилка підключення до бази:', err));
+    .catch(err => console.error('❌ Помилка бази:', err));
 
-// Схема користувача
 const UserSchema = new mongoose.Schema({
     telegramId: { type: String, unique: true, required: true },
     username: { type: String, default: 'Гравець' },
@@ -27,75 +25,58 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', UserSchema);
 
-// 1. ІНІЦІАЛІЗАЦІЯ ГРАВЦЯ ТА РЕФЕРАЛЬНА СИСТЕМА
+// ГОЛОВНА ЛОГІКА РЕФЕРАЛІВ
 app.post('/api/init', async (req, res) => {
     try {
         const { telegramId, username, refId } = req.body;
         let user = await User.findOne({ telegramId });
         
         if (!user) {
-            // Створюємо нового гравця, якщо його немає в базі
-            user = new User({ 
-                telegramId, 
-                username: username || 'Гравець',
-                balance: 0,
-                energy: 1000
-            });
+            // Новий користувач
+            user = new User({ telegramId, username: username || 'Гравець' });
             await user.save();
-            console.log(`🆕 Новий гравець: ${username} (${telegramId})`);
+            console.log(`🆕 Створено користувача: ${telegramId}`);
 
-            // ЛОГІКА РЕФЕРАЛА: якщо є refId і це не сам гравець
-            if (refId && refId !== telegramId) {
-                const updatedInviter = await User.findOneAndUpdate(
-                    { telegramId: refId }, 
-                    { $inc: { referrals: 1 } }, // Додаємо +1 реферала тому, хто запросив
-                    { new: true }
-                );
-                if (updatedInviter) {
-                    console.log(`👥 Реферал зараховано для ID: ${refId}. Тепер у нього: ${updatedInviter.referrals}`);
+            // Зараховуємо реферала, якщо є refId і це не сам гравець
+            if (refId && refId !== telegramId && refId !== "null") {
+                const inviter = await User.findOne({ telegramId: refId });
+                if (inviter) {
+                    inviter.referrals += 1;
+                    // Можна додати бонус запрошувачу: inviter.balance += 5;
+                    await inviter.save();
+                    console.log(`👥 Реферал +1 для ${refId} від ${telegramId}`);
+                } else {
+                    console.log(`⚠️ Запрошувача з ID ${refId} не знайдено`);
                 }
             }
         }
         res.json(user);
-    } catch (e) {
-        console.error('Помилка при ініціалізації:', e);
-        res.status(500).json({ error: e.message });
+    } catch (e) { 
+        console.error("Помилка ініціалізації:", e);
+        res.status(500).json({ error: e.message }); 
     }
 });
 
-// 2. СИНХРОНІЗАЦІЯ ДАНИХ (АВТОЗБЕРЕЖЕННЯ)
 app.post('/api/sync', async (req, res) => {
     try {
         const { telegramId, balance, energy, levels } = req.body;
-        
-        // Оновлюємо баланс, енергію та всі рівні покращень
         await User.findOneAndUpdate({ telegramId }, { 
-            balance, 
-            energy, 
+            balance, energy, 
             damageLevel: levels.damage, 
             capacityLevel: levels.capacity, 
-            recoveryLevel: levels.recovery, // Додано збереження рівня відновлення
+            recoveryLevel: levels.recovery,
             lastSync: Date.now() 
         });
-        
         res.json({ success: true });
-    } catch (e) {
-        console.error('Помилка синхронізації:', e);
-        res.status(500).json({ error: e.message });
-    }
+    } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// 3. АДМІН-ПАНЕЛЬ (СПИСОК КОРИСТУВАЧІВ)
 app.get('/api/admin/users', async (req, res) => {
     try {
         const users = await User.find().sort({ lastSync: -1 });
         res.json(users);
-    } catch (e) {
-        res.status(500).json({ error: e.message });
-    }
+    } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-    console.log(`🚀 Сервер запущено на порту ${PORT}`);
-});
+app.listen(PORT, () => console.log(`🚀 Сервер на порту ${PORT}`));
