@@ -373,7 +373,7 @@
                 <div style="font-size: 3rem; margin-bottom: 10px; color: #3b82f6;">📢</div>
                 <p style="margin-bottom: 20px;">Подпишись на наш официальный Telegram канал, чтобы быть в курсе новостей и получить <b>+0.80 USDT</b> на баланс!</p>
                 
-                <button class="item-button" onclick="tg.openTelegramLink('t.me/test_trust_sub')" style="width: 100%; padding: 1rem; font-size: 1rem; background: linear-gradient(145deg, #2a4a8a, #1a3a6a); color: #fff; margin-bottom: 15px; border-color: #3b82f6;">1. Перейти в канал</button>
+                <button id="joinChannelBtn" class="item-button" style="width: 100%; padding: 1rem; font-size: 1rem; background: linear-gradient(145deg, #2a4a8a, #1a3a6a); color: #fff; margin-bottom: 15px; border-color: #3b82f6;">1. Перейти в канал</button>
                 
                 <button id="verifySubBtn" class="item-button" style="width: 100%; padding: 1rem; font-size: 1rem; background: rgba(16, 185, 129, 0.2); color: #4ade80; border-color: rgba(16, 185, 129, 0.4);">2. Проверить подписку</button>
             </div>
@@ -622,7 +622,6 @@
                     if (task === 'subscribe') {
                         document.getElementById('subscribeModal').classList.add('active');
                     } else {
-                        // Обычные задания (пока без проверок)
                         let reward = task === 'ad' ? ECONOMY.tasks.adReward : (task === 'wallet' ? ECONOMY.tasks.walletReward : 0);
                         if (reward > 0) {
                             player.balance = parseFloat((player.balance + reward).toFixed(6));
@@ -638,6 +637,17 @@
             // Логика модалки подписки
             document.getElementById('closeSubscribeModal').addEventListener('click', () => {
                 document.getElementById('subscribeModal').classList.remove('active');
+            });
+
+            // ======= ОСЬ ТУТ ДОДАНО ЛОГІКУ ПЕРЕХОДУ НА КАНАЛ =======
+            document.getElementById('joinChannelBtn').addEventListener('click', () => {
+                vibrate();
+                const channelLink = 'https://t.me/test_trust_sub'; // <---- ВСТАВ ПОСИЛАННЯ ТУТ
+                if (tg && tg.openTelegramLink) {
+                    tg.openTelegramLink(channelLink);
+                } else {
+                    window.open(channelLink, '_blank');
+                }
             });
 
             document.getElementById('verifySubBtn').addEventListener('click', async () => {
