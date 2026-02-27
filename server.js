@@ -2,171 +2,122 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const crypto = require('crypto');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Підключення до бази
 mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('✅ База підключена'))
     .catch(err => console.error('❌ Помилка бази:', err));
 
+// Схема користувача (додано поле isBanned)
 const UserSchema = new mongoose.Schema({
     telegramId: { type: String, unique: true, required: true },
-    username: { type: String, default: 'Игрок' },
+    username: { type: String, default: 'Гравець' },
     balance: { type: Number, default: 0 },
-    totalEarned: { type: Number, default: 0 }, 
-    totalSpent: { type: Number, default: 0 },  
     energy: { type: Number, default: 1000 },
     damageLevel: { type: Number, default: 1 },
     capacityLevel: { type: Number, default: 1 },
     recoveryLevel: { type: Number, default: 1 },
     referrals: { type: Number, default: 0 },
-    rank: { type: Number, default: 1 }, 
-    invitedBy: { type: String, default: null },
-    earnedForInviter: { type: Number, default: 0 },
-    pendingEnergyBonus: { type: Number, default: 0 },
-    sessionId: { type: String, default: null },
+    isBanned: { type: Boolean, default: false }, // Поле для бану
     lastSync: { type: Date, default: Date.now }
 });
 
 const User = mongoose.model('User', UserSchema);
 
-function validateInitData(initData) {
-    if (!process.env.BOT_TOKEN) return true; 
-    if (!initData) return false;
-
-    try {
-        const urlParams = new URLSearchParams(initData);
-        const hash = urlParams.get('hash');
-        urlParams.delete('hash');
-        urlParams.sort();
-        
-        let dataCheckString = '';
-        for (const [key, value] of urlParams.entries()) {
-            dataCheckString += `${key}=${value}\n`;
-        }
-        dataCheckString = dataCheckString.slice(0, -1);
-        
-        const secretKey = crypto.createHmac('sha256', 'WebAppData').update(process.env.BOT_TOKEN).digest();
-        const calculatedHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
-        
-        return calculatedHash === hash;
-    } catch (e) {
-        return false;
-    }
-}
-
-// ІНІЦІАЛІЗАЦІЯ ТА ВИДАЧА БОНУСУ ОДРАЗУ
+// ВХІД ТА РЕФЕРАЛИ
 app.post('/api/init', async (req, res) => {
     try {
-        const { telegramId, username, refId, initData } = req.body;
-        
-        if (!validateInitData(initData)) {
-            return res.status(403).json({ error: "Unauthorized" });
-        }
-
-        const sessionId = crypto.randomUUID(); 
+        const { telegramId, username, refId } = req.body;
         let user = await User.findOne({ telegramId });
         
+        // Якщо гравець у бані - не пускаємо
+        if (user && user.isBanned) {
+            return res.status(403).json({ error: "Акаунт заблоковано" });
+        }
+
         if (!user) {
-            user = new User({ telegramId, username: username || 'Игрок', sessionId });
+            user = new User({ telegramId, username: username || 'Гравець' });
+            await user.save();
+            console.log(`🆕 Створено користувача: ${telegramId}`);
+
             if (refId && refId !== telegramId && refId !== "null") {
                 const inviter = await User.findOne({ telegramId: refId });
-                if (inviter) {
+                // Даємо реферала, тільки якщо запрошувач теж не в бані
+                if (inviter && !inviter.isBanned) {
                     inviter.referrals += 1;
-                    inviter.pendingEnergyBonus += 500; // СРАЗУ ВЫДАЕМ +500 ЭНЕРГИИ ДРУГУ
                     await inviter.save();
-                    user.invitedBy = refId;
+                    console.log(`👥 Реферал зарахований для ${refId}`);
                 }
             }
-        } else {
-            user.sessionId = sessionId; 
-            if (user.totalEarned === 0 && user.balance > 0) {
-                user.totalEarned = user.balance; 
-            }
         }
-        await user.save();
         res.json(user);
-    } catch (e) { 
-        res.status(500).json({ error: e.message }); 
-    }
+    } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// СИНХРОНІЗАЦІЯ
+// ЗБЕРЕЖЕННЯ ДАНИХ ТАПІВ
 app.post('/api/sync', async (req, res) => {
     try {
-        const { telegramId, clientTotalEarned, clientSpent, clientEnergy, levels, rank, initData, sessionId } = req.body;
+        const { telegramId, balance, energy, levels } = req.body;
         
-        if (!validateInitData(initData)) return res.status(403).json({ error: "Unauthorized" });
-
         const user = await User.findOne({ telegramId });
-        if (!user) return res.status(404).json({ error: "User not found" });
+        if (!user) return res.status(404).json({ error: "Гравця не знайдено" });
+        if (user.isBanned) return res.status(403).json({ error: "Акаунт заблоковано" });
 
-        if (user.sessionId !== sessionId) {
-            return res.status(409).json({ error: "conflict", message: "Игра открыта на другом устройстве" });
-        }
-
-        const farmed = Math.max(0, clientTotalEarned - user.totalEarned);
-        const spentDiff = Math.max(0, clientSpent - user.totalSpent);
-
-        let safeFarmed = farmed;
-        if (safeFarmed > 50) safeFarmed = 50; 
-
-        if (safeFarmed > 0 && user.invitedBy) {
-            const bonus = safeFarmed * 0.10;
-            await User.findOneAndUpdate(
-                { telegramId: user.invitedBy },
-                { $inc: { balance: bonus } }
-            );
-            user.earnedForInviter += bonus;
-        }
-
-        user.totalEarned = user.totalEarned + safeFarmed;
-        user.totalSpent = Math.max(user.totalSpent, clientSpent);
-        user.balance = user.balance + safeFarmed - spentDiff;
-        
-        let newEnergy = clientEnergy;
-        if (user.pendingEnergyBonus > 0) {
-            const capacityMultipliers = [1.0, 1.3, 1.6, 2.0, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0];
-            const maxEnergy = Math.floor(1000 * capacityMultipliers[levels.capacity - 1]);
-            newEnergy = Math.min(maxEnergy, clientEnergy + user.pendingEnergyBonus);
-            user.pendingEnergyBonus = 0;
-        }
-
-        user.energy = newEnergy;
-        user.damageLevel = levels.damage;
-        user.capacityLevel = levels.capacity;
-        user.recoveryLevel = levels.recovery;
-        user.rank = Math.max(user.rank || 1, rank || 1);
-        user.lastSync = Date.now();
-        
-        await user.save();
-
-        res.json({ 
-            success: true, 
-            balance: user.balance,
-            totalEarned: user.totalEarned,
-            totalSpent: user.totalSpent,
-            energy: user.energy,
-            referrals: user.referrals
+        await User.findOneAndUpdate({ telegramId }, { 
+            balance, energy, 
+            damageLevel: levels.damage, capacityLevel: levels.capacity, recoveryLevel: levels.recovery,
+            lastSync: Date.now() 
         });
+        res.json({ success: true });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-app.get('/api/referralsList/:telegramId', async (req, res) => {
-    try {
-        const refs = await User.find({ invitedBy: req.params.telegramId }).select('username earnedForInviter');
-        res.json(refs);
-    } catch (e) { res.status(500).json({ error: e.message }); }
-});
-
+// ВИВІД ГРАВЦІВ В АДМІНКУ
 app.get('/api/admin/users', async (req, res) => {
     try {
         const users = await User.find().sort({ lastSync: -1 });
         res.json(users);
     } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
+// ⚡ ГОЛОВНИЙ БЛОК ДЛЯ РОБОТИ КНОПОК ⚡
+app.post('/api/admin/action', async (req, res) => {
+    try {
+        const { telegramId, action, value, adminKey } = req.body;
+        
+        // Перевірка пароля, щоб ніхто чужий не міг слати запити
+        if (adminKey !== "0001k") {
+            return res.status(401).json({ error: "Невірний пароль адміністратора" });
+        }
+
+        const user = await User.findOne({ telegramId });
+        if (!user && action !== 'delete') return res.status(404).json({ error: "Гравця не знайдено" });
+
+        // Логіка кнопок
+        if (action === 'add_balance') {
+            user.balance += Number(value);
+            await user.save();
+        } else if (action === 'sub_balance') {
+            user.balance = Math.max(0, user.balance - Number(value)); // Забороняємо мінус
+            await user.save();
+        } else if (action === 'ban') {
+            user.isBanned = true;
+            await user.save();
+        } else if (action === 'unban') {
+            user.isBanned = false;
+            await user.save();
+        } else if (action === 'delete') {
+            await User.deleteOne({ telegramId });
+        }
+
+        res.json({ success: true });
+    } catch (e) {
+        res.status(500).json({ error: e.message });
+    }
 });
 
 const PORT = process.env.PORT || 3000;
