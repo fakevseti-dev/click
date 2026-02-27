@@ -9,9 +9,10 @@ app.use(express.json());
 
 // Підключення до MongoDB Atlas
 mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ База MongoDB підключена!'))
+  .then(() => console.log('✅ База підключена'))
   .catch(err => console.error('❌ Помилка бази:', err));
 
+// Схема користувача
 const UserSchema = new mongoose.Schema({
     telegramId: { type: String, unique: true, required: true },
     username: { type: String, default: 'Гравець' },
@@ -26,7 +27,7 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', UserSchema);
 
-// Ініціалізація гравця
+// 1. Вхід в гру та створення користувача
 app.post('/api/init', async (req, res) => {
     try {
         const { telegramId, username } = req.body;
@@ -34,18 +35,18 @@ app.post('/api/init', async (req, res) => {
 
         let user = await User.findOne({ telegramId });
         if (!user) {
-            user = new User({ telegramId, username, balance: 0, energy: 1000 });
+            user = new User({ telegramId, username: username || 'Гравець' });
             await user.save();
         }
         res.json(user);
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// Синхронізація (Збереження)
+// 2. Збереження прогресу
 app.post('/api/sync', async (req, res) => {
     try {
         const { telegramId, balance, energy, levels } = req.body;
-        const user = await User.findOneAndUpdate(
+        await User.findOneAndUpdate(
             { telegramId },
             { 
                 balance, energy, 
@@ -53,14 +54,13 @@ app.post('/api/sync', async (req, res) => {
                 capacityLevel: levels.capacity, 
                 recoveryLevel: levels.recovery,
                 lastSync: Date.now() 
-            },
-            { new: true }
+            }
         );
         res.json({ success: true });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// Дані для адмінки
+// 3. Дані для адмінки
 app.get('/api/admin/users', async (req, res) => {
     try {
         const users = await User.find().sort({ lastSync: -1 });
