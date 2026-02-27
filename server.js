@@ -7,11 +7,14 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-mongoose.connect(process.env.MONGODB_URI)
+// Підключення до бази з додатковими параметрами для стабільності
+mongoose.connect(process.env.MONGODB_URI, {
+    serverSelectionTimeoutMS: 5000
+})
     .then(() => console.log('✅ База підключена'))
     .catch(err => console.error('❌ Помилка бази:', err));
 
-// ОНОВЛЕНА СХЕМА: ДОДАНО completedTasks
+// СХЕМА З ДОДАНИМИ ПОЛЯМИ ДЛЯ РЕФЕРАЛІВ ТА ЗАВДАНЬ
 const UserSchema = new mongoose.Schema({
     telegramId: { type: String, unique: true, required: true },
     username: { type: String, default: 'Гравець' },
@@ -23,16 +26,18 @@ const UserSchema = new mongoose.Schema({
     capacityLevel: { type: Number, default: 1 },
     recoveryLevel: { type: Number, default: 1 },
     referrals: { type: Number, default: 0 },
+    invitedBy: { type: String, default: null }, // ID того, хто запросив
+    earnedForInviter: { type: Number, default: 0 }, // Прибуток, який цей гравець приніс своєму запрошувачу
     rank: { type: Number, default: 1 },
     isBanned: { type: Boolean, default: false },
     sessionId: { type: String },
-    completedTasks: { type: [String], default: [] }, // НОВЕ ПОЛЕ ДЛЯ ЗАВДАНЬ
+    completedTasks: { type: [String], default: [] },
     lastSync: { type: Date, default: Date.now }
 });
 
 const User = mongoose.model('User', UserSchema);
 
-// ВХІД
+// ВХІД ТА РЕЄСТРАЦІЯ
 app.post('/api/init', async (req, res) => {
     try {
         const { telegramId, username, refId } = req.body;
@@ -44,15 +49,17 @@ app.post('/api/init', async (req, res) => {
 
         if (!user) {
             user = new User({ telegramId, username: username || 'Гравець', sessionId: newSessionId });
-            await user.save();
             
+            // Логіка рефералів при першому вході
             if (refId && refId !== telegramId && refId !== "null") {
                 const inviter = await User.findOne({ telegramId: refId });
                 if (inviter && !inviter.isBanned) {
                     inviter.referrals += 1;
                     await inviter.save();
+                    user.invitedBy = refId; // Записуємо, хто запросив
                 }
             }
+            await user.save();
         } else {
             user.sessionId = newSessionId;
             await user.save();
@@ -62,7 +69,7 @@ app.post('/api/init', async (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// ЗБЕРЕЖЕННЯ
+// ЗБЕРЕЖЕННЯ (СИНХРОНІЗАЦІЯ) + 10% РЕФЕРАЛУ
 app.post('/api/sync', async (req, res) => {
     try {
         const { telegramId, clientTotalEarned, clientSpent, clientEnergy, levels, rank, sessionId } = req.body;
@@ -75,7 +82,24 @@ app.post('/api/sync', async (req, res) => {
         const newEarned = clientTotalEarned - user.totalEarned;
         const newSpent = clientSpent - user.totalSpent;
         
-        if (newEarned > 0) user.balance += newEarned;
+        if (newEarned > 0) {
+            user.balance += newEarned;
+            
+            // Нараховуємо 10% запрошувачу (якщо він є)
+            if (user.invitedBy) {
+                const inviter = await User.findOne({ telegramId: user.invitedBy });
+                if (inviter && !inviter.isBanned) {
+                    const refBonus = parseFloat((newEarned * 0.10).toFixed(6));
+                    inviter.balance += refBonus;
+                    inviter.totalEarned += refBonus;
+                    await inviter.save();
+                    
+                    // Записуємо статистику прибутку в профіль реферала
+                    user.earnedForInviter += refBonus;
+                }
+            }
+        }
+        
         if (newSpent > 0) user.balance -= newSpent;
 
         user.totalEarned = clientTotalEarned;
@@ -92,7 +116,19 @@ app.post('/api/sync', async (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// --- НОВИЙ РОУТ ДЛЯ ПЕРЕВІРКИ ПІДПИСКИ ---
+// РОУТ ДЛЯ СПИСКУ РЕФЕРАЛІВ
+app.get('/api/referralsList/:telegramId', async (req, res) => {
+    try {
+        const { telegramId } = req.params;
+        const referrals = await User.find({ invitedBy: telegramId }, 'username earnedForInviter');
+        res.json(referrals);
+    } catch (e) {
+        console.error('Помилка рефералів:', e);
+        res.status(500).json({ error: e.message });
+    }
+});
+
+// ПЕРЕВІРКА ПІДПИСКИ
 app.post('/api/verify-subscription', async (req, res) => {
     try {
         const { telegramId } = req.body;
@@ -103,35 +139,28 @@ app.post('/api/verify-subscription', async (req, res) => {
             return res.json({ success: false, message: "Завдання вже виконано" });
         }
 
-        // Беремо токен бота і ID каналу зі змінних Render
         const botToken = process.env.BOT_TOKEN;
-        const channelId = process.env.CHANNEL_ID; // Наприклад: @my_crypto_channel
+        const channelId = process.env.CHANNEL_ID;
 
         if (!botToken || !channelId) {
             console.error("Помилка: BOT_TOKEN або CHANNEL_ID не налаштовані на Render!");
             return res.status(500).json({ error: "Помилка сервера" });
         }
 
-        // Запит до API Телеграму
         const tgResponse = await fetch(`https://api.telegram.org/bot${botToken}/getChatMember?chat_id=${channelId}&user_id=${telegramId}`);
         const tgData = await tgResponse.json();
 
         if (tgData.ok) {
             const status = tgData.result.status;
-            // Перевіряємо, чи юзер підписаний
             if (['member', 'administrator', 'creator'].includes(status)) {
-                
-                // Даємо нагороду 0.80 USDT
                 user.balance += 0.80;
                 user.totalEarned += 0.80;
                 user.completedTasks.push('subscribe');
                 await user.save();
-
                 return res.json({ success: true, reward: 0.80 });
             }
         }
 
-        // Якщо не підписаний або сталася помилка
         res.json({ success: false, message: "Ви не підписані!" });
 
     } catch (e) {
@@ -140,7 +169,7 @@ app.post('/api/verify-subscription', async (req, res) => {
     }
 });
 
-// Адмінка
+// АДМІНКА
 app.get('/api/admin/users', async (req, res) => {
     try { const users = await User.find().sort({ lastSync: -1 }); res.json(users); } catch (e) { res.status(500).json({ error: e.message }); }
 });
