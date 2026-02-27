@@ -43,7 +43,8 @@ app.post('/api/init', async (req, res) => {
         const { telegramId, username, refId } = req.body;
         let user = await User.findOne({ telegramId });
         
-        if (user && user.isBanned) return res.status(403).json({ error: "Акаунт заблоковано" });
+        // Перевірка на бан
+        if (user && user.isBanned) return res.json({ banned: true, error: "Акаунт заблоковано" });
 
         const newSessionId = Math.random().toString(36).substring(2, 15);
 
@@ -76,7 +77,9 @@ app.post('/api/sync', async (req, res) => {
         const user = await User.findOne({ telegramId });
         
         if (!user) return res.status(404).json({ error: "Гравця не знайдено" });
-        if (user.isBanned) return res.status(403).json({ error: "Акаунт заблоковано" });
+        // Перевірка на бан
+        if (user.isBanned) return res.json({ banned: true, error: "Акаунт заблоковано" });
+        
         if (user.sessionId !== sessionId) return res.status(409).json({ error: "conflict", message: "Ви зайшли з іншого пристрою!" });
 
         const newEarned = clientTotalEarned - user.totalEarned;
@@ -135,6 +138,7 @@ app.post('/api/verify-subscription', async (req, res) => {
         const user = await User.findOne({ telegramId });
 
         if (!user) return res.status(404).json({ error: "Користувача не знайдено" });
+        if (user.isBanned) return res.json({ banned: true, error: "Акаунт заблоковано" });
         if (user.completedTasks.includes('subscribe')) {
             return res.json({ success: false, message: "Завдання вже виконано" });
         }
@@ -178,6 +182,7 @@ app.post('/api/bind-wallet', async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: "Користувача не знайдено" });
         }
+        if (user.isBanned) return res.json({ banned: true, error: "Акаунт заблоковано" });
         
         // Перевіряємо, чи не отримував гравець нагороду раніше
         if (user.completedTasks.includes('wallet')) {
