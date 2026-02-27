@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>TRUST TAP • CRYPTO WALLET GAME</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        /* Existing styles remain the same */
         * {
             margin: 0;
             padding: 0;
@@ -77,7 +80,6 @@
             margin-left: auto; margin-right: auto; 
         }
         
-        /* ПОВЕРНУТО ОРИГІНАЛЬНИЙ РОЗМІР 26PX ТА МІНІМАЛЬНИЙ ВІДСТУП 2PX */
         .balance-box { 
             display: flex; 
             align-items: center; 
@@ -275,6 +277,221 @@
         .notice { text-align: center; font-size: 0.65rem; color: #aaccff; margin-top: 1rem; border-top: 1px dashed rgba(59, 130, 246, 0.3); padding-top: 0.8rem; }
 
         .game-container, .top-bar, .feature-card, .upgrade-item, .task-item { transform: translateZ(0); backface-visibility: hidden; }
+
+        /* Admin Panel Styles */
+        .admin-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(145deg, #2b6ed7, #0a2a6a);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            cursor: pointer;
+            z-index: 10000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            transition: all 0.2s;
+        }
+
+        .admin-btn:active {
+            transform: scale(0.9);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .admin-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(3, 7, 18, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 20000;
+            overflow-y: auto;
+            display: none;
+            color: white;
+            padding: 20px;
+        }
+
+        .admin-panel.active {
+            display: block;
+        }
+
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .admin-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+
+        .admin-close {
+            font-size: 2rem;
+            cursor: pointer;
+            padding: 0 10px;
+        }
+
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .admin-tab {
+            padding: 10px 20px;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .admin-tab.active {
+            background: rgba(59, 130, 246, 0.3);
+            border-color: #3b82f6;
+        }
+
+        .admin-tab-content {
+            display: none;
+        }
+
+        .admin-tab-content.active {
+            display: block;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: rgba(20, 40, 70, 0.55);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3b82f6;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: rgba(170, 204, 255, 0.8);
+            margin-top: 5px;
+        }
+
+        .users-list {
+            max-height: 500px;
+            overflow-y: auto;
+            background: rgba(10, 20, 35, 0.55);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+        }
+
+        .user-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            cursor: pointer;
+        }
+
+        .user-item:hover {
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-id {
+            font-weight: bold;
+            color: #3b82f6;
+        }
+
+        .user-details {
+            font-size: 0.8rem;
+            color: rgba(170, 204, 255, 0.8);
+        }
+
+        .user-balance {
+            font-weight: bold;
+            color: #fff;
+        }
+
+        .tasks-stats {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .task-stat-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background: rgba(10, 20, 35, 0.55);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+        }
+
+        .task-name {
+            font-weight: 500;
+        }
+
+        .task-completed {
+            color: #4caf50;
+        }
+
+        .referral-tree {
+            background: rgba(10, 20, 35, 0.55);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 10px;
+            padding: 10px;
+            min-height: 200px;
+        }
+
+        .tree-node {
+            margin-left: 20px;
+            padding-left: 10px;
+            border-left: 1px dashed rgba(59, 130, 246, 0.3);
+            margin-top: 5px;
+        }
+
+        .tree-node-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 5px;
+        }
+
+        .tree-node:hover {
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -283,7 +500,7 @@
 
         <div class="top-bar">
             <div class="balance-box">
-                <img src="стоковая иконка юсдт.png" class="usdt-icon" alt="USDT">
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233b82f6'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z'/%3E%3C/svg%3E" class="usdt-icon" alt="USDT">
                 <span class="usdt-text">USDT</span>
                 <span class="balance-amount" id="balanceDisplay">10.500000</span>
             </div>
@@ -508,8 +725,106 @@
         </div>
     </div>
 
+    <div class="admin-btn" id="adminBtn">A</div>
+
+    <div class="admin-panel" id="adminPanel">
+        <div class="admin-header">
+            <span class="admin-title">🔐 Админ панель</span>
+            <span class="admin-close" id="adminClose">×</span>
+        </div>
+
+        <div class="admin-tabs">
+            <div class="admin-tab active" data-tab="stats">📊 Статистика</div>
+            <div class="admin-tab" data-tab="users">👥 Пользователи</div>
+            <div class="admin-tab" data-tab="tasks">📝 Задания</div>
+            <div class="admin-tab" data-tab="referrals">🔗 Рефералы</div>
+        </div>
+
+        <div class="admin-tab-content active" id="tab-stats">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalUsers">0</div>
+                    <div class="stat-label">Всего пользователей</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="activeToday">0</div>
+                    <div class="stat-label">Активных сегодня</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalBalance">0</div>
+                    <div class="stat-label">Общий баланс</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTaps">0</div>
+                    <div class="stat-label">Всего тапов</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalReferrals">0</div>
+                    <div class="stat-label">Всего рефералов</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="avgLevel">1.0</div>
+                    <div class="stat-label">Ср. уровень</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <h3>Последние действия</h3>
+                <div class="users-list" id="recentActivity"></div>
+            </div>
+        </div>
+
+        <div class="admin-tab-content" id="tab-users">
+            <div style="margin-bottom: 10px;">
+                <input type="text" id="userSearch" placeholder="🔍 Поиск по ID или имени..." style="width: 100%; padding: 10px; background: rgba(10,20,35,0.8); border: 1px solid rgba(59,130,246,0.3); border-radius: 10px; color: white;">
+            </div>
+            <div class="users-list" id="usersList"></div>
+        </div>
+
+        <div class="admin-tab-content" id="tab-tasks">
+            <div class="tasks-stats" id="tasksStats">
+                <div class="task-stat-item">
+                    <span class="task-name">📺 Подписка на канал</span>
+                    <span class="task-completed" id="taskSubscribeCount">0/0</span>
+                </div>
+                <div class="task-stat-item">
+                    <span class="task-name">📹 Просмотр рекламы</span>
+                    <span class="task-completed" id="taskAdCount">0/0</span>
+                </div>
+                <div class="task-stat-item">
+                    <span class="task-name">💳 Привязка кошелька</span>
+                    <span class="task-completed" id="taskWalletCount">0/0</span>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <h3>Статистика выполнения</h3>
+                <div class="stats-grid" style="grid-template-columns: 1fr;">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalRewards">0</div>
+                        <div class="stat-label">Всего выдано наград</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-tab-content" id="tab-referrals">
+            <div style="margin-bottom: 10px;">
+                <select id="referralUserSelect" style="width: 100%; padding: 10px; background: rgba(10,20,35,0.8); border: 1px solid rgba(59,130,246,0.3); border-radius: 10px; color: white;">
+                    <option value="">Выберите пользователя</option>
+                </select>
+            </div>
+            <div class="referral-tree" id="referralTree">
+                <div style="text-align: center; color: rgba(170,204,255,0.5); padding: 20px;">
+                    Выберите пользователя для просмотра реферальной структуры
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         (function() {
+            // Telegram WebApp initialization
             if (window.Telegram && window.Telegram.WebApp) {
                 const tg = window.Telegram.WebApp;
                 tg.ready();
@@ -527,16 +842,47 @@
                 });
             }
 
-            function vibrate() {
-                try {
-                    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
-                        window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
-                    } else if (navigator.vibrate) {
-                        navigator.vibrate(10);
-                    }
-                } catch(e) {}
+            // Firebase Configuration
+            const firebaseConfig = {
+                apiKey: "AIzaSyBYIO9gOIG_loRVVjfYt1x4i6ZqpobH_vM", // Замените на свои данные
+                authDomain: "jamesguru-9cdcd.firebaseapp.com",
+                databaseURL: "https://jamesguru-9cdcd-default-rtdb.europe-west1.firebasedatabase.app",
+                projectId: "jamesguru-9cdcd",
+                storageBucket: "jamesguru-9cdcd.firebasestorage.app",
+                messagingSenderId: "114795022166",
+                appId: "1:114795022166:web:17348f5349510c60e038f7"
+            };
+
+            // Initialize Firebase
+            let database = null;
+            try {
+                firebase.initializeApp(firebaseConfig);
+                database = firebase.database();
+                console.log("Firebase initialized");
+            } catch (e) {
+                console.error("Firebase initialization failed:", e);
+                // Fallback to localStorage if Firebase fails
+                console.log("Using localStorage fallback");
             }
 
+            // Get user ID from Telegram or generate one
+            let userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            let userName = 'User';
+            
+            if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
+                const user = window.Telegram.WebApp.initDataUnsafe.user;
+                if (user) {
+                    userId = user.id.toString();
+                    userName = user.first_name || 'User';
+                    if (user.last_name) userName += ' ' + user.last_name;
+                }
+            }
+
+            // Get referral from URL if exists
+            const urlParams = new URLSearchParams(window.location.search);
+            const referrerId = urlParams.get('ref');
+
+            // Economy constants
             const ECONOMY = {
                 usdt: { decimals: 6, baseTapValue: 0.0002 },
                 energy: { baseCapacity: 1000, baseRecovery: 1, tapCost: 1 },
@@ -558,17 +904,265 @@
                 }
             };
 
+            // Player state
             let player = {
+                userId: userId,
+                userName: userName,
                 balance: 10.500000,
-                damageLevel: 1, capacityLevel: 1, recoveryLevel: 1,
-                energy: ECONOMY.energy.baseCapacity, referrals: 0
+                damageLevel: 1,
+                capacityLevel: 1,
+                recoveryLevel: 1,
+                energy: ECONOMY.energy.baseCapacity,
+                referrals: 0,
+                referrer: referrerId || null,
+                tasks: {
+                    subscribe: false,
+                    ad: false,
+                    wallet: false
+                },
+                totalTaps: 0,
+                lastActive: Date.now(),
+                createdAt: Date.now()
             };
 
-            function formatUSDT(value) { return parseFloat(value).toFixed(6); }
-            function getCurrentTapValue() { return (ECONOMY.usdt.baseTapValue * ECONOMY.upgrades.damage[player.damageLevel - 1]).toFixed(6); }
-            function getCurrentCapacity() { return Math.floor(ECONOMY.energy.baseCapacity * ECONOMY.upgrades.capacity[player.capacityLevel - 1]); }
-            function getCurrentRecovery() { return ECONOMY.energy.baseRecovery * ECONOMY.upgrades.recovery[player.recoveryLevel - 1]; }
+            // Helper functions
+            function formatUSDT(value) { 
+                return parseFloat(value).toFixed(6); 
+            }
 
+            function getCurrentTapValue() { 
+                return (ECONOMY.usdt.baseTapValue * ECONOMY.upgrades.damage[player.damageLevel - 1]).toFixed(6); 
+            }
+
+            function getCurrentCapacity() { 
+                return Math.floor(ECONOMY.energy.baseCapacity * ECONOMY.upgrades.capacity[player.capacityLevel - 1]); 
+            }
+
+            function getCurrentRecovery() { 
+                return ECONOMY.energy.baseRecovery * ECONOMY.upgrades.recovery[player.recoveryLevel - 1]; 
+            }
+
+            // Save player data
+            function savePlayerData() {
+                try {
+                    // Update last active
+                    player.lastActive = Date.now();
+                    
+                    // Save to localStorage as backup
+                    localStorage.setItem('trustTap_player_' + userId, JSON.stringify(player));
+                    
+                    // Save to Firebase if available
+                    if (database) {
+                        const updates = {};
+                        updates['users/' + userId] = player;
+                        updates['users/' + userId + '/lastActive'] = Date.now();
+                        
+                        // Update total stats
+                        updates['stats/lastUpdate'] = Date.now();
+                        
+                        database.ref().update(updates);
+                        
+                        // Update global counters
+                        database.ref('stats/totalUsers').transaction(function(current) {
+                            return (current || 0) + 1;
+                        });
+                    }
+                } catch (e) {
+                    console.error("Error saving player data:", e);
+                }
+            }
+
+            // Load player data
+            function loadPlayerData() {
+                return new Promise((resolve) => {
+                    try {
+                        // Try to load from Firebase first
+                        if (database) {
+                            database.ref('users/' + userId).once('value', (snapshot) => {
+                                if (snapshot.exists()) {
+                                    const data = snapshot.val();
+                                    player = { ...player, ...data };
+                                    
+                                    // Ensure energy doesn't exceed capacity
+                                    const maxEnergy = getCurrentCapacity();
+                                    if (player.energy > maxEnergy) {
+                                        player.energy = maxEnergy;
+                                    }
+                                    
+                                    resolve();
+                                } else {
+                                    // New user - check if referred
+                                    if (referrerId) {
+                                        // Add referral to referrer
+                                        database.ref('users/' + referrerId + '/referrals').transaction(function(current) {
+                                            return (current || 0) + 1;
+                                        });
+                                        
+                                        // Give referral bonus
+                                        player.energy += ECONOMY.tasks.referralBonusEnergy;
+                                    }
+                                    
+                                    savePlayerData();
+                                    resolve();
+                                }
+                            });
+                        } else {
+                            // Fallback to localStorage
+                            const saved = localStorage.getItem('trustTap_player_' + userId);
+                            if (saved) {
+                                const data = JSON.parse(saved);
+                                player = { ...player, ...data };
+                                
+                                // Ensure energy doesn't exceed capacity
+                                const maxEnergy = getCurrentCapacity();
+                                if (player.energy > maxEnergy) {
+                                    player.energy = maxEnergy;
+                                }
+                            }
+                            resolve();
+                        }
+                    } catch (e) {
+                        console.error("Error loading player data:", e);
+                        resolve();
+                    }
+                });
+            }
+
+            // Admin functions
+            let adminData = {
+                users: {},
+                stats: {
+                    totalUsers: 0,
+                    activeToday: 0,
+                    totalBalance: 0,
+                    totalTaps: 0,
+                    totalReferrals: 0
+                }
+            };
+
+            function loadAdminData() {
+                if (!database) return;
+                
+                // Load all users
+                database.ref('users').once('value', (snapshot) => {
+                    const users = snapshot.val() || {};
+                    adminData.users = users;
+                    
+                    // Calculate stats
+                    const now = Date.now();
+                    const dayAgo = now - 24 * 60 * 60 * 1000;
+                    
+                    let totalBalance = 0;
+                    let totalTaps = 0;
+                    let totalReferrals = 0;
+                    let activeToday = 0;
+                    
+                    Object.values(users).forEach(user => {
+                        totalBalance += user.balance || 0;
+                        totalTaps += user.totalTaps || 0;
+                        totalReferrals += user.referrals || 0;
+                        if (user.lastActive > dayAgo) activeToday++;
+                    });
+                    
+                    adminData.stats = {
+                        totalUsers: Object.keys(users).length,
+                        activeToday: activeToday,
+                        totalBalance: totalBalance,
+                        totalTaps: totalTaps,
+                        totalReferrals: totalReferrals
+                    };
+                    
+                    updateAdminUI();
+                });
+            }
+
+            function updateAdminUI() {
+                // Update stats
+                document.getElementById('totalUsers').textContent = adminData.stats.totalUsers;
+                document.getElementById('activeToday').textContent = adminData.stats.activeToday;
+                document.getElementById('totalBalance').textContent = adminData.stats.totalBalance.toFixed(2);
+                document.getElementById('totalTaps').textContent = adminData.stats.totalTaps;
+                document.getElementById('totalReferrals').textContent = adminData.stats.totalReferrals;
+                
+                // Update users list
+                const usersList = document.getElementById('usersList');
+                usersList.innerHTML = '';
+                
+                const searchTerm = document.getElementById('userSearch')?.value?.toLowerCase() || '';
+                
+                Object.entries(adminData.users).forEach(([id, user]) => {
+                    if (searchTerm && !id.includes(searchTerm) && !user.userName?.toLowerCase().includes(searchTerm)) {
+                        return;
+                    }
+                    
+                    const userEl = document.createElement('div');
+                    userEl.className = 'user-item';
+                    userEl.innerHTML = `
+                        <div class="user-info">
+                            <div class="user-id">${id}</div>
+                            <div class="user-details">${user.userName || 'Unknown'} • Уровни: ${user.damageLevel || 1}/${user.capacityLevel || 1}/${user.recoveryLevel || 1}</div>
+                        </div>
+                        <div class="user-balance">${(user.balance || 0).toFixed(2)} USDT</div>
+                    `;
+                    userEl.onclick = () => showUserDetails(id, user);
+                    usersList.appendChild(userEl);
+                });
+                
+                // Update task stats
+                let subscribeCount = 0, adCount = 0, walletCount = 0;
+                Object.values(adminData.users).forEach(user => {
+                    if (user.tasks?.subscribe) subscribeCount++;
+                    if (user.tasks?.ad) adCount++;
+                    if (user.tasks?.wallet) walletCount++;
+                });
+                
+                document.getElementById('taskSubscribeCount').textContent = `${subscribeCount}/${adminData.stats.totalUsers}`;
+                document.getElementById('taskAdCount').textContent = `${adCount}/${adminData.stats.totalUsers}`;
+                document.getElementById('taskWalletCount').textContent = `${walletCount}/${adminData.stats.totalUsers}`;
+                
+                // Update referral select
+                const select = document.getElementById('referralUserSelect');
+                select.innerHTML = '<option value="">Выберите пользователя</option>';
+                Object.entries(adminData.users).forEach(([id, user]) => {
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = `${id} - ${user.userName || 'Unknown'} (реф: ${user.referrals || 0})`;
+                    select.appendChild(option);
+                });
+            }
+
+            function showUserDetails(userId, userData) {
+                const details = `
+                    👤 Пользователь: ${userData.userName || 'Unknown'}
+                    ID: ${userId}
+                    
+                    💰 Баланс: ${(userData.balance || 0).toFixed(2)} USDT
+                    ⚡ Энергия: ${userData.energy || 0}/${getCurrentCapacityForUser(userData)}
+                    
+                    📊 Уровни:
+                    • Урон: ${userData.damageLevel || 1}
+                    • Ёмкость: ${userData.capacityLevel || 1}
+                    • Восстановление: ${userData.recoveryLevel || 1}
+                    
+                    👥 Рефералы: ${userData.referrals || 0}
+                    🔗 Приглашен: ${userData.referrer || 'нет'}
+                    
+                    📝 Задания:
+                    • Подписка: ${userData.tasks?.subscribe ? '✅' : '❌'}
+                    • Реклама: ${userData.tasks?.ad ? '✅' : '❌'}
+                    • Кошелек: ${userData.tasks?.wallet ? '✅' : '❌'}
+                    
+                    🕐 Последний вход: ${new Date(userData.lastActive || 0).toLocaleString()}
+                    📅 Регистрация: ${new Date(userData.createdAt || 0).toLocaleString()}
+                `;
+                alert(details);
+            }
+
+            function getCurrentCapacityForUser(userData) {
+                return Math.floor(ECONOMY.energy.baseCapacity * ECONOMY.upgrades.capacity[(userData.capacityLevel || 1) - 1]);
+            }
+
+            // UI update function
             function updateUI() {
                 document.getElementById('balanceDisplay').textContent = formatUSDT(player.balance);
                 
@@ -586,8 +1180,14 @@
                 document.getElementById('capacityLevel').textContent = `ур. ${player.capacityLevel}`;
                 document.getElementById('recoveryValue').textContent = `${getCurrentRecovery().toFixed(1)}/сек`;
                 document.getElementById('recoveryLevel').textContent = `ур. ${player.recoveryLevel}`;
+                
+                // Update task button states
+                document.querySelector('[data-task="subscribe"]').textContent = player.tasks.subscribe ? '✅' : 'Старт';
+                document.querySelector('[data-task="ad"]').textContent = player.tasks.ad ? '✅' : 'Старт';
+                document.querySelector('[data-task="wallet"]').textContent = player.tasks.wallet ? '✅' : 'Старт';
             }
 
+            // Floating animation
             function showFloating(text, color, x, y) {
                 const div = document.createElement('div');
                 div.className = 'floating-value';
@@ -603,6 +1203,18 @@
                 setTimeout(() => { if (div.parentNode) div.remove(); }, 800);
             }
 
+            // Vibration
+            function vibrate() {
+                try {
+                    if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
+                        window.Telegram.WebApp.HapticFeedback.impactOccurred('light');
+                    } else if (navigator.vibrate) {
+                        navigator.vibrate(10);
+                    }
+                } catch(e) {}
+            }
+
+            // Tap handler
             function processTap(clientX, clientY) {
                 vibrate(); 
                 
@@ -614,49 +1226,84 @@
                 const tapValue = parseFloat(getCurrentTapValue());
                 player.energy -= ECONOMY.energy.tapCost;
                 player.balance = parseFloat((player.balance + tapValue).toFixed(6));
+                player.totalTaps = (player.totalTaps || 0) + 1;
                 
                 showFloating(`+${tapValue.toFixed(4)}`, null, clientX, clientY);
                 updateUI();
+                savePlayerData();
             }
 
+            // Upgrade purchase
             function purchaseUpgrade(type) {
                 const currentLevel = player[`${type}Level`];
-                if (currentLevel >= 10) { alert('❌ Максимальный уровень'); return; }
+                if (currentLevel >= 10) { 
+                    alert('❌ Максимальный уровень'); 
+                    return; 
+                }
                 
                 const price = ECONOMY.upgradePrices[type][currentLevel - 1];
-                if (player.balance < price) { alert(`❌ Нужно еще ${(price - player.balance).toFixed(2)} USDT`); return; }
+                if (player.balance < price) { 
+                    alert(`❌ Нужно еще ${(price - player.balance).toFixed(2)} USDT`); 
+                    return; 
+                }
                 
                 if (confirm(`✅ Улучшить за ${price.toFixed(2)} USDT?`)) {
                     vibrate(); 
                     player.balance = parseFloat((player.balance - price).toFixed(6));
                     player[`${type}Level`]++;
-                    if (type === 'capacity') { player.energy = getCurrentCapacity(); }
+                    if (type === 'capacity') { 
+                        player.energy = getCurrentCapacity(); 
+                    }
                     showFloating('UP', null, window.innerWidth / 2, window.innerHeight / 2);
                     updateUI();
+                    savePlayerData();
                 }
             }
 
+            // Task handlers
             function handleTaskSubscribe() {
+                if (player.tasks.subscribe) {
+                    alert('❌ Задание уже выполнено');
+                    return;
+                }
+                
                 player.balance = parseFloat((player.balance + ECONOMY.tasks.subscription).toFixed(6));
+                player.tasks.subscribe = true;
                 showFloating(`+${ECONOMY.tasks.subscription.toFixed(2)}`, null, window.innerWidth / 2, window.innerHeight / 2);
                 updateUI();
+                savePlayerData();
                 alert('✅ Вы подписались на канал! +0.80 USDT');
             }
 
             function handleTaskAd() {
+                if (player.tasks.ad) {
+                    alert('❌ Задание уже выполнено');
+                    return;
+                }
+                
                 player.balance = parseFloat((player.balance + ECONOMY.tasks.adReward).toFixed(6));
+                player.tasks.ad = true;
                 showFloating(`+${ECONOMY.tasks.adReward.toFixed(2)}`, null, window.innerWidth / 2, window.innerHeight / 2);
                 updateUI();
+                savePlayerData();
                 alert('✅ Реклама просмотрена! +0.20 USDT');
             }
 
             function handleTaskWallet() {
+                if (player.tasks.wallet) {
+                    alert('❌ Задание уже выполнено');
+                    return;
+                }
+                
                 player.balance = parseFloat((player.balance + ECONOMY.tasks.walletReward).toFixed(6));
+                player.tasks.wallet = true;
                 showFloating(`+22.50`, null, window.innerWidth / 2, window.innerHeight / 2);
                 updateUI();
+                savePlayerData();
                 alert('✅ Кошелёк привязан! +22.50 USDT');
             }
 
+            // Background decoration
             function createHandwrittenBg() {
                 const bgContainer = document.getElementById('handwrittenBg');
                 if (!bgContainer) return;
@@ -674,10 +1321,17 @@
                 }
             }
 
-            function init() {
+            // Initialize
+            async function init() {
                 createHandwrittenBg();
-                player.energy = getCurrentCapacity();
                 
+                // Load player data
+                await loadPlayerData();
+                
+                // Set initial energy
+                player.energy = Math.min(player.energy, getCurrentCapacity());
+                
+                // Setup event listeners
                 const tapZone = document.getElementById('tapButton');
                 const bigCoin = document.querySelector('.big-coin');
 
@@ -705,10 +1359,15 @@
                 tapZone.addEventListener('mouseup', () => bigCoin.classList.remove('pressed'));
                 tapZone.addEventListener('mouseleave', () => bigCoin.classList.remove('pressed'));
                 
+                // Upgrade buttons
                 document.querySelectorAll('.upgrade-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => { e.stopPropagation(); purchaseUpgrade(e.target.dataset.type); });
+                    btn.addEventListener('click', (e) => { 
+                        e.stopPropagation(); 
+                        purchaseUpgrade(e.target.dataset.type); 
+                    });
                 });
                 
+                // Task buttons
                 document.querySelectorAll('.task-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -722,26 +1381,126 @@
                     });
                 });
                 
+                // Referral bar
                 document.getElementById('topRefBar').addEventListener('click', () => {
-                    vibrate(); player.referrals++;
-                    player.energy = Math.min(getCurrentCapacity(), player.energy + ECONOMY.tasks.referralBonusEnergy);
-                    showFloating(`+500 ⚡`, null, window.innerWidth / 2, window.innerHeight / 2);
-                    updateUI();
+                    const referralLink = `https://t.me/YourBot?start=${userId}`;
+                    navigator.clipboard.writeText(referralLink).then(() => {
+                        alert('🔗 Реферальная ссылка скопирована!');
+                    }).catch(() => {
+                        prompt('Ваша реферальная ссылка:', referralLink);
+                    });
                 });
 
-                document.getElementById('rankCard').addEventListener('click', () => { alert('🏆 Ваш ранг: Бронза'); });
+                // Rank card
+                document.getElementById('rankCard').addEventListener('click', () => { 
+                    alert('🏆 Ваш ранг: Бронза'); 
+                });
                 
+                // Energy regeneration
                 setInterval(() => {
                     const maxEnergy = getCurrentCapacity();
                     if (player.energy < maxEnergy) {
                         player.energy = Math.min(maxEnergy, player.energy + getCurrentRecovery());
                         updateUI();
+                        savePlayerData();
                     }
                 }, 1000);
                 
+                // Auto-save every 30 seconds
+                setInterval(() => {
+                    savePlayerData();
+                }, 30000);
+                
+                // Admin panel
+                const adminBtn = document.getElementById('adminBtn');
+                const adminPanel = document.getElementById('adminPanel');
+                const adminClose = document.getElementById('adminClose');
+                const adminTabs = document.querySelectorAll('.admin-tab');
+                const userSearch = document.getElementById('userSearch');
+                
+                // Check if user is admin (you can set specific user IDs here)
+                const ADMIN_IDS = ['7734938819', '987654321']; // Замените на реальные ID админов
+                const isAdmin = ADMIN_IDS.includes(userId);
+                
+                if (isAdmin) {
+                    adminBtn.style.display = 'flex';
+                    
+                    adminBtn.addEventListener('click', () => {
+                        adminPanel.classList.add('active');
+                        loadAdminData();
+                        
+                        // Auto-refresh every 10 seconds
+                        if (window.adminRefreshInterval) clearInterval(window.adminRefreshInterval);
+                        window.adminRefreshInterval = setInterval(loadAdminData, 10000);
+                    });
+                    
+                    adminClose.addEventListener('click', () => {
+                        adminPanel.classList.remove('active');
+                        if (window.adminRefreshInterval) {
+                            clearInterval(window.adminRefreshInterval);
+                            window.adminRefreshInterval = null;
+                        }
+                    });
+                    
+                    // Tab switching
+                    adminTabs.forEach(tab => {
+                        tab.addEventListener('click', () => {
+                            adminTabs.forEach(t => t.classList.remove('active'));
+                            tab.classList.add('active');
+                            
+                            document.querySelectorAll('.admin-tab-content').forEach(content => {
+                                content.classList.remove('active');
+                            });
+                            document.getElementById(`tab-${tab.dataset.tab}`).classList.add('active');
+                        });
+                    });
+                    
+                    // User search
+                    userSearch?.addEventListener('input', () => {
+                        updateAdminUI();
+                    });
+                    
+                    // Referral tree
+                    document.getElementById('referralUserSelect').addEventListener('change', (e) => {
+                        const selectedUserId = e.target.value;
+                        if (!selectedUserId || !adminData.users[selectedUserId]) return;
+                        
+                        buildReferralTree(selectedUserId);
+                    });
+                } else {
+                    adminBtn.style.display = 'none';
+                }
+                
+                function buildReferralTree(userId) {
+                    const tree = document.getElementById('referralTree');
+                    const user = adminData.users[userId];
+                    if (!user) return;
+                    
+                    let html = `<div class="tree-node-content">👤 ${userId} (${user.referrals || 0} реф)</div>`;
+                    
+                    // Find referrals
+                    const referrals = Object.entries(adminData.users)
+                        .filter(([id, u]) => u.referrer === userId);
+                    
+                    if (referrals.length > 0) {
+                        html += '<div class="tree-node">';
+                        referrals.forEach(([id, refUser]) => {
+                            html += `<div class="tree-node-content">└─ 👤 ${id} (${refUser.referrals || 0} реф)</div>`;
+                        });
+                        html += '</div>';
+                    }
+                    
+                    tree.innerHTML = html;
+                }
+                
+                // Initial UI update
                 updateUI();
+                
+                // Save initial data
+                savePlayerData();
             }
 
+            // Start the game
             init();
         })();
     </script>
