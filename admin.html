@@ -2,82 +2,155 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <title>TRUST TAP • ADMIN</title>
+    <title>TRUST TAP • ADMIN PANEL</title>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1e1e2f; color: #fff; padding: 20px; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .status { padding: 5px 10px; background: #4caf50; border-radius: 5px; font-size: 14px; }
-        table { width: 100%; border-collapse: collapse; background: #2a2a40; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border-radius: 8px; overflow: hidden; }
-        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #3f3f5a; }
-        th { background-color: #3b82f6; color: white; font-weight: 600; }
-        tr:hover { background-color: #32324e; }
-        .money { color: #4ade80; font-weight: bold; }
-        .energy { color: #facc15; }
+        /* Стилізація під професійний дашборд */
+        body { 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            background: #0f172a; 
+            color: #f8fafc; 
+            padding: 20px; 
+            margin: 0;
+        }
+        .header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 20px;
+            background: #1e293b;
+            padding: 15px 25px;
+            border-radius: 12px;
+            border: 1px solid #334155;
+        }
+        h2 { margin: 0; color: #3b82f6; letter-spacing: 1px; }
+        .status-badge { 
+            padding: 6px 12px; 
+            background: #10b981; 
+            border-radius: 20px; 
+            font-size: 13px; 
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        table { 
+            width: 100%; 
+            border-collapse: separate; 
+            border-spacing: 0;
+            background: #1e293b; 
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); 
+            border-radius: 12px; 
+            overflow: hidden;
+            border: 1px solid #334155;
+        }
+        th { 
+            background-color: #3b82f6; 
+            color: white; 
+            padding: 15px; 
+            text-align: left; 
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+        td { 
+            padding: 15px; 
+            border-bottom: 1px solid #334155; 
+            font-size: 14px;
+        }
+        tr:last-child td { border-bottom: none; }
+        tr:hover { background-color: #2d3748; }
+        
+        .money { color: #4ade80; font-weight: 700; font-family: monospace; font-size: 16px; }
+        .energy { color: #facc15; font-weight: 600; }
+        .online { color: #4ade80; font-weight: bold; animation: pulse 2s infinite; }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .loading-row { text-align: center; padding: 40px; color: #94a3b8; }
     </style>
 </head>
 <body>
+
     <div class="header">
-        <h2>👥 Панель керування TRUST TAP</h2>
-        <div class="status" id="updateStatus">Оновлено щойно</div>
+        <h2>👥 TRUST TAP ADMIN</h2>
+        <div class="status-badge" id="updateStatus">Синхронізація...</div>
     </div>
     
     <table>
         <thead>
             <tr>
                 <th>Telegram ID</th>
-                <th>Username</th>
+                <th>Нікнейм</th>
                 <th>Баланс (USDT)</th>
                 <th>Енергія</th>
                 <th>Реферали</th>
-                <th>Остання активність</th>
+                <th>Активність</th>
             </tr>
         </thead>
         <tbody id="usersTable">
-            <tr><td colspan="6">Завантаження даних...</td></tr>
+            <tr><td colspan="6" class="loading-row">Завантаження даних з сервера Render...</td></tr>
         </tbody>
     </table>
 
     <script>
-        // Твоє нове посилання на сервер Render
+        // Твоя офіційна адреса сервера
         const API_URL = 'https://click-9pdn.onrender.com/api/admin/users'; 
 
         function fetchUsers() {
-            document.getElementById('updateStatus').textContent = 'Оновлюю...';
+            const statusBadge = document.getElementById('updateStatus');
+            statusBadge.textContent = 'Оновлюю...';
+            statusBadge.style.background = '#3b82f6';
             
             fetch(API_URL)
-                .then(res => res.json())
+                .then(res => {
+                    if (!res.ok) throw new Error('Помилка сервера');
+                    return res.json();
+                })
                 .then(users => {
                     const tbody = document.getElementById('usersTable');
                     tbody.innerHTML = ''; 
                     
-                    users.forEach(u => {
-                        const date = new Date(u.lastSync);
-                        const now = new Date();
-                        const diffSec = Math.floor((now - date) / 1000);
-                        
-                        // Якщо гравець тапав менше 30 секунд тому — він онлайн
-                        const timeText = diffSec < 30 ? '<span style="color:#4ade80">🟢 Онлайн</span>' : date.toLocaleString('uk-UA');
+                    if (users.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="6" class="loading-row">Гравців поки немає. Зайди в гру, щоб створити перший запис!</td></tr>';
+                    }
 
-                        tbody.innerHTML += `<tr>
-                            <td>${u.telegramId}</td>
-                            <td>@${u.username || 'Приховано'}</td>
-                            <td class="money">${u.balance.toFixed(4)}</td>
-                            <td class="energy">⚡ ${Math.floor(u.energy)}</td>
-                            <td>${u.referrals} 👥</td>
-                            <td>${timeText}</td>
-                        </tr>`;
+                    users.forEach(u => {
+                        const lastDate = new Date(u.lastSync);
+                        const diffSec = Math.floor((new Date() - lastDate) / 1000);
+                        
+                        // Статус "Онлайн", якщо остання активність була менше 40 секунд тому
+                        const activityHTML = diffSec < 40 
+                            ? '<span class="online">🟢 Онлайн</span>' 
+                            : lastDate.toLocaleString('uk-UA');
+
+                        tbody.innerHTML += `
+                            <tr>
+                                <td><code>${u.telegramId}</code></td>
+                                <td>${u.username ? '@' + u.username : '<i>Приховано</i>'}</td>
+                                <td class="money">${u.balance.toFixed(6)}</td>
+                                <td class="energy">⚡ ${Math.floor(u.energy)}</td>
+                                <td>${u.referrals || 0} 👥</td>
+                                <td>${activityHTML}</td>
+                            </tr>
+                        `;
                     });
                     
-                    document.getElementById('updateStatus').textContent = `Оновлено: ${new Date().toLocaleTimeString('uk-UA')}`;
+                    statusBadge.textContent = 'Оновлено щойно';
+                    statusBadge.style.background = '#10b981';
                 })
                 .catch(err => {
-                    document.getElementById('updateStatus').textContent = '❌ Помилка з\'єднання (можливо сервер "спить")';
-                    document.getElementById('updateStatus').style.background = '#ef4444';
+                    console.error(err);
+                    statusBadge.textContent = '❌ Сервер спить... чекайте';
+                    statusBadge.style.background = '#ef4444';
                 });
         }
 
+        // Запуск при відкритті сторінки
         fetchUsers();
-        setInterval(fetchUsers, 10000); // Автооновлення кожні 10 секунд
+
+        // Автоматичне оновлення кожні 10 секунд
+        setInterval(fetchUsers, 10000);
     </script>
 </body>
 </html>
