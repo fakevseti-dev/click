@@ -29,17 +29,15 @@
             position: relative;
         }
 
-        /* ФОН КРАКЕНА (Ледь помітний) */
         body::before {
             content: '';
             position: fixed;
             inset: 0;
             z-index: -1;
-            /* Використовуємо якісне зображення з щупальцями (Unsplash) */
             background-image: url('https://images.unsplash.com/photo-1542261697-159424ee180e?q=80&w=2070&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
-            opacity: 0.15; /* Ледь-ледь видно */
+            opacity: 0.15;
             filter: grayscale(50%) contrast(120%) brightness(80%);
             mix-blend-mode: screen;
         }
@@ -54,7 +52,6 @@
 
         h1, h2, h3, th { font-family: 'Montserrat', sans-serif; }
 
-        /* Скляні панелі */
         .glass-panel {
             background: var(--bg-glass);
             backdrop-filter: blur(20px);
@@ -63,7 +60,6 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
         }
 
-        /* Екран Логіну */
         #login-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1000; background: rgba(2, 6, 23, 0.9); }
         .login-box { padding: 3rem 2rem; border-radius: 1.5rem; text-align: center; width: 90%; max-width: 400px; }
         .login-icon { font-size: 4rem; color: var(--kraken-glow); margin-bottom: 1rem; filter: drop-shadow(0 0 15px var(--kraken-blue)); }
@@ -73,7 +69,6 @@
         .btn-login { width: 100%; padding: 1rem; border: none; border-radius: 0.8rem; background: linear-gradient(135deg, var(--kraken-blue), #3b82f6); color: #fff; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); }
         .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(79, 70, 229, 0.6); }
 
-        /* Дашборд */
         #dashboard { display: none; padding: 2rem; max-width: 1400px; margin: 0 auto; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
         .brand { display: flex; align-items: center; gap: 15px; }
@@ -83,11 +78,11 @@
         .btn-logout { padding: 0.7rem 1.5rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .btn-logout:hover { background: rgba(239, 68, 68, 0.2); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
 
-        .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-        .stat-card { padding: 1.5rem; border-radius: 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
-        .stat-icon { width: 60px; height: 60px; background: rgba(129, 140, 248, 0.15); border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--kraken-glow); border: 1px solid rgba(129, 140, 248, 0.3); }
-        .stat-info span { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
-        .stat-info h3 { font-size: 1.8rem; margin-top: 0.3rem; font-weight: 800; color: #fff; }
+        .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { padding: 1.2rem; border-radius: 1.5rem; display: flex; align-items: center; gap: 1.2rem; }
+        .stat-icon { width: 50px; height: 50px; flex-shrink: 0; background: rgba(129, 140, 248, 0.15); border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; color: var(--kraken-glow); border: 1px solid rgba(129, 140, 248, 0.3); }
+        .stat-info span { font-size: 0.75rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-info h3 { font-size: 1.4rem; margin-top: 0.3rem; font-weight: 800; color: #fff; word-break: break-all; }
 
         .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding: 1rem 1.5rem; border-radius: 1.2rem; }
         .search-wrapper { position: relative; width: 400px; }
@@ -98,7 +93,6 @@
         .btn-refresh { padding: 0.8rem 1.5rem; background: linear-gradient(135deg, var(--kraken-blue), #3b82f6); border: none; color: #fff; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; font-weight: 700; display: flex; align-items: center; gap: 8px; }
         .btn-refresh:hover { box-shadow: 0 0 20px rgba(79, 70, 229, 0.5); transform: translateY(-2px); }
 
-        /* Таблиця */
         .table-container { border-radius: 1.5rem; overflow-x: auto; }
         table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1000px; }
         th { background: rgba(0, 0, 0, 0.4); padding: 1.5rem 1.2rem; text-align: left; color: var(--text-muted); font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; border-bottom: 1px solid var(--border-glass); }
@@ -112,48 +106,59 @@
         .status.active { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; }
         .status.banned { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; }
 
-        /* НОВІ СТИЛЬНІ КНОПКИ ДІЙ */
         .action-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
-        
-        .btn-action {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 0.8rem;
-            border-radius: 0.6rem;
-            font-family: 'Montserrat', sans-serif;
-            font-size: 0.65rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #fff;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
+        .btn-action { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.8rem; border-radius: 0.6rem; font-family: 'Montserrat', sans-serif; font-size: 0.65rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; color: #fff; background: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.1); cursor: pointer; transition: all 0.3s ease; }
         .btn-action i { font-size: 0.9rem; }
 
-        /* Додати (Зелений) */
+        .btn-info { border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; }
+        .btn-info:hover { background: rgba(56, 189, 248, 0.2); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
+
         .btn-add { border-color: rgba(16, 185, 129, 0.4); color: #34d399; }
         .btn-add:hover { background: rgba(16, 185, 129, 0.2); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
 
-        /* Забрати (Помаранчевий) */
         .btn-sub { border-color: rgba(245, 158, 11, 0.4); color: #fbbf24; }
         .btn-sub:hover { background: rgba(245, 158, 11, 0.2); box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
 
-        /* Бан (Фіолетовий) */
         .btn-ban { border-color: rgba(168, 85, 247, 0.4); color: #c084fc; }
         .btn-ban:hover { background: rgba(168, 85, 247, 0.2); box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); }
         
-        /* Розбан (Синій) */
-        .btn-ban.is-banned { border-color: rgba(56, 189, 248, 0.4); color: #7dd3fc; }
-        .btn-ban.is-banned:hover { background: rgba(56, 189, 248, 0.2); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
+        .btn-unban { border-color: rgba(56, 189, 248, 0.4); color: #38bdf8; }
+        .btn-unban:hover { background: rgba(56, 189, 248, 0.2); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
 
-        /* Видалити (Червоний/Сірий) */
         .btn-del { border-color: rgba(239, 68, 68, 0.4); color: #f87171; }
         .btn-del:hover { background: rgba(239, 68, 68, 0.2); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+
+        /* Модалка Досье */
+        .admin-modal-overlay { position: fixed; inset: 0; background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(8px); z-index: 2000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.3s; padding: 1rem; }
+        .admin-modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .admin-modal { background: var(--bg-glass); border: 1px solid var(--border-glass); border-radius: 1.5rem; width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8); transform: scale(0.95); transition: 0.3s; display: flex; flex-direction: column; }
+        .admin-modal-overlay.active .admin-modal { transform: scale(1); }
+        .admin-modal::-webkit-scrollbar { width: 6px; }
+        .admin-modal::-webkit-scrollbar-thumb { background: var(--kraken-blue); border-radius: 10px; }
+        
+        .modal-header-x { padding: 1.5rem 2rem; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.2); }
+        .modal-title-box h2 { font-size: 1.5rem; color: #fff; margin-bottom: 5px; }
+        .modal-title-box p { color: var(--text-muted); font-size: 0.85rem; }
+        .btn-close-modal { background: none; border: none; color: #94a3b8; font-size: 2rem; cursor: pointer; transition: 0.3s; }
+        .btn-close-modal:hover { color: #ef4444; }
+
+        .modal-body-x { padding: 2rem; display: flex; flex-direction: column; gap: 1.5rem; }
+        .info-section h3 { font-size: 1rem; color: var(--kraken-glow); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px dashed rgba(129, 140, 248, 0.3); padding-bottom: 0.5rem; }
+        
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+        .info-box { background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05); padding: 1.2rem; border-radius: 1rem; }
+        .info-box span { display: block; font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .info-box strong { font-size: 1.2rem; color: #fff; font-family: 'Montserrat', sans-serif; }
+        .info-box .highlight { color: #34d399; }
+        
+        .task-list { display: flex; flex-direction: column; gap: 0.5rem; }
+        .task-row { display: flex; justify-content: space-between; align-items: center; background: rgba(255,255,255,0.02); padding: 1rem; border-radius: 0.8rem; border: 1px solid rgba(255,255,255,0.05); }
+        .task-name { font-weight: 600; font-size: 0.95rem; }
+        .task-status.done { color: #34d399; background: rgba(52, 211, 153, 0.1); padding: 0.3rem 0.8rem; border-radius: 1rem; font-size: 0.8rem; }
+        .task-status.pending { color: #f87171; background: rgba(248, 113, 113, 0.1); padding: 0.3rem 0.8rem; border-radius: 1rem; font-size: 0.8rem; }
+        
+        .btn-reset-tasks { margin-top: 1rem; padding: 0.8rem; width: 100%; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.4); color: #fbbf24; border-radius: 0.8rem; cursor: pointer; font-weight: 700; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .btn-reset-tasks:hover { background: rgba(245, 158, 11, 0.2); box-shadow: 0 0 15px rgba(245, 158, 11, 0.3); }
 
     </style>
 </head>
@@ -181,11 +186,27 @@
         <div class="stats-bar">
             <div class="stat-card glass-panel">
                 <div class="stat-icon"><i class="fa-solid fa-user-astronaut"></i></div>
-                <div class="stat-info"><span>Живі душі (Гравці)</span><h3 id="stat-users">0</h3></div>
+                <div class="stat-info"><span>Живі душі</span><h3 id="stat-users">0</h3></div>
             </div>
             <div class="stat-card glass-panel">
-                <div class="stat-icon"><i class="fa-solid fa-vault"></i></div>
-                <div class="stat-info"><span>Скарбниця Кракена (Пул)</span><h3 id="stat-balance">0.0000 USDT</h3></div>
+                <div class="stat-icon" style="color:#fbbf24; border-color: rgba(251,191,36,0.3); background: rgba(251,191,36,0.15);"><i class="fa-solid fa-vault"></i></div>
+                <div class="stat-info"><span>Пул Гравців</span><h3 id="stat-balance">0 USDT</h3></div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-icon" style="color:#34d399; border-color: rgba(52,211,153,0.3); background: rgba(52,211,153,0.15);"><i class="fa-solid fa-sack-dollar"></i></div>
+                <div class="stat-info"><span>Всього добуто</span><h3 id="stat-earned">0 USDT</h3></div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-icon" style="color:#f87171; border-color: rgba(248,113,113,0.3); background: rgba(248,113,113,0.15);"><i class="fa-solid fa-fire"></i></div>
+                <div class="stat-info"><span>Всього витрачено</span><h3 id="stat-spent">0 USDT</h3></div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-icon" style="color:#c084fc; border-color: rgba(192,132,252,0.3); background: rgba(192,132,252,0.15);"><i class="fa-solid fa-wallet"></i></div>
+                <div class="stat-info"><span>Гаманців</span><h3 id="stat-wallets">0</h3></div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-icon" style="color:#38bdf8; border-color: rgba(56,189,248,0.3); background: rgba(56,189,248,0.15);"><i class="fa-solid fa-eye"></i></div>
+                <div class="stat-info"><span>Реклам</span><h3 id="stat-ads">0</h3></div>
             </div>
         </div>
 
@@ -210,8 +231,69 @@
                     </tr>
                 </thead>
                 <tbody id="usersBody">
-                    </tbody>
+                </tbody>
             </table>
+        </div>
+    </div>
+
+    <div class="admin-modal-overlay" id="userModal">
+        <div class="admin-modal">
+            <div class="modal-header-x">
+                <div class="modal-title-box">
+                    <h2 id="modal-title-id">ID: 000000</h2>
+                    <p id="modal-title-nick">@username | Ранг: 1</p>
+                </div>
+                <button class="btn-close-modal" onclick="closeModal()"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="modal-body-x">
+                <div class="info-section">
+                    <h3><i class="fa-solid fa-chart-pie"></i> Економіка</h3>
+                    <div class="info-grid">
+                        <div class="info-box"><span>Поточний баланс</span><strong id="m-balance" class="highlight">0 USDT</strong></div>
+                        <div class="info-box"><span>Всього добуто</span><strong id="m-earned">0 USDT</strong></div>
+                        <div class="info-box"><span>Всього витрачено</span><strong id="m-spent">0 USDT</strong></div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3><i class="fa-solid fa-rocket"></i> Прокачка</h3>
+                    <div class="info-grid">
+                        <div class="info-box"><span>Енергія</span><strong id="m-energy">1000</strong></div>
+                        <div class="info-box"><span>Урон (Рівень)</span><strong id="m-dmg">1</strong></div>
+                        <div class="info-box"><span>Ємність (Рівень)</span><strong id="m-cap">1</strong></div>
+                        <div class="info-box"><span>Реген (Рівень)</span><strong id="m-rec">1</strong></div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3><i class="fa-solid fa-users"></i> Реферальна мережа</h3>
+                    <div class="info-grid">
+                        <div class="info-box"><span>Хто запросив (ID)</span><strong id="m-inviter">Немає</strong></div>
+                        <div class="info-box"><span>Приніс доходу інвайтерy</span><strong id="m-profit" class="highlight">0 USDT</strong></div>
+                        <div class="info-box"><span>Власних рефералів</span><strong id="m-refs">0</strong></div>
+                    </div>
+                </div>
+
+                <div class="info-section">
+                    <h3><i class="fa-solid fa-list-check"></i> Завдання гравця</h3>
+                    <div class="task-list">
+                        <div class="task-row">
+                            <span class="task-name">Підписка на канал</span>
+                            <span class="task-status" id="t-sub">Очікує</span>
+                        </div>
+                        <div class="task-row">
+                            <span class="task-name">Прив'язка гаманця</span>
+                            <span class="task-status" id="t-wal">Очікує</span>
+                        </div>
+                        <div class="task-row">
+                            <span class="task-name">Перегляд реклами</span>
+                            <span class="task-status" id="t-ad">Очікує</span>
+                        </div>
+                    </div>
+                    <button class="btn-reset-tasks" id="btn-reset-tasks" onclick=""><i class="fa-solid fa-rotate-left"></i> Скинути всі завдання</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -243,13 +325,27 @@
                 const btnIcon = document.querySelector('.btn-refresh i'); 
                 btnIcon.classList.add('fa-spin');
                 
-                const res = await fetch(`${API_URL}/admin/users`);
+                const res = await fetch(`${API_URL}/admin/users?_t=${Date.now()}`, { cache: 'no-store' });
                 globalUsers = await res.json();
                 renderTable(globalUsers);
                 
+                // Глобальна статистика
                 document.getElementById('stat-users').textContent = globalUsers.length;
-                const totalBal = globalUsers.reduce((sum, u) => sum + (u.balance || 0), 0);
-                document.getElementById('stat-balance').textContent = totalBal.toFixed(4) + ' USDT';
+                
+                const totalBal = globalUsers.reduce((sum, u) => sum + (parseFloat(u.balance) || 0), 0);
+                document.getElementById('stat-balance').textContent = totalBal.toFixed(2) + ' $';
+
+                const totalEarned = globalUsers.reduce((sum, u) => sum + (parseFloat(u.totalEarned) || 0), 0);
+                document.getElementById('stat-earned').textContent = totalEarned.toFixed(2) + ' $';
+
+                const totalSpent = globalUsers.reduce((sum, u) => sum + (parseFloat(u.totalSpent) || 0), 0);
+                document.getElementById('stat-spent').textContent = totalSpent.toFixed(2) + ' $';
+
+                const walletCount = globalUsers.reduce((sum, u) => sum + (u.completedTasks?.includes('wallet') ? 1 : 0), 0);
+                document.getElementById('stat-wallets').textContent = walletCount;
+
+                const adCount = globalUsers.reduce((sum, u) => sum + (u.completedTasks?.includes('ad') ? 1 : 0), 0);
+                document.getElementById('stat-ads').textContent = adCount;
                 
                 setTimeout(() => btnIcon.classList.remove('fa-spin'), 500);
             } catch (e) { console.error('Error:', e); }
@@ -258,17 +354,15 @@
         function renderTable(users) {
             const tbody = document.getElementById('usersBody'); tbody.innerHTML = '';
             users.forEach(u => {
-                const isBanned = u.isBanned || false;
+                const isBanned = u.isBanned === true || u.banned === true || u.status === 'banned';
                 
-                // Статус
                 const statusHtml = isBanned 
                     ? `<span class="status banned"><i class="fa-solid fa-skull"></i> У БАНІ</span>` 
                     : `<span class="status active"><i class="fa-solid fa-heart-pulse"></i> ЖИВИЙ</span>`;
                 
-                // Динамічна кнопка БАНУ
-                const banIcon = isBanned ? 'fa-unlock' : 'fa-gavel';
-                const banClass = isBanned ? 'btn-ban is-banned' : 'btn-ban';
-                const banTitle = isBanned ? 'РОЗБАН' : 'БАН';
+                let banButtonHtml = isBanned 
+                    ? `<button class="btn-action btn-unban" onclick="adminAction('${u.telegramId}', 'unban')"><i class="fa-solid fa-unlock"></i> Розбан</button>`
+                    : `<button class="btn-action btn-ban" onclick="adminAction('${u.telegramId}', 'ban')"><i class="fa-solid fa-gavel"></i> Бан</button>`;
 
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -278,20 +372,18 @@
                     <td style="font-weight:700; text-align:center;">${u.referrals || 0}</td>
                     <td>${statusHtml}</td>
                     <td class="action-btns">
+                        <button class="btn-action btn-info" onclick="openDetails('${u.telegramId}')">
+                            <i class="fa-solid fa-circle-info"></i> Досьє
+                        </button>
                         <button class="btn-action btn-add" onclick="adminAction('${u.telegramId}', 'add_balance')">
-                            <i class="fa-solid fa-circle-plus"></i> Додати
+                            <i class="fa-solid fa-circle-plus"></i>
                         </button>
-                        
                         <button class="btn-action btn-sub" onclick="adminAction('${u.telegramId}', 'sub_balance')">
-                            <i class="fa-solid fa-circle-minus"></i> Забрати
+                            <i class="fa-solid fa-circle-minus"></i>
                         </button>
-                        
-                        <button class="btn-action ${banClass}" onclick="adminAction('${u.telegramId}', '${isBanned ? 'unban' : 'ban'}')">
-                            <i class="fa-solid ${banIcon}"></i> ${banTitle}
-                        </button>
-                        
+                        ${banButtonHtml}
                         <button class="btn-action btn-del" onclick="adminAction('${u.telegramId}', 'delete')">
-                            <i class="fa-solid fa-trash-can"></i> Видалити
+                            <i class="fa-solid fa-trash-can"></i>
                         </button>
                     </td>
                 `;
@@ -301,8 +393,56 @@
 
         function filterTable() {
             const term = document.getElementById('search').value.toLowerCase();
-            const filtered = globalUsers.filter(u => u.telegramId.toLowerCase().includes(term) || (u.username && u.username.toLowerCase().includes(term)));
+            const filtered = globalUsers.filter(u => String(u.telegramId).toLowerCase().includes(term) || (u.username && u.username.toLowerCase().includes(term)));
             renderTable(filtered);
+        }
+
+        // Логіка Досьє (Модалка)
+        function openDetails(id) {
+            const user = globalUsers.find(u => u.telegramId === String(id));
+            if(!user) return;
+
+            document.getElementById('modal-title-id').textContent = `ID: ${user.telegramId}`;
+            const nick = user.username ? `@${user.username}` : 'Невідомий';
+            document.getElementById('modal-title-nick').textContent = `${nick} | Ранг: ${user.rank || 1} | Останній візит: ${new Date(user.lastSync).toLocaleString('ru-RU')}`;
+            
+            document.getElementById('m-balance').textContent = parseFloat(user.balance || 0).toFixed(4) + ' USDT';
+            document.getElementById('m-earned').textContent = parseFloat(user.totalEarned || 0).toFixed(4) + ' USDT';
+            document.getElementById('m-spent').textContent = parseFloat(user.totalSpent || 0).toFixed(4) + ' USDT';
+
+            document.getElementById('m-energy').textContent = Math.floor(user.energy || 0);
+            document.getElementById('m-dmg').textContent = user.damageLevel || 1;
+            document.getElementById('m-cap').textContent = user.capacityLevel || 1;
+            document.getElementById('m-rec').textContent = user.recoveryLevel || 1;
+
+            document.getElementById('m-inviter').textContent = user.invitedBy || 'Немає';
+            document.getElementById('m-profit').textContent = parseFloat(user.earnedForInviter || 0).toFixed(4) + ' USDT';
+            document.getElementById('m-refs').textContent = user.referrals || 0;
+
+            const tasks = user.completedTasks || [];
+            setupTaskUI('t-sub', tasks.includes('subscribe'));
+            setupTaskUI('t-wal', tasks.includes('wallet'));
+            setupTaskUI('t-ad', tasks.includes('ad'));
+
+            // Кнопка скидання завдань
+            document.getElementById('btn-reset-tasks').onclick = () => adminAction(user.telegramId, 'reset_tasks');
+
+            document.getElementById('userModal').classList.add('active');
+        }
+
+        function setupTaskUI(elementId, isDone) {
+            const el = document.getElementById(elementId);
+            if (isDone) {
+                el.textContent = '✅ Виконано';
+                el.className = 'task-status done';
+            } else {
+                el.textContent = '❌ Не виконано';
+                el.className = 'task-status pending';
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('userModal').classList.remove('active');
         }
 
         async function adminAction(telegramId, action) {
@@ -310,13 +450,15 @@
             if (action === 'add_balance') {
                 const input = prompt(`Скільки USDT ДОДАТИ гравцю ${telegramId}?`, "1.00"); if (!input) return; value = parseFloat(input);
             } else if (action === 'sub_balance') {
-                const input = prompt(`Скільки USDT ЗАБРАТИ у гравцю ${telegramId}?`, "1.00"); if (!input) return; value = parseFloat(input);
+                const input = prompt(`Скільки USDT ЗАБРАТИ у гравця ${telegramId}?`, "1.00"); if (!input) return; value = parseFloat(input);
             } else if (action === 'delete') { 
                 if (!confirm(`💀 ВИДАЛИТИ користувача ${telegramId} назавжди?`)) return; 
             } else if (action === 'ban') { 
                 if (!confirm(`Відправити ${telegramId} на дно (БАН)?`)) return; 
             } else if (action === 'unban') { 
                 if (!confirm(`Повернути ${telegramId} до життя (РОЗБАН)?`)) return; 
+            } else if (action === 'reset_tasks') {
+                if (!confirm(`Обнулити всі завдання для ${telegramId}? Він зможе отримати нагороду за них знову.`)) return; 
             }
 
             try {
@@ -325,7 +467,16 @@
                     body: JSON.stringify({ telegramId, action, value, adminKey: '0001k' })
                 });
                 const data = await res.json();
-                if (data.success) loadUsers(); else alert('Помилка сервера: ' + data.error);
+                
+                if (res.ok || data.success) {
+                    if(action === 'reset_tasks') {
+                        alert('Завдання успішно скинуто!');
+                        closeModal();
+                    }
+                    setTimeout(() => loadUsers(), 300); 
+                } else { 
+                    alert('Помилка сервера: ' + (data.error || 'Невідома помилка')); 
+                }
             } catch (e) { alert('Втрачено зв\'язок з базою!'); }
         }
     </script>
