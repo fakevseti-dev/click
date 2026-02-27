@@ -1,156 +1,333 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>TRUST TAP • ADMIN PANEL</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KRAKEN ADMIN PANEL</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-        /* Стилізація під професійний дашборд */
-        body { 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
-            background: #0f172a; 
-            color: #f8fafc; 
-            padding: 20px; 
-            margin: 0;
-        }
-        .header { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            margin-bottom: 20px;
-            background: #1e293b;
-            padding: 15px 25px;
-            border-radius: 12px;
-            border: 1px solid #334155;
-        }
-        h2 { margin: 0; color: #3b82f6; letter-spacing: 1px; }
-        .status-badge { 
-            padding: 6px 12px; 
-            background: #10b981; 
-            border-radius: 20px; 
-            font-size: 13px; 
-            font-weight: 600;
-            transition: all 0.3s;
-        }
-        table { 
-            width: 100%; 
-            border-collapse: separate; 
-            border-spacing: 0;
-            background: #1e293b; 
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3); 
-            border-radius: 12px; 
-            overflow: hidden;
-            border: 1px solid #334155;
-        }
-        th { 
-            background-color: #3b82f6; 
-            color: white; 
-            padding: 15px; 
-            text-align: left; 
-            font-size: 14px;
-            text-transform: uppercase;
-        }
-        td { 
-            padding: 15px; 
-            border-bottom: 1px solid #334155; 
-            font-size: 14px;
-        }
-        tr:last-child td { border-bottom: none; }
-        tr:hover { background-color: #2d3748; }
-        
-        .money { color: #4ade80; font-weight: 700; font-family: monospace; font-size: 16px; }
-        .energy { color: #facc15; font-weight: 600; }
-        .online { color: #4ade80; font-weight: bold; animation: pulse 2s infinite; }
-        
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
+        :root {
+            --kraken-blue: #4f46e5;
+            --kraken-glow: #818cf8;
+            --bg-dark: #020617;
+            --bg-glass: rgba(15, 23, 42, 0.65);
+            --border-glass: rgba(255, 255, 255, 0.08);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
         }
 
-        .loading-row { text-align: center; padding: 40px; color: #94a3b8; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body { 
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* ФОН КРАКЕНА (Ледь помітний) */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            /* Використовуємо якісне зображення з щупальцями (Unsplash) */
+            background-image: url('https://images.unsplash.com/photo-1542261697-159424ee180e?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.15; /* Ледь-ледь видно */
+            filter: grayscale(50%) contrast(120%) brightness(80%);
+            mix-blend-mode: screen;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: radial-gradient(circle at 50% 0%, rgba(30, 58, 138, 0.4) 0%, var(--bg-dark) 70%);
+        }
+
+        h1, h2, h3, th { font-family: 'Montserrat', sans-serif; }
+
+        /* Скляні панелі */
+        .glass-panel {
+            background: var(--bg-glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border-glass);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        /* Екран Логіну */
+        #login-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; z-index: 1000; background: rgba(2, 6, 23, 0.9); }
+        .login-box { padding: 3rem 2rem; border-radius: 1.5rem; text-align: center; width: 90%; max-width: 400px; }
+        .login-icon { font-size: 4rem; color: var(--kraken-glow); margin-bottom: 1rem; filter: drop-shadow(0 0 15px var(--kraken-blue)); }
+        .login-box h2 { margin-bottom: 2rem; font-weight: 900; letter-spacing: 2px; }
+        .input-field { width: 100%; padding: 1rem 1.2rem; margin-bottom: 1rem; border-radius: 0.8rem; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0,0,0,0.4); color: #fff; outline: none; transition: 0.3s; font-size: 1rem; }
+        .input-field:focus { border-color: var(--kraken-glow); box-shadow: 0 0 15px rgba(129, 140, 248, 0.3); }
+        .btn-login { width: 100%; padding: 1rem; border: none; border-radius: 0.8rem; background: linear-gradient(135deg, var(--kraken-blue), #3b82f6); color: #fff; font-weight: 800; font-size: 1.1rem; cursor: pointer; transition: 0.3s; letter-spacing: 1px; box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(79, 70, 229, 0.6); }
+
+        /* Дашборд */
+        #dashboard { display: none; padding: 2rem; max-width: 1400px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2.5rem; }
+        .brand { display: flex; align-items: center; gap: 15px; }
+        .brand i { font-size: 3rem; color: var(--kraken-glow); filter: drop-shadow(0 0 10px var(--kraken-blue)); }
+        .header h1 { font-weight: 900; font-size: 2.2rem; letter-spacing: 1.5px; background: linear-gradient(to right, #ffffff, #a5b4fc); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .btn-logout { padding: 0.7rem 1.5rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #ef4444; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .btn-logout:hover { background: rgba(239, 68, 68, 0.2); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+
+        .stats-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
+        .stat-card { padding: 1.5rem; border-radius: 1.5rem; display: flex; align-items: center; gap: 1.5rem; }
+        .stat-icon { width: 60px; height: 60px; background: rgba(129, 140, 248, 0.15); border-radius: 1rem; display: flex; align-items: center; justify-content: center; font-size: 1.8rem; color: var(--kraken-glow); border: 1px solid rgba(129, 140, 248, 0.3); }
+        .stat-info span { font-size: 0.85rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+        .stat-info h3 { font-size: 1.8rem; margin-top: 0.3rem; font-weight: 800; color: #fff; }
+
+        .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding: 1rem 1.5rem; border-radius: 1.2rem; }
+        .search-wrapper { position: relative; width: 400px; }
+        .search-wrapper i { position: absolute; left: 1.2rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
+        .search-bar { width: 100%; padding: 0.8rem 1rem 0.8rem 3rem; border-radius: 0.8rem; border: 1px solid rgba(255, 255, 255, 0.1); background: rgba(0,0,0,0.3); color: #fff; outline: none; transition: 0.3s; }
+        .search-bar:focus { border-color: var(--kraken-glow); background: rgba(0,0,0,0.5); }
+        
+        .btn-refresh { padding: 0.8rem 1.5rem; background: linear-gradient(135deg, var(--kraken-blue), #3b82f6); border: none; color: #fff; border-radius: 0.8rem; cursor: pointer; transition: 0.3s; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+        .btn-refresh:hover { box-shadow: 0 0 20px rgba(79, 70, 229, 0.5); transform: translateY(-2px); }
+
+        /* Таблиця */
+        .table-container { border-radius: 1.5rem; overflow-x: auto; }
+        table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1000px; }
+        th { background: rgba(0, 0, 0, 0.4); padding: 1.5rem 1.2rem; text-align: left; color: var(--text-muted); font-size: 0.75rem; letter-spacing: 1.5px; text-transform: uppercase; border-bottom: 1px solid var(--border-glass); }
+        td { padding: 1.2rem; border-bottom: 1px solid rgba(255, 255, 255, 0.03); font-size: 0.95rem; vertical-align: middle; }
+        tr:hover td { background: rgba(255, 255, 255, 0.02); }
+        
+        .user-id { font-family: 'Montserrat', sans-serif; font-weight: 700; color: #fff; }
+        .user-balance { font-family: 'Montserrat', sans-serif; font-weight: 800; color: #fbbf24; text-shadow: 0 0 10px rgba(245, 158, 11, 0.3); }
+        
+        .status { padding: 0.4rem 0.8rem; border-radius: 2rem; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; display: inline-flex; align-items: center; gap: 6px; }
+        .status.active { background: rgba(16, 185, 129, 0.1); border: 1px solid rgba(16, 185, 129, 0.3); color: #34d399; }
+        .status.banned { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); color: #f87171; }
+
+        /* НОВІ СТИЛЬНІ КНОПКИ ДІЙ */
+        .action-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+        
+        .btn-action {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0.8rem;
+            border-radius: 0.6rem;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #fff;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-action i { font-size: 0.9rem; }
+
+        /* Додати (Зелений) */
+        .btn-add { border-color: rgba(16, 185, 129, 0.4); color: #34d399; }
+        .btn-add:hover { background: rgba(16, 185, 129, 0.2); box-shadow: 0 0 15px rgba(16, 185, 129, 0.4); }
+
+        /* Забрати (Помаранчевий) */
+        .btn-sub { border-color: rgba(245, 158, 11, 0.4); color: #fbbf24; }
+        .btn-sub:hover { background: rgba(245, 158, 11, 0.2); box-shadow: 0 0 15px rgba(245, 158, 11, 0.4); }
+
+        /* Бан (Фіолетовий) */
+        .btn-ban { border-color: rgba(168, 85, 247, 0.4); color: #c084fc; }
+        .btn-ban:hover { background: rgba(168, 85, 247, 0.2); box-shadow: 0 0 15px rgba(168, 85, 247, 0.4); }
+        
+        /* Розбан (Синій) */
+        .btn-ban.is-banned { border-color: rgba(56, 189, 248, 0.4); color: #7dd3fc; }
+        .btn-ban.is-banned:hover { background: rgba(56, 189, 248, 0.2); box-shadow: 0 0 15px rgba(56, 189, 248, 0.4); }
+
+        /* Видалити (Червоний/Сірий) */
+        .btn-del { border-color: rgba(239, 68, 68, 0.4); color: #f87171; }
+        .btn-del:hover { background: rgba(239, 68, 68, 0.2); box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <h2>👥 TRUST TAP ADMIN</h2>
-        <div class="status-badge" id="updateStatus">Синхронізація...</div>
+    <div id="login-screen">
+        <div class="login-box glass-panel">
+            <i class="fa-solid fa-k login-icon"></i>
+            <h2>KRAKEN SYSTEM</h2>
+            <input type="text" id="login-input" class="input-field" placeholder="Admin ID">
+            <input type="password" id="pass-input" class="input-field" placeholder="Access Key">
+            <button class="btn-login" onclick="checkAuth()">ІНІЦІАЛІЗАЦІЯ</button>
+        </div>
     </div>
-    
-    <table>
-        <thead>
-            <tr>
-                <th>Telegram ID</th>
-                <th>Нікнейм</th>
-                <th>Баланс (USDT)</th>
-                <th>Енергія</th>
-                <th>Реферали</th>
-                <th>Активність</th>
-            </tr>
-        </thead>
-        <tbody id="usersTable">
-            <tr><td colspan="6" class="loading-row">Завантаження даних з сервера Render...</td></tr>
-        </tbody>
-    </table>
+
+    <div id="dashboard">
+        <div class="header">
+            <div class="brand">
+                <i class="fa-brands fa-octopus-deploy"></i>
+                <h1>KRAKEN ADMIN PANEL</h1>
+            </div>
+            <button class="btn-logout" onclick="logout()"><i class="fa-solid fa-power-off"></i> ЗАВЕРШИТИ СЕАНС</button>
+        </div>
+
+        <div class="stats-bar">
+            <div class="stat-card glass-panel">
+                <div class="stat-icon"><i class="fa-solid fa-user-astronaut"></i></div>
+                <div class="stat-info"><span>Живі душі (Гравці)</span><h3 id="stat-users">0</h3></div>
+            </div>
+            <div class="stat-card glass-panel">
+                <div class="stat-icon"><i class="fa-solid fa-vault"></i></div>
+                <div class="stat-info"><span>Скарбниця Кракена (Пул)</span><h3 id="stat-balance">0.0000 USDT</h3></div>
+            </div>
+        </div>
+
+        <div class="toolbar glass-panel">
+            <div class="search-wrapper">
+                <i class="fa-solid fa-crosshairs"></i>
+                <input type="text" id="search" class="search-bar" placeholder="Знайти ціль (ID або Нік)..." onkeyup="filterTable()">
+            </div>
+            <button class="btn-refresh" onclick="loadUsers()"><i class="fa-solid fa-satellite-dish"></i> СКАНУВАТИ МЕРЕЖУ</button>
+        </div>
+
+        <div class="table-container glass-panel">
+            <table id="usersTable">
+                <thead>
+                    <tr>
+                        <th>ID Гравця</th>
+                        <th>Позивний</th>
+                        <th>Баланс</th>
+                        <th>Реферали</th>
+                        <th>Статус</th>
+                        <th>Управління</th>
+                    </tr>
+                </thead>
+                <tbody id="usersBody">
+                    </tbody>
+            </table>
+        </div>
+    </div>
 
     <script>
-        // Твоя офіційна адреса сервера
-        const API_URL = 'https://click-9pdn.onrender.com/api/admin/users'; 
+        const API_URL = 'https://click-9pdn.onrender.com/api'; 
+        let globalUsers = [];
 
-        function fetchUsers() {
-            const statusBadge = document.getElementById('updateStatus');
-            statusBadge.textContent = 'Оновлюю...';
-            statusBadge.style.background = '#3b82f6';
-            
-            fetch(API_URL)
-                .then(res => {
-                    if (!res.ok) throw new Error('Помилка сервера');
-                    return res.json();
-                })
-                .then(users => {
-                    const tbody = document.getElementById('usersTable');
-                    tbody.innerHTML = ''; 
-                    
-                    if (users.length === 0) {
-                        tbody.innerHTML = '<tr><td colspan="6" class="loading-row">Гравців поки немає. Зайди в гру, щоб створити перший запис!</td></tr>';
-                    }
-
-                    users.forEach(u => {
-                        const lastDate = new Date(u.lastSync);
-                        const diffSec = Math.floor((new Date() - lastDate) / 1000);
-                        
-                        // Статус "Онлайн", якщо остання активність була менше 40 секунд тому
-                        const activityHTML = diffSec < 40 
-                            ? '<span class="online">🟢 Онлайн</span>' 
-                            : lastDate.toLocaleString('uk-UA');
-
-                        tbody.innerHTML += `
-                            <tr>
-                                <td><code>${u.telegramId}</code></td>
-                                <td>${u.username ? '@' + u.username : '<i>Приховано</i>'}</td>
-                                <td class="money">${u.balance.toFixed(6)}</td>
-                                <td class="energy">⚡ ${Math.floor(u.energy)}</td>
-                                <td>${u.referrals || 0} 👥</td>
-                                <td>${activityHTML}</td>
-                            </tr>
-                        `;
-                    });
-                    
-                    statusBadge.textContent = 'Оновлено щойно';
-                    statusBadge.style.background = '#10b981';
-                })
-                .catch(err => {
-                    console.error(err);
-                    statusBadge.textContent = '❌ Сервер спить... чекайте';
-                    statusBadge.style.background = '#ef4444';
-                });
+        function checkAuth() {
+            const l = document.getElementById('login-input').value;
+            const p = document.getElementById('pass-input').value;
+            if (l === 'mdkkraken' && p === '0001k') {
+                sessionStorage.setItem('adminAuth', 'true');
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('dashboard').style.display = 'block';
+                loadUsers();
+            } else { alert('❌ ДОСТУП ЗАБОРОНЕНО'); }
         }
 
-        // Запуск при відкритті сторінки
-        fetchUsers();
+        function logout() { sessionStorage.removeItem('adminAuth'); location.reload(); }
 
-        // Автоматичне оновлення кожні 10 секунд
-        setInterval(fetchUsers, 10000);
+        if (sessionStorage.getItem('adminAuth') === 'true') {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('dashboard').style.display = 'block';
+            loadUsers();
+        }
+
+        async function loadUsers() {
+            try {
+                const btnIcon = document.querySelector('.btn-refresh i'); 
+                btnIcon.classList.add('fa-spin');
+                
+                const res = await fetch(`${API_URL}/admin/users`);
+                globalUsers = await res.json();
+                renderTable(globalUsers);
+                
+                document.getElementById('stat-users').textContent = globalUsers.length;
+                const totalBal = globalUsers.reduce((sum, u) => sum + (u.balance || 0), 0);
+                document.getElementById('stat-balance').textContent = totalBal.toFixed(4) + ' USDT';
+                
+                setTimeout(() => btnIcon.classList.remove('fa-spin'), 500);
+            } catch (e) { console.error('Error:', e); }
+        }
+
+        function renderTable(users) {
+            const tbody = document.getElementById('usersBody'); tbody.innerHTML = '';
+            users.forEach(u => {
+                const isBanned = u.isBanned || false;
+                
+                // Статус
+                const statusHtml = isBanned 
+                    ? `<span class="status banned"><i class="fa-solid fa-skull"></i> У БАНІ</span>` 
+                    : `<span class="status active"><i class="fa-solid fa-heart-pulse"></i> ЖИВИЙ</span>`;
+                
+                // Динамічна кнопка БАНУ
+                const banIcon = isBanned ? 'fa-unlock' : 'fa-gavel';
+                const banClass = isBanned ? 'btn-ban is-banned' : 'btn-ban';
+                const banTitle = isBanned ? 'РОЗБАН' : 'БАН';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="user-id">${u.telegramId}</td>
+                    <td>${u.username ? '@'+u.username : '<span style="opacity:0.3">Невідомий</span>'}</td>
+                    <td class="user-balance">${parseFloat(u.balance || 0).toFixed(6)} <span>USDT</span></td>
+                    <td style="font-weight:700; text-align:center;">${u.referrals || 0}</td>
+                    <td>${statusHtml}</td>
+                    <td class="action-btns">
+                        <button class="btn-action btn-add" onclick="adminAction('${u.telegramId}', 'add_balance')">
+                            <i class="fa-solid fa-circle-plus"></i> Додати
+                        </button>
+                        
+                        <button class="btn-action btn-sub" onclick="adminAction('${u.telegramId}', 'sub_balance')">
+                            <i class="fa-solid fa-circle-minus"></i> Забрати
+                        </button>
+                        
+                        <button class="btn-action ${banClass}" onclick="adminAction('${u.telegramId}', '${isBanned ? 'unban' : 'ban'}')">
+                            <i class="fa-solid ${banIcon}"></i> ${banTitle}
+                        </button>
+                        
+                        <button class="btn-action btn-del" onclick="adminAction('${u.telegramId}', 'delete')">
+                            <i class="fa-solid fa-trash-can"></i> Видалити
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterTable() {
+            const term = document.getElementById('search').value.toLowerCase();
+            const filtered = globalUsers.filter(u => u.telegramId.toLowerCase().includes(term) || (u.username && u.username.toLowerCase().includes(term)));
+            renderTable(filtered);
+        }
+
+        async function adminAction(telegramId, action) {
+            let value = 0;
+            if (action === 'add_balance') {
+                const input = prompt(`Скільки USDT ДОДАТИ гравцю ${telegramId}?`, "1.00"); if (!input) return; value = parseFloat(input);
+            } else if (action === 'sub_balance') {
+                const input = prompt(`Скільки USDT ЗАБРАТИ у гравцю ${telegramId}?`, "1.00"); if (!input) return; value = parseFloat(input);
+            } else if (action === 'delete') { 
+                if (!confirm(`💀 ВИДАЛИТИ користувача ${telegramId} назавжди?`)) return; 
+            } else if (action === 'ban') { 
+                if (!confirm(`Відправити ${telegramId} на дно (БАН)?`)) return; 
+            } else if (action === 'unban') { 
+                if (!confirm(`Повернути ${telegramId} до життя (РОЗБАН)?`)) return; 
+            }
+
+            try {
+                const res = await fetch(`${API_URL}/admin/action`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ telegramId, action, value, adminKey: '0001k' })
+                });
+                const data = await res.json();
+                if (data.success) loadUsers(); else alert('Помилка сервера: ' + data.error);
+            } catch (e) { alert('Втрачено зв\'язок з базою!'); }
+        }
     </script>
 </body>
 </html>
