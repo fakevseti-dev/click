@@ -525,7 +525,7 @@
             const API_URL = 'https://click-9pdn.onrender.com/api'; 
             const tgUser = tg?.initDataUnsafe?.user || { id: 'test_user_1', username: 'Tester' };
             
-            // ВАЖЛИВО! Параметр для рефералів для Mini App
+            // ВАЖЛИВО! Параметр startapp для Mini App Direct Link
             const refParam = tg?.initDataUnsafe?.start_param || null;
 
             const ECONOMY = {
@@ -635,8 +635,8 @@
             // --- РЕФЕРАЛКА ---
             document.getElementById('topRefBar').addEventListener('click', () => {
                 vibrate();
-                const botUser = 'teosoaodosabot'; 
-                // ПРАВИЛЬНИЙ ФОРМАТ ПОСИЛАННЯ ДЛЯ MINI APP
+                const botUser = 'teosoaodosabot'; // Твій бот
+                // ПРАВИЛЬНИЙ ФОРМАТ ПОСИЛАННЯ ДЛЯ DIRECT APP LINK
                 const link = `https://t.me/${botUser}/app?startapp=${tgUser.id}`;
                 if (tg && tg.openTelegramLink) tg.openTelegramLink(`https://t.me/share/url?url=${link}&text=Забирай USDT!`);
                 else alert(`Ссылка: ${link}`);
