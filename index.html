@@ -312,31 +312,69 @@
 
         <div class="top-ref-bar" id="topRefBar">
             <div class="top-ref-left">
+                <span class="item-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 5H18L21 9L12 20L3 9L6 5Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M3 9H21" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 20L8 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M12 20L16 9" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </span>
                 <span>Пригласить друга</span>
             </div>
             <div class="top-ref-right">
-                <span>+500 ⚡</span>
+                <span>+500</span>
+                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="white"/>
+                </svg>
+                <span>+10%</span>
             </div>
         </div>
 
         <div class="feature-grid">
             <div class="feature-card" id="rankCard">
-                <span class="card-label">Ранг</span>
+                <div class="card-left">
+                    <span class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L15 8L22 9L17 14L18 21L12 17.5L6 21L7 14L2 9L9 8L12 2Z" fill="white"/>
+                        </svg>
+                    </span>
+                    <span class="card-label">Ранг</span>
+                </div>
                 <span class="card-value">Бронза</span>
             </div>
             <div class="feature-card" id="referralsCard">
-                <span class="card-label">Рефералы</span>
+                <div class="card-left">
+                    <span class="card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M16 11C17.66 11 19 9.66 19 8C19 6.34 17.66 5 16 5C14.34 5 13 6.34 13 8C13 9.66 14.34 11 16 11ZM8 11C9.66 11 11 9.66 11 8C11 6.34 9.66 5 8 5C6.34 5 5 6.34 5 8C5 9.66 6.34 11 8 11ZM8 13C5.79 13 2 14.79 2 17V19H22V17C22 14.79 18.21 13 16 13C14.55 13 12.81 13.55 12 14.38C11.19 13.55 9.45 13 8 13Z" fill="white"/>
+                        </svg>
+                    </span>
+                    <span class="card-label">Рефералы</span>
+                </div>
                 <span class="card-value" id="refCount">0</span>
             </div>
         </div>
 
         <div class="upgrade-section">
             <div class="section-header">
+                <span class="section-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2"/>
+                        <path d="M12 6V12L16 14" stroke="white" stroke-width="2"/>
+                    </svg>
+                </span>
                 <span class="section-title">Улучшения</span>
             </div>
             
             <div class="upgrade-item" id="upgradeDamage">
                 <div class="item-left">
+                    <span class="item-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="10" stroke="white" stroke-width="2"/>
+                            <path d="M12 6V12L16 14" stroke="white" stroke-width="2"/>
+                        </svg>
+                    </span>
                     <div class="item-info">
                         <span class="item-name">Урон за клик</span>
                         <span class="item-level" id="damageLevel">ур. 1</span>
@@ -350,6 +388,12 @@
             
             <div class="upgrade-item" id="upgradeCapacity">
                 <div class="item-left">
+                    <span class="item-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="6" y="2" width="12" height="20" rx="2" stroke="white" stroke-width="2"/>
+                            <rect x="10" y="6" width="4" height="4" fill="white"/>
+                        </svg>
+                    </span>
                     <div class="item-info">
                         <span class="item-name">Ёмкость энергии</span>
                         <span class="item-level" id="capacityLevel">ур. 1</span>
@@ -363,6 +407,11 @@
             
             <div class="upgrade-item" id="upgradeRecovery">
                 <div class="item-left">
+                    <span class="item-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="white"/>
+                        </svg>
+                    </span>
                     <div class="item-info">
                         <span class="item-name">Восстановление</span>
                         <span class="item-level" id="recoveryLevel">ур. 1</span>
@@ -374,16 +423,85 @@
                 </div>
             </div>
         </div>
+
+        <div class="tasks-section">
+            <div class="section-header">
+                <span class="section-icon">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="3" y="4" width="18" height="16" rx="2" stroke="white" stroke-width="2"/>
+                        <path d="M8 10L11 13L16 7" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </span>
+                <span class="section-title">Задания</span>
+            </div>
+            
+            <div class="task-item" id="taskSubscribe">
+                <div class="item-left">
+                    <span class="item-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M22 2L11 13" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </span>
+                    <span class="item-name">Подписаться на канал</span>
+                </div>
+                <div class="item-right">
+                    <span class="task-reward">+0.80 USDT</span>
+                    <button class="item-button task-btn" data-task="subscribe">Старт</button>
+                </div>
+            </div>
+            
+            <div class="task-item" id="taskAd">
+                <div class="item-left">
+                    <span class="item-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="2" y="6" width="20" height="12" rx="2" stroke="white" stroke-width="2"/>
+                            <circle cx="17" cy="12" r="2" fill="white"/>
+                        </svg>
+                    </span>
+                    <span class="item-name">Смотреть рекламу</span>
+                </div>
+                <div class="item-right">
+                    <span class="task-reward">+0.20 USDT</span>
+                    <button class="item-button task-btn" data-task="ad">Старт</button>
+                </div>
+            </div>
+            
+            <div class="task-item" id="taskWallet">
+                <div class="item-left">
+                    <span class="item-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <rect x="3" y="6" width="18" height="12" rx="2" stroke="white" stroke-width="2"/>
+                            <path d="M16 12H18" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                            <circle cx="17" cy="12" r="1" fill="white"/>
+                        </svg>
+                    </span>
+                    <span class="item-name">Привязать кошелёк</span>
+                </div>
+                <div class="item-right">
+                    <span class="task-reward">+22.50 USDT</span>
+                    <button class="item-button task-btn" data-task="wallet">Старт</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="notice">
+            ⚡ Trust Wallet · Tap to earn
+        </div>
     </div>
 
     <script>
-        (async function() {
-            // --- ТЕЛЕГРАМ ТА БАЗА ---
+        (function() {
+            // --- ТЕЛЕГРАМ ІНІЦІАЛІЗАЦІЯ ---
             let tg = window.Telegram?.WebApp || null;
             if (tg) {
                 tg.ready();
                 tg.expand();
                 tg.disableVerticalSwipes();
+                requestAnimationFrame(() => {
+                    window.scrollTo(0, 1);
+                    setTimeout(() => window.scrollTo(0, 0), 50);
+                });
             }
 
             const API_URL = 'https://click-9pdn.onrender.com/api'; 
@@ -402,33 +520,43 @@
                     damage: [2.5, 5.0, 10.0, 20.0, 40.0, 80.0, 160.0, 320.0, 640.0, 1280.0],
                     capacity: [3.0, 6.0, 12.0, 24.0, 48.0, 96.0, 192.0, 384.0, 768.0, 1536.0],
                     recovery: [1.5, 3.0, 6.0, 12.0, 24.0, 48.0, 96.0, 192.0, 384.0, 768.0]
-                }
+                },
+                tasks: { subscription: 0.80, adReward: 0.20, walletReward: 22.50, referralBonusEnergy: 500 }
             };
 
-            let player = { balance: 0, damageLevel: 1, capacityLevel: 1, recoveryLevel: 1, energy: 1000, referrals: 0 };
+            // Дефолтні значення, щоб гра працювала миттєво
+            let player = {
+                balance: 0,
+                damageLevel: 1, capacityLevel: 1, recoveryLevel: 1,
+                energy: 1000, referrals: 0
+            };
 
-            // --- ОБРОБКА ТАПІВ ТА UI ---
-            function vibrate() {
-                try {
-                    if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
-                    else if (navigator.vibrate) navigator.vibrate(10);
-                } catch(e) {}
-            }
+            function formatUSDT(value) { return parseFloat(value || 0).toFixed(6); }
+            function getCurrentTapValue() { return (ECONOMY.usdt.baseTapValue * ECONOMY.upgrades.damage[player.damageLevel - 1]).toFixed(6); }
+            function getCurrentCapacity() { return Math.floor(ECONOMY.energy.baseCapacity * ECONOMY.upgrades.capacity[player.capacityLevel - 1]); }
+            function getCurrentRecovery() { return ECONOMY.energy.baseRecovery * ECONOMY.upgrades.recovery[player.recoveryLevel - 1]; }
 
             function updateUI() {
-                document.getElementById('balanceDisplay').textContent = player.balance.toFixed(6);
-                const maxEnergy = Math.floor(ECONOMY.energy.baseCapacity * ECONOMY.upgrades.capacity[player.capacityLevel - 1]);
+                document.getElementById('balanceDisplay').textContent = formatUSDT(player.balance);
+                const maxEnergy = getCurrentCapacity();
                 document.getElementById('energyDisplay').textContent = Math.floor(player.energy);
                 document.getElementById('energyBarFill').style.width = `${(player.energy / maxEnergy) * 100}%`;
-                document.getElementById('regenTip').textContent = `+${(ECONOMY.energy.baseRecovery * ECONOMY.upgrades.recovery[player.recoveryLevel-1]).toFixed(1)}/сек`;
-                document.getElementById('tapValueDisplay').textContent = `${(ECONOMY.usdt.baseTapValue * ECONOMY.upgrades.damage[player.damageLevel - 1]).toFixed(6)} USDT за тап`;
+                document.getElementById('regenTip').textContent = `+${getCurrentRecovery().toFixed(1)}/сек`;
+                document.getElementById('tapValueDisplay').textContent = `${getCurrentTapValue()} USDT за тап`;
                 document.getElementById('refCount').textContent = player.referrals;
                 document.getElementById('damageValue').textContent = `${ECONOMY.upgrades.damage[player.damageLevel-1].toFixed(1)}x`;
                 document.getElementById('damageLevel').textContent = `ур. ${player.damageLevel}`;
                 document.getElementById('capacityValue').textContent = maxEnergy;
                 document.getElementById('capacityLevel').textContent = `ур. ${player.capacityLevel}`;
-                document.getElementById('recoveryValue').textContent = `${(ECONOMY.energy.baseRecovery * ECONOMY.upgrades.recovery[player.recoveryLevel-1]).toFixed(1)}/сек`;
+                document.getElementById('recoveryValue').textContent = `${getCurrentRecovery().toFixed(1)}/сек`;
                 document.getElementById('recoveryLevel').textContent = `ур. ${player.recoveryLevel}`;
+            }
+
+            function vibrate() {
+                try {
+                    if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+                    else if (navigator.vibrate) navigator.vibrate(10);
+                } catch(e) {}
             }
 
             function showFloating(text, x, y) {
@@ -440,25 +568,26 @@
                 setTimeout(() => div.remove(), 800);
             }
 
-            function processTap(x, y) {
-                if (player.energy < 1) return;
-                const tapValue = ECONOMY.usdt.baseTapValue * ECONOMY.upgrades.damage[player.damageLevel - 1];
-                player.energy -= 1;
-                player.balance += tapValue;
-                vibrate();
-                showFloating(`+${tapValue.toFixed(4)}`, x, y);
-                updateUI();
-            }
-
-            // --- ВКЛЮЧАЄМО КНОПКИ ВІДРАЗУ ---
+            // --- ОБРОБКА ТАПІВ ---
             const tapZone = document.getElementById('tapButton');
             const bigCoin = document.querySelector('.big-coin');
 
+            function handleTap(x, y) {
+                if (player.energy >= ECONOMY.energy.tapCost) {
+                    const val = parseFloat(getCurrentTapValue());
+                    player.energy -= ECONOMY.energy.tapCost;
+                    player.balance = parseFloat((player.balance + val).toFixed(6));
+                    vibrate();
+                    showFloating(`+${val.toFixed(4)}`, x, y);
+                    updateUI();
+                }
+            }
+
             tapZone.addEventListener('touchstart', (e) => {
-                e.preventDefault(); 
-                bigCoin.classList.add('pressed'); 
+                e.preventDefault();
+                bigCoin.classList.add('pressed');
                 for (let i = 0; i < e.changedTouches.length; i++) {
-                    processTap(e.changedTouches[i].clientX, e.changedTouches[i].clientY);
+                    handleTap(e.changedTouches[i].clientX, e.changedTouches[i].clientY);
                 }
             }, { passive: false });
 
@@ -466,32 +595,50 @@
                 if (e.touches.length === 0) bigCoin.classList.remove('pressed');
             });
 
+            // --- КНОПКИ ПОКРАЩЕННЯ ---
             document.querySelectorAll('.upgrade-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const type = e.target.dataset.type;
                     const price = ECONOMY.upgradePrices[type][player[type + 'Level'] - 1];
                     if (player.balance >= price) {
                         vibrate();
-                        player.balance -= price;
+                        player.balance = parseFloat((player.balance - price).toFixed(6));
                         player[type + 'Level']++;
-                        if (type === 'capacity') player.energy = Math.floor(ECONOMY.energy.baseCapacity * ECONOMY.upgrades.capacity[player.capacityLevel - 1]);
-                        updateUI(); 
-                        syncData(); // Зберігаємо в базу
+                        if (type === 'capacity') player.energy = getCurrentCapacity();
+                        updateUI();
+                        syncData(); // Відправляємо зміни фоном
                     } else {
-                        alert(`❌ Недостатньо USDT! Потрібно: ${price}`);
+                        alert(`❌ Недостаточно USDT! Нужно: ${price}`);
                     }
                 });
             });
 
+            // --- РЕФЕРАЛКА ТА ЗАВДАННЯ ---
             document.getElementById('topRefBar').addEventListener('click', () => {
                 vibrate();
-                const botUsername = 'teosoaodosabot'; // ВПИШИ СВОГО БОТА ТУТ
-                const refLink = `https://t.me/${botUsername}?start=${tgUser.id}`;
-                if (tg && tg.openTelegramLink) tg.openTelegramLink(`https://t.me/share/url?url=${refLink}`);
-                else alert(`Код: ${refLink}`);
+                const botUser = 'TrustTap_Bot'; // Впиши свій юзернейм
+                const link = `https://t.me/${botUser}?start=${tgUser.id}`;
+                if (tg && tg.openTelegramLink) tg.openTelegramLink(`https://t.me/share/url?url=${link}&text=Забирай USDT!`);
+                else alert(`Ссылка: ${link}`);
             });
 
-            // --- ПІДКЛЮЧЕННЯ БАЗИ (ПРАЦЮЄ ФОНОМ) ---
+            document.querySelectorAll('.task-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const task = e.target.dataset.task;
+                    let reward = 0;
+                    if (task === 'subscribe') reward = ECONOMY.tasks.subscription;
+                    if (task === 'ad') reward = ECONOMY.tasks.adReward;
+                    if (task === 'wallet') reward = ECONOMY.tasks.walletReward;
+                    if (reward > 0) {
+                        player.balance = parseFloat((player.balance + reward).toFixed(6));
+                        alert('✅ Задание выполнено!');
+                        updateUI();
+                        syncData();
+                    }
+                });
+            });
+
+            // --- РОБОТА З БАЗОЮ (ФОНОМ) ---
             async function loadData() {
                 try {
                     const res = await fetch(`${API_URL}/init`, {
@@ -500,47 +647,58 @@
                         body: JSON.stringify({ telegramId: tgUser.id.toString(), username: tgUser.username, refId: refParam })
                     });
                     const data = await res.json();
-                    player.balance = data.balance; player.energy = data.energy;
-                    player.damageLevel = data.damageLevel; player.capacityLevel = data.capacityLevel;
-                    player.recoveryLevel = data.recoveryLevel; player.referrals = data.referrals;
-                    updateUI();
-                } catch (e) { console.log('База завантажується...'); }
+                    if (data.telegramId) {
+                        player = {
+                            balance: data.balance,
+                            energy: data.energy,
+                            damageLevel: data.damageLevel,
+                            capacityLevel: data.capacityLevel,
+                            recoveryLevel: data.recoveryLevel,
+                            referrals: data.referrals
+                        };
+                        updateUI();
+                    }
+                } catch (e) { console.log('Подключение...'); }
             }
 
             async function syncData() {
                 try {
-                    await fetch(`${API_URL}/sync`, {
+                    fetch(`${API_URL}/sync`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
                             telegramId: tgUser.id.toString(),
-                            balance: player.balance, energy: player.energy,
+                            balance: player.balance,
+                            energy: player.energy,
                             levels: { damage: player.damageLevel, capacity: player.capacityLevel, recovery: player.recoveryLevel }
                         })
                     });
                 } catch (e) {}
             }
 
-            // РЕГЕНЕРАЦІЯ
+            // --- ТАЙМЕРИ ---
             setInterval(() => {
-                const max = Math.floor(ECONOMY.energy.baseCapacity * ECONOMY.upgrades.capacity[player.capacityLevel - 1]);
-                const regen = ECONOMY.energy.baseRecovery * ECONOMY.upgrades.recovery[player.recoveryLevel - 1];
-                if (player.energy < max) { player.energy = Math.min(max, player.energy + regen); updateUI(); }
+                const max = getCurrentCapacity();
+                const regen = getCurrentRecovery();
+                if (player.energy < max) {
+                    player.energy = Math.min(max, player.energy + regen);
+                    updateUI();
+                }
             }, 1000);
 
-            // АВТОЗБЕРЕЖЕННЯ
             setInterval(syncData, 10000);
 
-            // ФОН "T"
+            // --- ФОНОВІ "T" ---
             const bg = document.getElementById('handwrittenBg');
-            for (let i = 0; i < 30; i++) {
+            for(let i=0; i<30; i++) {
                 const s = document.createElement('span'); s.textContent = 'T';
-                s.style.left = Math.random() * 100 + '%'; s.style.top = Math.random() * 100 + '%';
-                s.style.setProperty('--r', (Math.random() * 60) - 30); s.style.setProperty('--d', Math.random() * 8);
+                s.style.left = Math.random()*100+'%'; s.style.top = Math.random()*100+'%';
+                s.style.setProperty('--r', Math.random()*60-30); s.style.setProperty('--d', Math.random()*8);
                 bg.appendChild(s);
             }
 
-            loadData(); // Запускаємо завантаження
+            // Старт
+            loadData(); // Завантажуємо дані без await, щоб не блокувати гру
             updateUI();
         })();
     </script>
