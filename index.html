@@ -11,9 +11,12 @@
         body { background: #030712; display: flex; justify-content: center; align-items: flex-start; min-height: 100dvh; overflow-x: hidden; padding: 0; }
         .game-container { max-width: 480px; width: 100%; background: linear-gradient(145deg, #0f1a2f, #030a18); border-radius: 0; padding: calc(1.5rem + env(safe-area-inset-top, 20px)) 1rem 3rem 1rem; min-height: 100dvh; box-shadow: 0 30px 60px rgba(0, 0, 0, 0.9), 0 0 0 1px #1e3a5f inset; color: #ffffff; position: relative; overflow: hidden; }
         @media (min-width: 480px) { body { padding: 1rem; align-items: center; } .game-container { border-radius: 3rem 3rem 2rem 2rem; min-height: 90vh; padding: 2rem 1.5rem 2rem 1.5rem; } }
-        .handwritten-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; opacity: 0.3; }
-        .handwritten-bg span { position: absolute; font-size: 1.2rem; font-weight: 300; color: #3b82f6; font-family: 'Caveat', cursive; transform: rotate(calc(var(--r) * 1deg)); animation: floatT 8s infinite alternate; animation-delay: calc(var(--d) * -1s); text-shadow: 0 0 5px #3b82f6; opacity: 0.6; pointer-events: none; will-change: transform, opacity; }
-        @keyframes floatT { 0% { transform: translateY(0) rotate(calc(var(--r) * 1deg)) scale(1); opacity: 0.4; } 50% { transform: translateY(-15px) rotate(calc(var(--r) * 1deg)) scale(1.1); opacity: 0.8; } 100% { transform: translateY(15px) rotate(calc(var(--r) * 1deg)) scale(0.9); opacity: 0.5; } }
+        
+        /* ФОНОВІ ЗНАЧКИ */
+        .handwritten-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .handwritten-bg span { position: absolute; font-family: 'Caveat', cursive; transform: rotate(calc(var(--r) * 1deg)); animation: floatT 8s infinite alternate; animation-delay: calc(var(--d) * -1s); will-change: transform, opacity; }
+        @keyframes floatT { 0% { transform: translateY(0) rotate(calc(var(--r) * 1deg)) scale(1); } 50% { transform: translateY(-15px) rotate(calc(var(--r) * 1deg)) scale(1.1); } 100% { transform: translateY(15px) rotate(calc(var(--r) * 1deg)) scale(0.9); } }
+        
         .game-container::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, transparent 30%, rgba(3, 7, 18, 0.7) 90%); pointer-events: none; z-index: 0; }
 
         .top-bar, .top-ref-bar, .feature-card, .tasks-section, .upgrade-section { background: rgba(20, 40, 70, 0.55); border: 1px solid rgba(59, 130, 246, 0.2); position: relative; z-index: 2; }
@@ -85,11 +88,12 @@
         .task-special { background: linear-gradient(145deg, #2a4a8a, #1a3a6a); border: 1px solid #3b82f6; }
         .notice { text-align: center; font-size: 0.65rem; color: #aaccff; margin-top: 1rem; border-top: 1px dashed rgba(59, 130, 246, 0.3); padding-top: 0.8rem; }
 
-        /* --- МОДАЛЬНЕ ВІКНО РЕФЕРАЛІВ --- */
+        /* --- МОДАЛЬНІ ВІКНА --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 10000; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
         .modal-content { background: linear-gradient(145deg, #0f1a2f, #030a18); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 1.5rem; width: 90%; max-width: 400px; padding: 1.5rem; box-shadow: 0 15px 30px rgba(0,0,0,0.5); transform: scale(0.9); transition: 0.3s; max-height: 80vh; display: flex; flex-direction: column; }
         .modal-overlay.active .modal-content { transform: scale(1); }
+        
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
         .modal-header h3 { font-size: 1.2rem; color: #fff; }
         .close-btn { background: none; border: none; color: #aaccff; font-size: 2rem; line-height: 1; cursor: pointer; padding: 0 5px; }
@@ -166,7 +170,7 @@
                     </span>
                     <span class="card-label">Ранг</span>
                 </div>
-                <span class="card-value">Бронза</span>
+                <span class="card-value" id="rankDisplay">Бронза</span>
             </div>
             <div class="feature-card" id="referralsCard">
                 <div class="card-left">
@@ -327,6 +331,21 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="rankModal">
+        <div class="modal-content" style="text-align: center; border: 1px solid rgba(59, 130, 246, 0.4); box-shadow: 0 0 30px rgba(59, 130, 246, 0.2);">
+            <div style="font-size: 3.5rem; margin-bottom: 5px; animation: modernFloat 3s infinite ease-in-out;">🏆</div>
+            <h3 style="color: #ffffff; font-size: 1.3rem; margin-bottom: 5px;">Новый ранг!</h3>
+            <p style="color: #aaccff; font-size: 0.95rem; margin-bottom: 5px;">Поздравляем, вы получили <span id="modalRankLevel">2</span> ранг</p>
+            <div id="modalRankName" style="font-size: 1.8rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin: 10px 0;">"СИЛЬВЕР"</div>
+            
+            <div style="background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.3); padding: 12px; border-radius: 12px; margin-top: 10px; display: inline-block;">
+                <span style="color: #4ade80; font-weight: 600; font-size: 1.1rem;">Бонус: +<span id="modalRankBonus">1</span>$ USDT</span>
+            </div>
+            
+            <button id="closeRankModalBtn" class="item-button" style="width: 100%; margin-top: 1.5rem; padding: 0.9rem; font-size: 0.95rem; background: rgba(59, 130, 246, 0.15); color: #fff; border-color: rgba(59, 130, 246, 0.5);">Забрать награду</button>
+        </div>
+    </div>
+
     <script>
         (function() {
             let tg = window.Telegram?.WebApp || null;
@@ -343,6 +362,15 @@
             const API_URL = 'https://click-9pdn.onrender.com/api'; 
             const tgUser = tg?.initDataUnsafe?.user || { id: 'test_user_1', username: 'Tester' };
             const refParam = tg?.initDataUnsafe?.start_param || null;
+
+            // ДАНІ РАНГІВ
+            const RANKS = [
+                { id: 1, name: 'Бронза', color: '#e89543', threshold: 0, bonus: 0 },
+                { id: 2, name: 'Сильвер', color: '#cbd5e1', threshold: 2.5, bonus: 1 },
+                { id: 3, name: 'Золото', color: '#fbbf24', threshold: 10, bonus: 3 },
+                { id: 4, name: 'Платинум', color: '#e2e8f0', threshold: 50, bonus: 5 },
+                { id: 5, name: 'Диамант', color: '#22d3ee', threshold: 150, bonus: 10 }
+            ];
 
             const ECONOMY = {
                 usdt: { decimals: 6, baseTapValue: 0.0002 },
@@ -361,7 +389,7 @@
 
             let player = {
                 balance: 0, damageLevel: 1, capacityLevel: 1, recoveryLevel: 1,
-                energy: 1000, referrals: 0
+                energy: 1000, referrals: 0, rank: 1
             };
 
             function formatUSDT(value) { return parseFloat(value || 0).toFixed(6); }
@@ -383,6 +411,13 @@
                 document.getElementById('capacityLevel').textContent = `ур. ${player.capacityLevel}`;
                 document.getElementById('recoveryValue').textContent = `${getCurrentRecovery().toFixed(1)}/сек`;
                 document.getElementById('recoveryLevel').textContent = `ур. ${player.recoveryLevel}`;
+
+                // Оновлення відображення рангу
+                const currentRank = RANKS[player.rank - 1];
+                const rankDisplay = document.getElementById('rankDisplay');
+                rankDisplay.textContent = currentRank.name;
+                rankDisplay.style.color = currentRank.color;
+                rankDisplay.style.textShadow = `0 0 8px ${currentRank.color}60`;
             }
 
             function vibrate() {
@@ -401,6 +436,42 @@
                 setTimeout(() => div.remove(), 800);
             }
 
+            // ЛОГІКА ПІДВИЩЕННЯ РАНГУ
+            function checkRankUp() {
+                let rankUpgraded = false;
+                let lastRankObj = null;
+
+                // Перевіряємо, чи баланс досягнув порогу наступного рангу
+                while (player.rank < 5 && player.balance >= RANKS[player.rank].threshold) {
+                    const nextRank = RANKS[player.rank];
+                    player.rank = nextRank.id;
+                    player.balance = parseFloat((player.balance + nextRank.bonus).toFixed(6));
+                    lastRankObj = nextRank;
+                    rankUpgraded = true;
+                }
+
+                if (rankUpgraded && lastRankObj) {
+                    vibrate();
+                    
+                    document.getElementById('modalRankLevel').textContent = lastRankObj.id;
+                    const rankNameEl = document.getElementById('modalRankName');
+                    rankNameEl.textContent = `"${lastRankObj.name}"`;
+                    rankNameEl.style.color = lastRankObj.color;
+                    rankNameEl.style.textShadow = `0 0 15px ${lastRankObj.color}80`;
+                    document.getElementById('modalRankBonus').textContent = lastRankObj.bonus;
+                    
+                    document.getElementById('rankModal').classList.add('active');
+                    
+                    updateUI();
+                    syncData(); // Відразу зберігаємо на сервер
+                }
+            }
+
+            // ЗАКРИТТЯ ВІКНА РАНГУ
+            document.getElementById('closeRankModalBtn').addEventListener('click', () => {
+                document.getElementById('rankModal').classList.remove('active');
+            });
+
             // --- ТАПИ ---
             const tapZone = document.getElementById('tapButton');
             const bigCoin = document.querySelector('.big-coin');
@@ -413,6 +484,7 @@
                     vibrate();
                     showFloating(`+${val.toFixed(4)}`, x, y);
                     updateUI();
+                    checkRankUp(); // Перевіряємо ранг після кожного тапу
                 }
             }
 
@@ -449,7 +521,7 @@
             // --- ПОДІЛИТИСЬ СИЛКОЮ ---
             document.getElementById('topRefBar').addEventListener('click', () => {
                 vibrate();
-                const botUser = 'teosoaodosabot'; // ВАШ БОТ
+                const botUser = 'teosoaodosabot'; 
                 const link = `https://t.me/${botUser}/app?startapp=${tgUser.id}`;
                 if (tg && tg.openTelegramLink) tg.openTelegramLink(`https://t.me/share/url?url=${link}&text=Забирай USDT!`);
                 else alert(`Ссылка: ${link}`);
@@ -511,9 +583,11 @@
                             damageLevel: data.damageLevel,
                             capacityLevel: data.capacityLevel,
                             recoveryLevel: data.recoveryLevel,
-                            referrals: data.referrals
+                            referrals: data.referrals,
+                            rank: data.rank || 1
                         };
                         updateUI();
+                        checkRankUp(); // Перевіряємо чи не підвищився ранг під час відсутності
                     }
                 } catch (e) { console.log('Подключение...'); }
             }
@@ -527,16 +601,17 @@
                             telegramId: tgUser.id.toString(),
                             clientBalance: player.balance,
                             clientEnergy: player.energy,
-                            levels: { damage: player.damageLevel, capacity: player.capacityLevel, recovery: player.recoveryLevel }
+                            levels: { damage: player.damageLevel, capacity: player.capacityLevel, recovery: player.recoveryLevel },
+                            rank: player.rank
                         })
                     });
                     const data = await res.json();
                     if (data.success) {
-                        // Якщо сервер нарахував пасивний дохід або енергію, оновлюємо локально
                         if (data.balance > player.balance) player.balance = data.balance;
                         if (data.energy > player.energy) player.energy = data.energy;
                         player.referrals = data.referrals;
                         updateUI();
+                        checkRankUp(); // Якщо прийшов пасивний дохід, він може апнути ранг
                     }
                 } catch (e) {}
             }
@@ -554,17 +629,36 @@
             // Синхронізація з сервером кожні 10 сек
             setInterval(syncData, 10000);
 
-            // Фон "T"
+            // НОВИЙ ГЕНЕРАТОР ФОНУ (Густіший + Яскравіші елементи)
             const bg = document.getElementById('handwrittenBg');
-            for(let i=0; i<30; i++) {
-                const s = document.createElement('span'); s.textContent = 'T';
-                s.style.left = Math.random()*100+'%'; s.style.top = Math.random()*100+'%';
-                s.style.setProperty('--r', Math.random()*60-30); s.style.setProperty('--d', Math.random()*8);
+            bg.innerHTML = '';
+            const totalT = 80; 
+            for(let i = 0; i < totalT; i++) {
+                const s = document.createElement('span'); 
+                s.textContent = 'T';
+                s.style.left = Math.random() * 100 + '%'; 
+                s.style.top = Math.random() * 100 + '%';
+                s.style.setProperty('--r', Math.random() * 60 - 30); 
+                s.style.setProperty('--d', Math.random() * 8);
+                
+                // 20% іконок робимо яскравішими і трохи більшими
+                if (Math.random() < 0.20) {
+                    s.style.opacity = (0.5 + Math.random() * 0.4).toFixed(2);
+                    s.style.fontSize = (1.2 + Math.random() * 1.5) + 'rem';
+                    s.style.color = '#aaccff'; 
+                    s.style.textShadow = '0 0 10px #3b82f6, 0 0 15px #ffffff';
+                    s.style.fontWeight = '600';
+                    s.style.zIndex = '1';
+                } else {
+                    // Звичайні іконки
+                    s.style.opacity = (0.15 + Math.random() * 0.25).toFixed(2);
+                    s.style.fontSize = (0.8 + Math.random() * 1.2) + 'rem';
+                    s.style.color = '#3b82f6';
+                }
                 bg.appendChild(s);
             }
 
             loadData();
-            updateUI();
         })();
     </script>
 </body>
