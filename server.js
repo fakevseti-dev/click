@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const crypto = require('crypto');
 
 const app = express();
 app.use(cors());
@@ -11,13 +12,12 @@ mongoose.connect(process.env.MONGODB_URI)
     .then(() => console.log('✅ База підключена'))
     .catch(err => console.error('❌ Помилка бази:', err));
 
-// Схема з новими полями totalEarned та totalSpent
 const UserSchema = new mongoose.Schema({
     telegramId: { type: String, unique: true, required: true },
-    username: { type: String, default: 'Гравець' },
+    username: { type: String, default: 'Игрок' },
     balance: { type: Number, default: 0 },
-    totalEarned: { type: Number, default: 0 }, // Скільки всього зароблено за весь час (для рангів)
-    totalSpent: { type: Number, default: 0 },  // Скільки витрачено на покращення
+    totalEarned: { type: Number, default: 0 }, 
+    totalSpent: { type: Number, default: 0 },  
     energy: { type: Number, default: 1000 },
     damageLevel: { type: Number, default: 1 },
     capacityLevel: { type: Number, default: 1 },
@@ -27,36 +27,67 @@ const UserSchema = new mongoose.Schema({
     invitedBy: { type: String, default: null },
     earnedForInviter: { type: Number, default: 0 },
     pendingEnergyBonus: { type: Number, default: 0 },
+    sessionId: { type: String, default: null },
     lastSync: { type: Date, default: Date.now }
 });
 
 const User = mongoose.model('User', UserSchema);
 
-// ІНІЦІАЛІЗАЦІЯ КОРИСТУВАЧА
+function validateInitData(initData) {
+    if (!process.env.BOT_TOKEN) return true; 
+    if (!initData) return false;
+
+    try {
+        const urlParams = new URLSearchParams(initData);
+        const hash = urlParams.get('hash');
+        urlParams.delete('hash');
+        urlParams.sort();
+        
+        let dataCheckString = '';
+        for (const [key, value] of urlParams.entries()) {
+            dataCheckString += `${key}=${value}\n`;
+        }
+        dataCheckString = dataCheckString.slice(0, -1);
+        
+        const secretKey = crypto.createHmac('sha256', 'WebAppData').update(process.env.BOT_TOKEN).digest();
+        const calculatedHash = crypto.createHmac('sha256', secretKey).update(dataCheckString).digest('hex');
+        
+        return calculatedHash === hash;
+    } catch (e) {
+        return false;
+    }
+}
+
+// ІНІЦІАЛІЗАЦІЯ ТА ВИДАЧА БОНУСУ ОДРАЗУ
 app.post('/api/init', async (req, res) => {
     try {
-        const { telegramId, username, refId } = req.body;
+        const { telegramId, username, refId, initData } = req.body;
+        
+        if (!validateInitData(initData)) {
+            return res.status(403).json({ error: "Unauthorized" });
+        }
+
+        const sessionId = crypto.randomUUID(); 
         let user = await User.findOne({ telegramId });
         
         if (!user) {
-            user = new User({ telegramId, username: username || 'Гравець' });
+            user = new User({ telegramId, username: username || 'Игрок', sessionId });
             if (refId && refId !== telegramId && refId !== "null") {
                 const inviter = await User.findOne({ telegramId: refId });
                 if (inviter) {
                     inviter.referrals += 1;
-                    inviter.pendingEnergyBonus += 500;
+                    inviter.pendingEnergyBonus += 500; // СРАЗУ ВЫДАЕМ +500 ЭНЕРГИИ ДРУГУ
                     await inviter.save();
                     user.invitedBy = refId;
                 }
             }
-            await user.save();
         } else {
-            // Міграція для старих гравців (щоб їхній ранг не скинувся)
+            user.sessionId = sessionId; 
             if (user.totalEarned === 0 && user.balance > 0) {
-                user.totalEarned = user.balance;
-                await user.save();
+                user.totalEarned = user.balance; 
             }
         }
+        await user.save();
         res.json(user);
     } catch (e) { 
         res.status(500).json({ error: e.message }); 
@@ -66,18 +97,25 @@ app.post('/api/init', async (req, res) => {
 // СИНХРОНІЗАЦІЯ
 app.post('/api/sync', async (req, res) => {
     try {
-        const { telegramId, clientTotalEarned, clientSpent, clientEnergy, levels, rank } = req.body;
-        const user = await User.findOne({ telegramId });
+        const { telegramId, clientTotalEarned, clientSpent, clientEnergy, levels, rank, initData, sessionId } = req.body;
         
+        if (!validateInitData(initData)) return res.status(403).json({ error: "Unauthorized" });
+
+        const user = await User.findOne({ telegramId });
         if (!user) return res.status(404).json({ error: "User not found" });
 
-        // Рахуємо ТІЛЬКИ чистий приріст (тапи/завдання), ігноруючи витрати в магазині
+        if (user.sessionId !== sessionId) {
+            return res.status(409).json({ error: "conflict", message: "Игра открыта на другом устройстве" });
+        }
+
         const farmed = Math.max(0, clientTotalEarned - user.totalEarned);
         const spentDiff = Math.max(0, clientSpent - user.totalSpent);
 
-        // Даємо 10% запрошувачу тільки з чистого приросту
-        if (farmed > 0 && user.invitedBy) {
-            const bonus = farmed * 0.10;
+        let safeFarmed = farmed;
+        if (safeFarmed > 50) safeFarmed = 50; 
+
+        if (safeFarmed > 0 && user.invitedBy) {
+            const bonus = safeFarmed * 0.10;
             await User.findOneAndUpdate(
                 { telegramId: user.invitedBy },
                 { $inc: { balance: bonus } }
@@ -85,11 +123,9 @@ app.post('/api/sync', async (req, res) => {
             user.earnedForInviter += bonus;
         }
 
-        user.totalEarned = Math.max(user.totalEarned, clientTotalEarned);
+        user.totalEarned = user.totalEarned + safeFarmed;
         user.totalSpent = Math.max(user.totalSpent, clientSpent);
-        
-        // Формуємо новий баланс з урахуванням заробітку та витрат
-        user.balance = user.balance + farmed - spentDiff;
+        user.balance = user.balance + safeFarmed - spentDiff;
         
         let newEnergy = clientEnergy;
         if (user.pendingEnergyBonus > 0) {
@@ -119,7 +155,6 @@ app.post('/api/sync', async (req, res) => {
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// СПИСОК РЕФЕРАЛІВ
 app.get('/api/referralsList/:telegramId', async (req, res) => {
     try {
         const refs = await User.find({ invitedBy: req.params.telegramId }).select('username earnedForInviter');

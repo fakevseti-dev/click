@@ -18,8 +18,12 @@
         
         .game-container::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 50%, transparent 30%, rgba(3, 7, 18, 0.7) 90%); pointer-events: none; z-index: 0; }
 
+        /* КНОПКА ИНСТРУКЦИИ (Книжечка) */
+        .info-btn { position: absolute; top: calc(1rem + env(safe-area-inset-top, 20px)); right: 1.5rem; background: rgba(20, 40, 70, 0.55); border: 1px solid rgba(59, 130, 246, 0.3); width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #aaccff; cursor: pointer; z-index: 50; box-shadow: 0 4px 10px rgba(0,0,0,0.3); transition: transform 0.1s ease; }
+        .info-btn:active { transform: scale(0.9); }
+
         .top-bar, .top-ref-bar, .feature-card, .tasks-section, .upgrade-section { background: rgba(20, 40, 70, 0.55); border: 1px solid rgba(59, 130, 246, 0.2); position: relative; z-index: 2; }
-        .top-bar { display: flex; justify-content: center; align-items: center; padding: 0.8rem 1.2rem; border-radius: 2.5rem; margin-bottom: 2rem; box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); width: max-content; min-width: 60%; margin-left: auto; margin-right: auto; }
+        .top-bar { display: flex; justify-content: center; align-items: center; padding: 0.8rem 1.2rem; border-radius: 2.5rem; margin-bottom: 2rem; margin-top: 1rem; box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); width: max-content; min-width: 60%; margin-left: auto; margin-right: auto; }
         .balance-box { display: flex; align-items: center; gap: 2px; }
         .usdt-icon { width: 26px; height: 26px; object-fit: contain; display: block; }
         .usdt-text { font-size: 1rem; font-weight: 600; color: #ffffff; text-shadow: 0 0 8px #3b82f6; margin-right: 6px; }
@@ -54,8 +58,20 @@
         .top-ref-bar:active { transform: scale(0.98); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2); }
         .top-ref-left { display: flex; align-items: center; gap: 0.6rem; }
         .top-ref-left span { font-size: 0.95rem; color: #ffffff; font-weight: 500; }
-        .top-ref-right { display: flex; align-items: center; gap: 8px; background: rgba(59, 130, 246, 0.05); color: #aaccff; font-weight: 600; font-size: 1rem; padding: 0.6rem 1.1rem; border-radius: 2rem; border: 1px solid rgba(59, 130, 246, 0.25); box-shadow: 0 0 5px rgba(59, 130, 246, 0.1), inset 0 0 8px rgba(59, 130, 246, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.1); backdrop-filter: blur(2px); }
-        .top-ref-right svg { width: 16px; height: 16px; } 
+        
+        /* НОВЫЙ ДИЗАЙН КНОПОК ПРИГЛАСИТЬ ДРУГА */
+        .top-ref-right { display: flex; align-items: center; gap: 6px; }
+        .ref-bonus-badge { 
+            display: flex; align-items: center; gap: 4px; 
+            padding: 0.4rem 0.6rem; border-radius: 1.5rem; 
+            font-size: 0.8rem; font-weight: 600; 
+            backdrop-filter: blur(2px); 
+            background: rgba(59, 130, 246, 0.05); 
+            border: 1px solid rgba(59, 130, 246, 0.25); 
+            color: #aaccff; 
+        }
+        .badge-energy { box-shadow: 0 0 6px rgba(249, 115, 22, 0.25), inset 0 0 5px rgba(59, 130, 246, 0.1); }
+        .badge-money { box-shadow: 0 0 6px rgba(74, 222, 128, 0.35), inset 0 0 5px rgba(59, 130, 246, 0.1); }
 
         .feature-grid { display: flex; gap: 0.6rem; margin: 0.8rem 0 1.2rem; justify-content: center; }
         .feature-card { border-radius: 1.12rem; padding: 0.7rem 0.8rem; flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 8px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); transition: transform 0.1s ease, box-shadow 0.1s ease; cursor: pointer; }
@@ -87,10 +103,20 @@
         .task-special { background: linear-gradient(145deg, #2a4a8a, #1a3a6a); border: 1px solid #3b82f6; }
         .notice { text-align: center; font-size: 0.65rem; color: #aaccff; margin-top: 1rem; border-top: 1px dashed rgba(59, 130, 246, 0.3); padding-top: 0.8rem; }
 
-        /* --- МОДАЛЬНІ ВІКНА --- */
+        /* --- ЭКРАН ЗАГРУЗКИ --- */
+        .loading-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #030712; z-index: 99999; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 0.5s ease; }
+        .loading-logo { width: 90px; height: 90px; margin-bottom: 25px; background: linear-gradient(145deg, #1e3a5f, #0f1a2f); border: 2px solid rgba(59,130,246,0.5); border-radius: 25px; display: flex; align-items: center; justify-content: center; animation: pulseGlowLoad 1.5s infinite alternate; box-shadow: 0 0 30px rgba(59,130,246,0.3); }
+        .loading-logo svg { width: 45px; height: 45px; }
+        @keyframes pulseGlowLoad { 0% { transform: scale(0.95); box-shadow: 0 0 20px rgba(59,130,246,0.2); } 100% { transform: scale(1.05); box-shadow: 0 0 40px rgba(59,130,246,0.6); } }
+        .loading-text { color: #fff; font-size: 1.6rem; font-weight: 800; letter-spacing: 3px; text-shadow: 0 0 15px #3b82f6; }
+        .loading-bar { width: 180px; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; margin-top: 25px; overflow: hidden; position: relative; }
+        .loading-progress { width: 0%; height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa); border-radius: 10px; animation: loadAnim 2.5s ease-out forwards; box-shadow: 0 0 10px #3b82f6; }
+        @keyframes loadAnim { 0% { width: 0%; } 100% { width: 100%; } }
+
+        /* --- МОДАЛЬНЫЕ ОКНА --- */
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 10000; opacity: 0; pointer-events: none; transition: 0.3s; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-content { background: linear-gradient(145deg, #0f1a2f, #030a18); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 1.5rem; width: 90%; max-width: 400px; padding: 1.5rem; box-shadow: 0 15px 30px rgba(0,0,0,0.5); transform: scale(0.9); transition: 0.3s; max-height: 80vh; display: flex; flex-direction: column; }
+        .modal-content { background: linear-gradient(145deg, #0f1a2f, #030a18); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 1.5rem; width: 90%; max-width: 400px; padding: 1.5rem; box-shadow: 0 15px 30px rgba(0,0,0,0.5); transform: scale(0.9); transition: 0.3s; max-height: 85vh; display: flex; flex-direction: column; }
         .modal-overlay.active .modal-content { transform: scale(1); }
         
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
@@ -100,25 +126,42 @@
         .modal-body::-webkit-scrollbar { width: 4px; }
         .modal-body::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 4px; }
         
-        /* Списки в модальних вікнах */
         .ref-user-item { background: rgba(10, 20, 35, 0.55); border-radius: 0.8rem; padding: 0.8rem; margin-bottom: 0.5rem; display: flex; justify-content: space-between; align-items: center; border: 1px solid rgba(59, 130, 246, 0.1); }
         .ref-user-name { color: #fff; font-weight: 500; font-size: 0.9rem; }
         .ref-user-profit { color: #4ade80; font-size: 0.85rem; font-weight: 600; }
         .loading-text, .no-refs { text-align: center; color: #aaccff; font-size: 0.9rem; padding: 1rem; }
 
-        /* Стилі для списку Рангів */
         .rank-info-item { background: rgba(10, 20, 35, 0.55); border-radius: 0.8rem; padding: 0.8rem; margin-bottom: 0.6rem; border: 1px solid rgba(59, 130, 246, 0.1); display: flex; align-items: center; justify-content: space-between; }
         .rank-info-item.active-rank { border-color: rgba(59, 130, 246, 0.6); box-shadow: 0 0 15px rgba(59, 130, 246, 0.2); background: rgba(59, 130, 246, 0.1); }
         .rank-info-left { display: flex; align-items: center; gap: 0.6rem; }
-        .rank-info-icon { font-size: 1.5rem; filter: drop-shadow(0 0 5px rgba(255,255,255,0.2)); }
         .rank-info-details { display: flex; flex-direction: column; }
-        .rank-info-name { font-weight: 700; font-size: 0.95rem; }
+        .rank-info-name { font-weight: 700; font-size: 0.95rem; display: flex; align-items: center; }
         .rank-info-req { font-size: 0.7rem; color: rgba(170, 204, 255, 0.7); margin-top: 2px; }
         .rank-info-bonus { font-size: 0.75rem; font-weight: 600; color: #4ade80; background: rgba(74, 222, 128, 0.1); padding: 4px 8px; border-radius: 8px; border: 1px solid rgba(74, 222, 128, 0.2); }
     </style>
 </head>
 <body>
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.5">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" fill="rgba(59,130,246,0.2)"></path>
+                <path d="M8 9h8m-4 0v8" stroke="white" stroke-width="2" stroke-linecap="round"></path>
+            </svg>
+        </div>
+        <div class="loading-text">TRUST TAP</div>
+        <div class="loading-bar">
+            <div class="loading-progress"></div>
+        </div>
+    </div>
+
     <div class="game-container">
+        <button id="openGuideBtn" class="info-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px; height:20px;">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+            </svg>
+        </button>
+
         <div class="handwritten-bg" id="handwrittenBg"></div>
 
         <div class="top-bar">
@@ -163,11 +206,12 @@
                 <span>Пригласить друга</span>
             </div>
             <div class="top-ref-right">
-                <span>+500</span>
-                <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="white"/>
-                </svg>
-                <span>+10%</span>
+                <div class="ref-bonus-badge badge-energy">
+                    <span>⚡</span> <span>+500</span>
+                </div>
+                <div class="ref-bonus-badge badge-money">
+                    <span>+10%</span>
+                </div>
             </div>
         </div>
 
@@ -181,7 +225,7 @@
                     </span>
                     <span class="card-label">Ранг</span>
                 </div>
-                <span class="card-value" id="rankDisplay">🥉 Бронза</span>
+                <span class="card-value" id="rankDisplay"></span>
             </div>
             <div class="feature-card" id="referralsCard">
                 <div class="card-left">
@@ -323,10 +367,67 @@
                     <button class="item-button task-btn" data-task="wallet">Старт</button>
                 </div>
             </div>
+            
+            <div class="task-item task-special" id="taskBlum">
+                <div class="item-left">
+                    <span class="item-icon">
+                        <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <circle cx="12" cy="12" r="8" stroke="white" stroke-width="2"/>
+                            <circle cx="12" cy="8" r="1" fill="white"/>
+                            <circle cx="16" cy="12" r="1" fill="white"/>
+                            <circle cx="8" cy="12" r="1" fill="white"/>
+                            <path d="M8 16L12 18L16 16" stroke="white" stroke-width="2"/>
+                        </svg>
+                    </span>
+                    <span class="item-name">Квест в разработке</span>
+                </div>
+                <div class="item-right">
+                    <button class="item-button task-btn" data-task="blum" disabled style="opacity: 0.5;">Скоро</button>
+                </div>
+            </div>
         </div>
 
         <div class="notice">
             ⚡ Trust Wallet · Tap to earn
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="guideModal">
+        <div class="modal-content" style="max-height: 85vh;">
+            <div class="modal-header">
+                <h3>Как играть?</h3>
+                <button class="close-btn" id="closeGuideBtn">×</button>
+            </div>
+            <div class="modal-body" style="font-size: 0.9rem; color: #cbd5e1; line-height: 1.5;">
+                <p style="margin-bottom: 15px;">Добро пожаловать в <b>Trust Tap</b>! Зарабатывай реальный USDT, просто кликая по экрану.</p>
+                
+                <div style="margin-bottom: 12px; background: rgba(10,20,35,0.5); padding: 10px; border-radius: 8px; border: 1px solid rgba(59,130,246,0.1);">
+                    <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">👆 Тапай и зарабатывай</div>
+                    Кликай по логотипу в центре экрана, чтобы зарабатывать USDT. Каждое нажатие тратит энергию.
+                </div>
+                
+                <div style="margin-bottom: 12px; background: rgba(10,20,35,0.5); padding: 10px; border-radius: 8px; border: 1px solid rgba(59,130,246,0.1);">
+                    <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">🚀 Улучшения</div>
+                    Прокачивай урон за клик, емкость энергии и скорость её восстановления, чтобы фармить быстрее.
+                </div>
+                
+                <div style="margin-bottom: 12px; background: rgba(10,20,35,0.5); padding: 10px; border-radius: 8px; border: 1px solid rgba(59,130,246,0.1);">
+                    <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">🏆 Ранги</div>
+                    Твой ранг растет в зависимости от <b>общего</b> заработка за всё время. Достигая новых рангов, ты получаешь USDT бонусы! Покупки в магазине не снижают твой ранг.
+                </div>
+                
+                <div style="margin-bottom: 12px; background: rgba(10,20,35,0.5); padding: 10px; border-radius: 8px; border: 1px solid rgba(59,130,246,0.1);">
+                    <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">👥 Реферальная система</div>
+                    Приглашай друзей и получай <b>10%</b> от всех их доходов навсегда! И сразу +500 энергии за каждого друга!
+                </div>
+
+                <div style="margin-bottom: 12px; background: rgba(10,20,35,0.5); padding: 10px; border-radius: 8px; border: 1px solid rgba(59,130,246,0.1);">
+                    <div style="color: #fff; font-weight: 600; margin-bottom: 4px;">💳 Вывод</div>
+                    В будущем ты сможешь вывести заработанные USDT напрямую на свой криптокошелек (Trust Wallet и др.).
+                </div>
+                
+                <button id="startGameBtn" class="item-button" style="width: 100%; margin-top: 10px; padding: 0.9rem; font-size: 1rem; background: rgba(59, 130, 246, 0.2); color: #fff;">Понятно, в игру!</button>
+            </div>
         </div>
     </div>
 
@@ -382,14 +483,24 @@
             }
 
             const API_URL = 'https://click-9pdn.onrender.com/api'; 
-            const tgUser = tg?.initDataUnsafe?.user || { id: 'test_user_1', username: 'Tester' };
+            const tgUser = tg?.initDataUnsafe?.user || { id: 'test_user_1', username: 'Игрок' };
             const refParam = tg?.initDataUnsafe?.start_param || null;
+            const tgInitData = tg?.initData || ''; 
+            let sessionId = null; 
 
-            // ДАНІ РАНГІВ (з іконками)
+            // СУПЕР КРАСИВЫЕ 3D ИКОНКИ ДЛЯ РАНГОВ (Без цифр, в нашем дизайне)
+            const createIcon = (color) => `<svg viewBox="0 0 24 24" width="22" height="22" style="display:inline-block; margin-right: 4px; vertical-align:-5px; filter:drop-shadow(0 0 4px ${color});">
+                <path d="M12 2 L2 8 L12 14 L22 8 Z" fill="#ffffff" opacity="0.9"/>
+                <path d="M2 8 L2 16 L12 22 L12 14 Z" fill="${color}" opacity="0.3"/>
+                <path d="M22 8 L22 16 L12 22 L12 14 Z" fill="${color}" opacity="0.7"/>
+                <path d="M12 2 L2 8 L2 16 L12 22 L22 16 L22 8 Z" fill="none" stroke="${color}" stroke-width="1.5"/>
+                <path d="M2 8 L12 14 L22 8 M12 14 L12 22" fill="none" stroke="${color}" stroke-width="1.5" opacity="0.7"/>
+            </svg>`;
+
             const RANKS = [
-                { id: 1, name: 'Бронза', icon: '🥉', color: '#e89543', threshold: 0, bonus: 0 },
-                { id: 2, name: 'Сильвер', icon: '🥈', color: '#cbd5e1', threshold: 2.5, bonus: 1 },
-                { id: 3, name: 'Золото', icon: '🥇', color: '#fbbf24', threshold: 10, bonus: 3 },
+                { id: 1, name: 'Бронза', icon: createIcon('#e89543'), color: '#e89543', threshold: 0, bonus: 0 },
+                { id: 2, name: 'Сильвер', icon: createIcon('#cbd5e1'), color: '#cbd5e1', threshold: 2.5, bonus: 1 },
+                { id: 3, name: 'Золото', icon: createIcon('#fbbf24'), color: '#fbbf24', threshold: 10, bonus: 3 },
                 { id: 4, name: 'Платинум', icon: '💠', color: '#e2e8f0', threshold: 50, bonus: 5 },
                 { id: 5, name: 'Диамант', icon: '💎', color: '#22d3ee', threshold: 150, bonus: 10 }
             ];
@@ -409,12 +520,47 @@
                 }
             };
 
-            // Додали totalEarned та totalSpent для безпечного зберігання
             let player = {
                 balance: 0, totalEarned: 0, totalSpent: 0, 
                 damageLevel: 1, capacityLevel: 1, recoveryLevel: 1,
                 energy: 1000, referrals: 0, rank: 1
             };
+
+            // ЛОГИКА ЗАГРУЗКИ И ОБУЧЕНИЯ
+            let appLoaded = false;
+            let minTimePassed = false;
+            
+            setTimeout(() => { 
+                minTimePassed = true; 
+                checkHideLoading(); 
+            }, 2000); 
+
+            function checkHideLoading() {
+                if (appLoaded && minTimePassed) {
+                    const loader = document.getElementById('loadingScreen');
+                    loader.style.opacity = '0';
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                        if (!localStorage.getItem('trustTapGuideShown')) {
+                            document.getElementById('guideModal').classList.add('active');
+                            localStorage.setItem('trustTapGuideShown', 'true');
+                        }
+                    }, 500);
+                }
+            }
+
+            // КНОПКИ ГАЙДА
+            document.getElementById('openGuideBtn').addEventListener('click', () => {
+                vibrate();
+                document.getElementById('guideModal').classList.add('active');
+            });
+            document.getElementById('closeGuideBtn').addEventListener('click', () => {
+                document.getElementById('guideModal').classList.remove('active');
+            });
+            document.getElementById('startGameBtn').addEventListener('click', () => {
+                vibrate();
+                document.getElementById('guideModal').classList.remove('active');
+            });
 
             function formatUSDT(value) { return parseFloat(value || 0).toFixed(6); }
             function getCurrentTapValue() { return (ECONOMY.usdt.baseTapValue * ECONOMY.upgrades.damage[player.damageLevel - 1]).toFixed(6); }
@@ -436,10 +582,9 @@
                 document.getElementById('recoveryValue').textContent = `${getCurrentRecovery().toFixed(1)}/сек`;
                 document.getElementById('recoveryLevel').textContent = `ур. ${player.recoveryLevel}`;
 
-                // Оновлення відображення рангу
                 const currentRank = RANKS[player.rank - 1];
                 const rankDisplay = document.getElementById('rankDisplay');
-                rankDisplay.innerHTML = `${currentRank.icon} ${currentRank.name}`;
+                rankDisplay.innerHTML = `${currentRank.icon} <span style="margin-left:2px">${currentRank.name}</span>`;
                 rankDisplay.style.color = currentRank.color;
                 rankDisplay.style.textShadow = `0 0 8px ${currentRank.color}60`;
             }
@@ -460,7 +605,6 @@
                 setTimeout(() => div.remove(), 800);
             }
 
-            // ЛОГІКА ПІДВИЩЕННЯ РАНГУ (Тепер рахує від загального прибутку!)
             function checkRankUp() {
                 let rankUpgraded = false;
                 let lastRankObj = null;
@@ -469,13 +613,14 @@
                     const nextRank = RANKS[player.rank];
                     player.rank = nextRank.id;
                     player.balance = parseFloat((player.balance + nextRank.bonus).toFixed(6));
+                    player.totalEarned = parseFloat((player.totalEarned + nextRank.bonus).toFixed(6));
                     lastRankObj = nextRank;
                     rankUpgraded = true;
                 }
 
                 if (rankUpgraded && lastRankObj) {
                     vibrate();
-                    document.getElementById('modalRankIcon').textContent = lastRankObj.icon;
+                    document.getElementById('modalRankIcon').innerHTML = lastRankObj.icon;
                     document.getElementById('modalRankLevel').textContent = lastRankObj.id;
                     
                     const rankNameEl = document.getElementById('modalRankName');
@@ -491,12 +636,10 @@
                 }
             }
 
-            // ЗАКРИТТЯ ВІКНА НОВОГО РАНГУ
             document.getElementById('closeRankModalBtn').addEventListener('click', () => {
                 document.getElementById('rankModal').classList.remove('active');
             });
 
-            // --- ТАПИ ---
             const tapZone = document.getElementById('tapButton');
             const bigCoin = document.querySelector('.big-coin');
 
@@ -506,7 +649,7 @@
                     player.energy -= ECONOMY.energy.tapCost;
                     
                     player.balance = parseFloat((player.balance + val).toFixed(6));
-                    player.totalEarned = parseFloat((player.totalEarned + val).toFixed(6)); // Записуємо в загальний прибуток!
+                    player.totalEarned = parseFloat((player.totalEarned + val).toFixed(6)); 
                     
                     vibrate();
                     showFloating(`+${val.toFixed(4)}`, x, y);
@@ -527,7 +670,6 @@
                 if (e.touches.length === 0) bigCoin.classList.remove('pressed');
             });
 
-            // --- КНОПКИ ПОКРАЩЕННЯ ---
             document.querySelectorAll('.upgrade-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const type = e.target.dataset.type;
@@ -535,7 +677,7 @@
                     if (player.balance >= price) {
                         vibrate();
                         player.balance = parseFloat((player.balance - price).toFixed(6));
-                        player.totalSpent = parseFloat((player.totalSpent + price).toFixed(6)); // Фіксуємо витрати!
+                        player.totalSpent = parseFloat((player.totalSpent + price).toFixed(6)); 
                         player[type + 'Level']++;
                         if (type === 'capacity') player.energy = getCurrentCapacity();
                         updateUI();
@@ -546,7 +688,6 @@
                 });
             });
 
-            // ЗАВДАННЯ (також йдуть в загальний досвід)
             document.querySelectorAll('.task-btn').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const task = e.target.dataset.task;
@@ -566,7 +707,6 @@
                 });
             });
 
-            // --- ПОДІЛИТИСЬ СИЛКОЮ ---
             document.getElementById('topRefBar').addEventListener('click', () => {
                 vibrate();
                 const botUser = 'teosoaodosabot'; 
@@ -575,7 +715,7 @@
                 else alert(`Ссылка: ${link}`);
             });
 
-            // --- ВІДКРИТИ ІНФОРМАЦІЮ ПРО РАНГИ ---
+            // ОКНО ИНФОРМАЦИИ О РАНГАХ (Полностью на русском)
             document.getElementById('rankCard').addEventListener('click', () => {
                 vibrate();
                 const modal = document.getElementById('ranksInfoModal');
@@ -586,16 +726,20 @@
                     const isActive = player.rank === r.id;
                     const div = document.createElement('div');
                     div.className = `rank-info-item ${isActive ? 'active-rank' : ''}`;
+                    
+                    const reqText = r.threshold > 0 ? `От ${r.threshold}$ общего заработка` : `Выдается сразу`;
+                    const bonusText = r.bonus > 0 ? `+${r.bonus}$ бонус` : `Начальный`;
+
                     div.innerHTML = `
                         <div class="rank-info-left">
-                            <span class="rank-info-icon">${r.icon}</span>
+                            <span class="rank-info-icon" style="display:flex; align-items:center;">${r.icon}</span>
                             <div class="rank-info-details">
                                 <span class="rank-info-name" style="color: ${r.color}; text-shadow: 0 0 5px ${r.color}60;">${r.name}</span>
-                                <span class="rank-info-req">Всього здобуто: от ${r.threshold}$</span>
+                                <span class="rank-info-req">${reqText}</span>
                             </div>
                         </div>
                         <div class="rank-info-bonus">
-                            ${r.bonus > 0 ? '+' + r.bonus + '$ бонус' : 'Початковий'}
+                            ${bonusText}
                         </div>
                     `;
                     list.appendChild(div);
@@ -607,7 +751,6 @@
                 document.getElementById('ranksInfoModal').classList.remove('active');
             });
 
-            // --- ВІДКРИТИ СПИСОК РЕФЕРАЛІВ ---
             document.getElementById('referralsCard').addEventListener('click', async () => {
                 vibrate();
                 const modal = document.getElementById('referralsModal');
@@ -629,7 +772,7 @@
                         const div = document.createElement('div');
                         div.className = 'ref-user-item';
                         div.innerHTML = `
-                            <span class="ref-user-name">@${r.username || 'Гравець'}</span>
+                            <span class="ref-user-name">@${r.username || 'Игрок'}</span>
                             <span class="ref-user-profit">+${r.earnedForInviter.toFixed(4)} $</span>
                         `;
                         listContainer.appendChild(div);
@@ -643,7 +786,6 @@
                 document.getElementById('referralsModal').classList.remove('active');
             });
 
-            // --- РОБОТА З БАЗОЮ ---
             async function loadData() {
                 try {
                     const res = await fetch(`${API_URL}/init`, {
@@ -652,11 +794,16 @@
                         body: JSON.stringify({ 
                             telegramId: tgUser.id.toString(), 
                             username: tgUser.username, 
-                            refId: refParam 
+                            refId: refParam,
+                            initData: tgInitData 
                         })
                     });
                     const data = await res.json();
-                    if (data.telegramId) {
+                    
+                    if (data.error) {
+                        console.error("Ошибка входа:", data.error);
+                    } else if (data.telegramId) {
+                        sessionId = data.sessionId; 
                         player = {
                             balance: data.balance,
                             totalEarned: data.totalEarned || 0,
@@ -671,11 +818,17 @@
                         updateUI();
                         checkRankUp(); 
                     }
-                } catch (e) { console.log('Подключение...'); }
+                } catch (e) { 
+                    console.log('Подключение...'); 
+                } finally {
+                    appLoaded = true;
+                    checkHideLoading();
+                }
             }
 
             async function syncData() {
-                // Зберігаємо змінні до запиту, щоб не загубити тапи, які будуть зроблені під час запиту
+                if (!sessionId) return; 
+
                 const syncEarned = player.totalEarned;
                 const syncSpent = player.totalSpent;
 
@@ -689,12 +842,20 @@
                             clientSpent: syncSpent,
                             clientEnergy: player.energy,
                             levels: { damage: player.damageLevel, capacity: player.capacityLevel, recovery: player.recoveryLevel },
-                            rank: player.rank
+                            rank: player.rank,
+                            initData: tgInitData,
+                            sessionId: sessionId 
                         })
                     });
                     const data = await res.json();
+                    
+                    if (data.error === "conflict") {
+                        alert('⚠️ ' + data.message + '\nОбновите страницу!');
+                        sessionId = null; 
+                        return;
+                    }
+
                     if (data.success) {
-                        // Оновлюємо баланс на серверний, але додаємо те, що встигли натапати або витратити під час синхронізації
                         player.balance = data.balance + (player.totalEarned - syncEarned) - (player.totalSpent - syncSpent);
                         player.referrals = data.referrals;
                         updateUI();
@@ -703,7 +864,12 @@
                 } catch (e) {}
             }
 
-            // Відновлення енергії
+            document.addEventListener("visibilitychange", function() {
+                if (document.visibilityState === 'hidden') {
+                    syncData();
+                }
+            });
+
             setInterval(() => {
                 const max = getCurrentCapacity();
                 const regen = getCurrentRecovery();
@@ -713,10 +879,8 @@
                 }
             }, 1000);
 
-            // Синхронізація з сервером кожні 10 сек
-            setInterval(syncData, 10000);
+            setInterval(syncData, 30000);
 
-            // НОВИЙ ГЕНЕРАТОР ФОНУ (Густіший + Яскравіші елементи)
             const bg = document.getElementById('handwrittenBg');
             bg.innerHTML = '';
             const totalT = 80; 
@@ -728,7 +892,6 @@
                 s.style.setProperty('--r', Math.random() * 60 - 30); 
                 s.style.setProperty('--d', Math.random() * 8);
                 
-                // 20% іконок робимо яскравішими і трохи більшими
                 if (Math.random() < 0.20) {
                     s.style.opacity = (0.5 + Math.random() * 0.4).toFixed(2);
                     s.style.fontSize = (1.2 + Math.random() * 1.5) + 'rem';
@@ -737,7 +900,6 @@
                     s.style.fontWeight = '600';
                     s.style.zIndex = '1';
                 } else {
-                    // Звичайні іконки
                     s.style.opacity = (0.15 + Math.random() * 0.25).toFixed(2);
                     s.style.fontSize = (0.8 + Math.random() * 1.2) + 'rem';
                     s.style.color = '#3b82f6';
