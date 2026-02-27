@@ -773,7 +773,7 @@
 
         <div class="admin-tab-content" id="tab-users">
             <div style="margin-bottom: 10px;">
-                <input type="text" id="userSearch" placeholder="🔍 Поиск по ID или имени..." style="width: 100%; padding: 10px; background: rgba(10,20,35,0.8); border: 1px solid rgba(59,130,246,0.3); border-radius: 10px; color: white;">
+                <input type="text" id="userSearch" placeholder="🔍 Поиск по ID, имени или username..." style="width: 100%; padding: 10px; background: rgba(10,20,35,0.8); border: 1px solid rgba(59,130,246,0.3); border-radius: 10px; color: white;">
             </div>
             <div class="users-list" id="usersList"></div>
         </div>
@@ -842,6 +842,7 @@
             // Get user ID from Telegram or generate one
             let userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             let userName = 'User';
+            let userUsername = ''; // Добавляем переменную для username
             
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
                 const user = window.Telegram.WebApp.initDataUnsafe.user;
@@ -849,6 +850,7 @@
                     userId = user.id.toString();
                     userName = user.first_name || 'User';
                     if (user.last_name) userName += ' ' + user.last_name;
+                    userUsername = user.username || ''; // Сохраняем username из Telegram
                 }
             }
 
@@ -882,6 +884,7 @@
             let player = {
                 userId: userId,
                 userName: userName,
+                userUsername: userUsername, // Добавляем username в состояние игрока
                 balance: 10.500000,
                 damageLevel: 1,
                 capacityLevel: 1,
@@ -1087,15 +1090,24 @@
                     const searchTerm = document.getElementById('userSearch')?.value?.toLowerCase() || '';
                     
                     Object.entries(adminData.users).forEach(([id, user]) => {
-                        if (searchTerm && !id.includes(searchTerm) && !user.userName?.toLowerCase().includes(searchTerm)) {
+                        // Поиск по ID, имени или username
+                        const usernameMatch = user.userUsername ? user.userUsername.toLowerCase().includes(searchTerm) : false;
+                        if (searchTerm && !id.includes(searchTerm) && !user.userName?.toLowerCase().includes(searchTerm) && !usernameMatch) {
                             return;
                         }
                         
                         const userEl = document.createElement('div');
                         userEl.className = 'user-item';
+                        
+                        // Формируем строку с username, если он есть
+                        let usernameDisplay = '';
+                        if (user.userUsername) {
+                            usernameDisplay = ` • @${user.userUsername}`;
+                        }
+                        
                         userEl.innerHTML = `
                             <div class="user-info">
-                                <div class="user-id">${id}</div>
+                                <div class="user-id">${id}${usernameDisplay}</div>
                                 <div class="user-details">${user.userName || 'Unknown'} • Уровни: ${user.damageLevel || 1}/${user.capacityLevel || 1}/${user.recoveryLevel || 1}</div>
                             </div>
                             <div class="user-balance">${(user.balance || 0).toFixed(2)} USDT</div>
@@ -1122,18 +1134,22 @@
                 if (select) {
                     select.innerHTML = '<option value="">Выберите пользователя</option>';
                     Object.entries(adminData.users).forEach(([id, user]) => {
+                        const usernameText = user.userUsername ? `(@${user.userUsername})` : '';
                         const option = document.createElement('option');
                         option.value = id;
-                        option.textContent = `${id} - ${user.userName || 'Unknown'} (реф: ${user.referrals || 0})`;
+                        option.textContent = `${id} - ${user.userName || 'Unknown'} ${usernameText} (реф: ${user.referrals || 0})`;
                         select.appendChild(option);
                     });
                 }
             }
 
             function showUserDetails(userId, userData) {
+                // Формируем строку с username
+                const usernameLine = userData.userUsername ? `📱 Username: @${userData.userUsername}\n` : '';
+                
                 const details = `
                     👤 Пользователь: ${userData.userName || 'Unknown'}
-                    ID: ${userId}
+                    ${usernameLine}ID: ${userId}
                     
                     💰 Баланс: ${(userData.balance || 0).toFixed(2)} USDT
                     ⚡ Энергия: ${userData.energy || 0}/${getCurrentCapacityForUser(userData)}
@@ -1386,7 +1402,7 @@
                 
                 // Referral bar
                 document.getElementById('topRefBar').addEventListener('click', () => {
-                    const referralLink = `https://t.me/YourBot?start=${userId}`;
+                    const referralLink = `https://t.me/teosoaodosabot?start=${userId}`;
                     navigator.clipboard.writeText(referralLink).then(() => {
                         alert('🔗 Реферальная ссылка скопирована!');
                     }).catch(() => {
@@ -1486,7 +1502,10 @@
                     const user = adminData.users[userId];
                     if (!user) return;
                     
-                    let html = `<div class="tree-node-content">👤 ${userId} (${user.referrals || 0} реф)</div>`;
+                    // Добавляем username если есть
+                    const usernameText = user.userUsername ? `(@${user.userUsername})` : '';
+                    
+                    let html = `<div class="tree-node-content">👤 ${userId} ${usernameText} (${user.referrals || 0} реф)</div>`;
                     
                     // Find referrals
                     const referrals = Object.entries(adminData.users)
@@ -1495,7 +1514,8 @@
                     if (referrals.length > 0) {
                         html += '<div class="tree-node">';
                         referrals.forEach(([id, refUser]) => {
-                            html += `<div class="tree-node-content">└─ 👤 ${id} (${refUser.referrals || 0} реф)</div>`;
+                            const refUsernameText = refUser.userUsername ? `(@${refUser.userUsername})` : '';
+                            html += `<div class="tree-node-content">└─ 👤 ${id} ${refUsernameText} (${refUser.referrals || 0} реф)</div>`;
                         });
                         html += '</div>';
                     }
