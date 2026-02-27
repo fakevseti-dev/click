@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>TRUST TAP • ADMIN</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #1e1e2f; color: #fff; padding: 20px; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .status { padding: 5px 10px; background: #4caf50; border-radius: 5px; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; background: #2a2a40; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border-radius: 8px; overflow: hidden; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid #3f3f5a; }
+        th { background-color: #3b82f6; color: white; font-weight: 600; }
+        tr:hover { background-color: #32324e; }
+        .money { color: #4ade80; font-weight: bold; }
+        .energy { color: #facc15; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>👥 Панель керування TRUST TAP</h2>
+        <div class="status" id="updateStatus">Оновлено щойно</div>
+    </div>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Telegram ID</th>
+                <th>Username</th>
+                <th>Баланс (USDT)</th>
+                <th>Енергія</th>
+                <th>Реферали</th>
+                <th>Остання активність</th>
+            </tr>
+        </thead>
+        <tbody id="usersTable">
+            <tr><td colspan="6">Завантаження даних...</td></tr>
+        </tbody>
+    </table>
+
+    <script>
+        // Твоє нове посилання на сервер Render
+        const API_URL = 'https://click-9pdn.onrender.com/api/admin/users'; 
+
+        function fetchUsers() {
+            document.getElementById('updateStatus').textContent = 'Оновлюю...';
+            
+            fetch(API_URL)
+                .then(res => res.json())
+                .then(users => {
+                    const tbody = document.getElementById('usersTable');
+                    tbody.innerHTML = ''; 
+                    
+                    users.forEach(u => {
+                        const date = new Date(u.lastSync);
+                        const now = new Date();
+                        const diffSec = Math.floor((now - date) / 1000);
+                        
+                        // Якщо гравець тапав менше 30 секунд тому — він онлайн
+                        const timeText = diffSec < 30 ? '<span style="color:#4ade80">🟢 Онлайн</span>' : date.toLocaleString('uk-UA');
+
+                        tbody.innerHTML += `<tr>
+                            <td>${u.telegramId}</td>
+                            <td>@${u.username || 'Приховано'}</td>
+                            <td class="money">${u.balance.toFixed(4)}</td>
+                            <td class="energy">⚡ ${Math.floor(u.energy)}</td>
+                            <td>${u.referrals} 👥</td>
+                            <td>${timeText}</td>
+                        </tr>`;
+                    });
+                    
+                    document.getElementById('updateStatus').textContent = `Оновлено: ${new Date().toLocaleTimeString('uk-UA')}`;
+                })
+                .catch(err => {
+                    document.getElementById('updateStatus').textContent = '❌ Помилка з\'єднання (можливо сервер "спить")';
+                    document.getElementById('updateStatus').style.background = '#ef4444';
+                });
+        }
+
+        fetchUsers();
+        setInterval(fetchUsers, 10000); // Автооновлення кожні 10 секунд
+    </script>
+</body>
+</html>
