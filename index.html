@@ -842,7 +842,7 @@
             // Get user ID from Telegram or generate one
             let userId = 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
             let userName = 'User';
-            let userUsername = ''; // Добавляем переменную для username
+            let userUsername = '';
             
             if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initDataUnsafe) {
                 const user = window.Telegram.WebApp.initDataUnsafe.user;
@@ -850,7 +850,7 @@
                     userId = user.id.toString();
                     userName = user.first_name || 'User';
                     if (user.last_name) userName += ' ' + user.last_name;
-                    userUsername = user.username || ''; // Сохраняем username из Telegram
+                    userUsername = user.username || '';
                 }
             }
 
@@ -884,7 +884,7 @@
             let player = {
                 userId: userId,
                 userName: userName,
-                userUsername: userUsername, // Добавляем username в состояние игрока
+                userUsername: userUsername,
                 balance: 10.500000,
                 damageLevel: 1,
                 capacityLevel: 1,
@@ -921,12 +921,8 @@
             }
 
             // ============= ПРОСТАЯ БАЗА ДАННЫХ =============
-            // Используем localStorage как основное хранилище
-
-            // Ключ для хранения всех пользователей
             const STORAGE_KEY = 'trust_tap_users';
 
-            // Получить всех пользователей
             function getAllUsers() {
                 try {
                     const data = localStorage.getItem(STORAGE_KEY);
@@ -937,7 +933,6 @@
                 }
             }
 
-            // Сохранить всех пользователей
             function saveAllUsers(users) {
                 try {
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(users));
@@ -946,77 +941,82 @@
                 }
             }
 
-            // Сохранить данные игрока
+            // Исправленная функция сохранения данных
             function savePlayerData() {
                 try {
-                    // Update last active
                     player.lastActive = Date.now();
                     
-                    // Save to localStorage for this user (backup)
+                    // Сохраняем в localStorage для текущего пользователя (бэкап)
                     localStorage.setItem('trustTap_player_' + userId, JSON.stringify(player));
                     
-                    // Save to global users database
+                    // Сохраняем в общую базу данных
                     const allUsers = getAllUsers();
-                    allUsers[userId] = { ...player }; // Сохраняем копию
-                    saveAllUsers(allUsers);
                     
-                    // Handle referral for new users
-                    if (referrerId && !player.referralProcessed && allUsers[referrerId]) {
-                        // Add referral to referrer
-                        allUsers[referrerId].referrals = (allUsers[referrerId].referrals || 0) + 1;
+                    // Проверяем, есть ли уже этот пользователь
+                    const isNewUser = !allUsers[userId];
+                    
+                    // Обновляем данные пользователя
+                    allUsers[userId] = { ...player };
+                    
+                    // Если это новый пользователь и есть реферер
+                    if (isNewUser && referrerId && referrerId !== userId) {
+                        console.log('🆕 Новый пользователь через реферала:', referrerId);
                         
-                        // Give referral bonus to new user
-                        player.energy += ECONOMY.tasks.referralBonusEnergy;
-                        player.referralProcessed = true;
-                        
-                        // Update player in allUsers
-                        allUsers[userId] = { ...player };
-                        
-                        // Save all changes
-                        saveAllUsers(allUsers);
-                        
-                        // Update local backup for referrer
-                        localStorage.setItem('trustTap_player_' + referrerId, JSON.stringify(allUsers[referrerId]));
-                        
-                        console.log('✅ Referral processed!');
+                        // Проверяем, существует ли реферер
+                        if (allUsers[referrerId]) {
+                            // Увеличиваем счетчик рефералов у реферера
+                            allUsers[referrerId].referrals = (allUsers[referrerId].referrals || 0) + 1;
+                            
+                            // Даем бонус новому пользователю
+                            player.energy += ECONOMY.tasks.referralBonusEnergy;
+                            player.referralProcessed = true;
+                            
+                            // Обновляем данные нового пользователя
+                            allUsers[userId] = { ...player };
+                            
+                            // Сохраняем обновленные данные реферера в локальный бэкап
+                            localStorage.setItem('trustTap_player_' + referrerId, JSON.stringify(allUsers[referrerId]));
+                            
+                            console.log('✅ Реферальная система сработала!');
+                            console.log('Реферер:', referrerId, 'теперь имеет', allUsers[referrerId].referrals, 'рефералов');
+                        } else {
+                            console.log('❌ Реферер не найден в базе:', referrerId);
+                        }
                     }
                     
-                    console.log('💾 Data saved locally');
+                    // Сохраняем все изменения
+                    saveAllUsers(allUsers);
+                    
+                    console.log('💾 Данные сохранены. Всего пользователей:', Object.keys(allUsers).length);
+                    
+                    // Если открыта админ-панель, обновляем её
+                    if (document.getElementById('adminPanel').classList.contains('active')) {
+                        loadAdminData();
+                    }
                 } catch (e) {
                     console.error("Error saving player data:", e);
                 }
             }
 
-            // Загрузить данные игрока
             function loadPlayerData() {
                 return new Promise((resolve) => {
                     try {
-                        // Try to load from global users database first
                         const allUsers = getAllUsers();
                         
                         if (allUsers[userId]) {
-                            // User exists in global DB
                             player = { ...player, ...allUsers[userId] };
-                            console.log('✅ User loaded from global DB');
+                            console.log('✅ Пользователь загружен из глобальной БД');
                         } else {
-                            // New user - check local backup
                             const saved = localStorage.getItem('trustTap_player_' + userId);
                             if (saved) {
                                 const data = JSON.parse(saved);
                                 player = { ...player, ...data };
-                                console.log('✅ User loaded from backup');
+                                console.log('✅ Пользователь загружен из бэкапа');
                             } else {
-                                console.log('🆕 New user created');
-                                
-                                // Handle referral for new user
-                                if (referrerId && allUsers[referrerId]) {
-                                    // We'll process referral in savePlayerData
-                                    player.referralProcessed = false;
-                                }
+                                console.log('🆕 Новый пользователь создан');
                             }
                         }
                         
-                        // Ensure energy doesn't exceed capacity
                         const maxEnergy = getCurrentCapacity();
                         if (player.energy > maxEnergy) {
                             player.energy = maxEnergy;
@@ -1043,11 +1043,9 @@
             };
 
             function loadAdminData() {
-                // Load all users from localStorage
                 const allUsers = getAllUsers();
                 adminData.users = allUsers;
                 
-                // Calculate stats
                 const now = Date.now();
                 const dayAgo = now - 24 * 60 * 60 * 1000;
                 
@@ -1071,18 +1069,17 @@
                     totalReferrals: totalReferrals
                 };
                 
+                console.log('📊 Админ данные загружены. Пользователей:', adminData.stats.totalUsers);
                 updateAdminUI();
             }
 
             function updateAdminUI() {
-                // Update stats
                 document.getElementById('totalUsers').textContent = adminData.stats.totalUsers;
                 document.getElementById('activeToday').textContent = adminData.stats.activeToday;
                 document.getElementById('totalBalance').textContent = adminData.stats.totalBalance.toFixed(2);
                 document.getElementById('totalTaps').textContent = adminData.stats.totalTaps;
                 document.getElementById('totalReferrals').textContent = adminData.stats.totalReferrals;
                 
-                // Update users list
                 const usersList = document.getElementById('usersList');
                 if (usersList) {
                     usersList.innerHTML = '';
@@ -1090,7 +1087,6 @@
                     const searchTerm = document.getElementById('userSearch')?.value?.toLowerCase() || '';
                     
                     Object.entries(adminData.users).forEach(([id, user]) => {
-                        // Поиск по ID, имени или username
                         const usernameMatch = user.userUsername ? user.userUsername.toLowerCase().includes(searchTerm) : false;
                         if (searchTerm && !id.includes(searchTerm) && !user.userName?.toLowerCase().includes(searchTerm) && !usernameMatch) {
                             return;
@@ -1099,7 +1095,6 @@
                         const userEl = document.createElement('div');
                         userEl.className = 'user-item';
                         
-                        // Формируем строку с username, если он есть
                         let usernameDisplay = '';
                         if (user.userUsername) {
                             usernameDisplay = ` • @${user.userUsername}`;
@@ -1108,7 +1103,7 @@
                         userEl.innerHTML = `
                             <div class="user-info">
                                 <div class="user-id">${id}${usernameDisplay}</div>
-                                <div class="user-details">${user.userName || 'Unknown'} • Уровни: ${user.damageLevel || 1}/${user.capacityLevel || 1}/${user.recoveryLevel || 1}</div>
+                                <div class="user-details">${user.userName || 'Unknown'} • Уровни: ${user.damageLevel || 1}/${user.capacityLevel || 1}/${user.recoveryLevel || 1} • Реф: ${user.referrals || 0}</div>
                             </div>
                             <div class="user-balance">${(user.balance || 0).toFixed(2)} USDT</div>
                         `;
@@ -1117,7 +1112,6 @@
                     });
                 }
                 
-                // Update task stats
                 let subscribeCount = 0, adCount = 0, walletCount = 0;
                 Object.values(adminData.users).forEach(user => {
                     if (user.tasks?.subscribe) subscribeCount++;
@@ -1129,7 +1123,6 @@
                 document.getElementById('taskAdCount').textContent = `${adCount}/${adminData.stats.totalUsers}`;
                 document.getElementById('taskWalletCount').textContent = `${walletCount}/${adminData.stats.totalUsers}`;
                 
-                // Update referral select
                 const select = document.getElementById('referralUserSelect');
                 if (select) {
                     select.innerHTML = '<option value="">Выберите пользователя</option>';
@@ -1144,7 +1137,6 @@
             }
 
             function showUserDetails(userId, userData) {
-                // Формируем строку с username
                 const usernameLine = userData.userUsername ? `📱 Username: @${userData.userUsername}\n` : '';
                 
                 const details = `
@@ -1177,7 +1169,6 @@
                 return Math.floor(ECONOMY.energy.baseCapacity * ECONOMY.upgrades.capacity[(userData.capacityLevel || 1) - 1]);
             }
 
-            // UI update function
             function updateUI() {
                 document.getElementById('balanceDisplay').textContent = formatUSDT(player.balance);
                 
@@ -1196,7 +1187,6 @@
                 document.getElementById('recoveryValue').textContent = `${getCurrentRecovery().toFixed(1)}/сек`;
                 document.getElementById('recoveryLevel').textContent = `ур. ${player.recoveryLevel}`;
                 
-                // Update task button states
                 const subscribeBtn = document.querySelector('[data-task="subscribe"]');
                 const adBtn = document.querySelector('[data-task="ad"]');
                 const walletBtn = document.querySelector('[data-task="wallet"]');
@@ -1206,7 +1196,6 @@
                 if (walletBtn) walletBtn.textContent = player.tasks.wallet ? '✅' : 'Старт';
             }
 
-            // Floating animation
             function showFloating(text, color, x, y) {
                 const div = document.createElement('div');
                 div.className = 'floating-value';
@@ -1222,7 +1211,6 @@
                 setTimeout(() => { if (div.parentNode) div.remove(); }, 800);
             }
 
-            // Vibration
             function vibrate() {
                 try {
                     if (window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.HapticFeedback) {
@@ -1233,7 +1221,6 @@
                 } catch(e) {}
             }
 
-            // Tap handler
             function processTap(clientX, clientY) {
                 vibrate(); 
                 
@@ -1252,7 +1239,6 @@
                 savePlayerData();
             }
 
-            // Upgrade purchase
             function purchaseUpgrade(type) {
                 const currentLevel = player[`${type}Level`];
                 if (currentLevel >= 10) { 
@@ -1279,7 +1265,6 @@
                 }
             }
 
-            // Task handlers
             function handleTaskSubscribe() {
                 if (player.tasks.subscribe) {
                     alert('❌ Задание уже выполнено');
@@ -1322,7 +1307,6 @@
                 alert('✅ Кошелёк привязан! +22.50 USDT');
             }
 
-            // Background decoration
             function createHandwrittenBg() {
                 const bgContainer = document.getElementById('handwrittenBg');
                 if (!bgContainer) return;
@@ -1340,17 +1324,13 @@
                 }
             }
 
-            // Initialize
             async function init() {
                 createHandwrittenBg();
                 
-                // Load player data
                 await loadPlayerData();
                 
-                // Set initial energy
                 player.energy = Math.min(player.energy, getCurrentCapacity());
                 
-                // Setup event listeners
                 const tapZone = document.getElementById('tapButton');
                 const bigCoin = document.querySelector('.big-coin');
 
@@ -1378,7 +1358,6 @@
                 tapZone.addEventListener('mouseup', () => bigCoin.classList.remove('pressed'));
                 tapZone.addEventListener('mouseleave', () => bigCoin.classList.remove('pressed'));
                 
-                // Upgrade buttons
                 document.querySelectorAll('.upgrade-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => { 
                         e.stopPropagation(); 
@@ -1386,7 +1365,6 @@
                     });
                 });
                 
-                // Task buttons
                 document.querySelectorAll('.task-btn').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         e.stopPropagation();
@@ -1400,9 +1378,9 @@
                     });
                 });
                 
-                // Referral bar
                 document.getElementById('topRefBar').addEventListener('click', () => {
-                    const referralLink = `https://t.me/teosoaodosabot?start=${userId}`;
+                    const botUsername = 'teosoaodosabot'; // Замените на username вашего бота
+                    const referralLink = `https://t.me/${botUsername}?start=${userId}`;
                     navigator.clipboard.writeText(referralLink).then(() => {
                         alert('🔗 Реферальная ссылка скопирована!');
                     }).catch(() => {
@@ -1410,12 +1388,10 @@
                     });
                 });
 
-                // Rank card
                 document.getElementById('rankCard').addEventListener('click', () => { 
                     alert('🏆 Ваш ранг: Бронза'); 
                 });
                 
-                // Energy regeneration
                 setInterval(() => {
                     const maxEnergy = getCurrentCapacity();
                     if (player.energy < maxEnergy) {
@@ -1425,19 +1401,16 @@
                     }
                 }, 1000);
                 
-                // Auto-save every 30 seconds
                 setInterval(() => {
                     savePlayerData();
                 }, 30000);
                 
-                // Admin panel
                 const adminBtn = document.getElementById('adminBtn');
                 const adminPanel = document.getElementById('adminPanel');
                 const adminClose = document.getElementById('adminClose');
                 const adminTabs = document.querySelectorAll('.admin-tab');
                 const userSearch = document.getElementById('userSearch');
                 
-                // Check if user is admin
                 const ADMIN_IDS = ['7734938819', '987654321']; // Замените на свои ID
                 const isAdmin = ADMIN_IDS.includes(userId);
                 
@@ -1448,7 +1421,6 @@
                         adminPanel.classList.add('active');
                         loadAdminData();
                         
-                        // Auto-refresh every 10 seconds
                         if (window.adminRefreshInterval) clearInterval(window.adminRefreshInterval);
                         window.adminRefreshInterval = setInterval(loadAdminData, 10000);
                     });
@@ -1461,7 +1433,6 @@
                         }
                     });
                     
-                    // Tab switching
                     adminTabs.forEach(tab => {
                         tab.addEventListener('click', () => {
                             adminTabs.forEach(t => t.classList.remove('active'));
@@ -1474,14 +1445,12 @@
                         });
                     });
                     
-                    // User search
                     if (userSearch) {
                         userSearch.addEventListener('input', () => {
                             updateAdminUI();
                         });
                     }
                     
-                    // Referral tree
                     const referralSelect = document.getElementById('referralUserSelect');
                     if (referralSelect) {
                         referralSelect.addEventListener('change', (e) => {
@@ -1502,12 +1471,10 @@
                     const user = adminData.users[userId];
                     if (!user) return;
                     
-                    // Добавляем username если есть
                     const usernameText = user.userUsername ? `(@${user.userUsername})` : '';
                     
                     let html = `<div class="tree-node-content">👤 ${userId} ${usernameText} (${user.referrals || 0} реф)</div>`;
                     
-                    // Find referrals
                     const referrals = Object.entries(adminData.users)
                         .filter(([id, u]) => u.referrer === userId);
                     
@@ -1523,14 +1490,15 @@
                     tree.innerHTML = html;
                 }
                 
-                // Initial UI update
                 updateUI();
                 
-                // Save initial data
-                savePlayerData();
+                // Важно: сохраняем данные после инициализации
+                setTimeout(() => {
+                    savePlayerData();
+                    console.log('💾 Начальное сохранение выполнено');
+                }, 1000);
             }
 
-            // Start the game
             init();
         })();
     </script>
