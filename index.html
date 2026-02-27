@@ -7,6 +7,7 @@
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
+        /* Все стили остаются без изменений */
         * {
             margin: 0;
             padding: 0;
@@ -832,11 +833,28 @@
                 } catch(e) {}
                 
                 tg.disableVerticalSwipes();
-                
-                requestAnimationFrame(() => {
-                    window.scrollTo(0, 1);
-                    setTimeout(() => window.scrollTo(0, 0), 50);
-                });
+            }
+
+            // Получаем параметры из URL (для рефералов)
+            function getReferrerFromUrl() {
+                try {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    // Telegram боты передают параметр start
+                    const startParam = urlParams.get('start');
+                    if (startParam) {
+                        console.log('✅ Найден параметр start:', startParam);
+                        return startParam;
+                    }
+                    // На всякий случай проверяем и ref
+                    const refParam = urlParams.get('ref');
+                    if (refParam) {
+                        console.log('✅ Найден параметр ref:', refParam);
+                        return refParam;
+                    }
+                } catch (e) {
+                    console.error('Ошибка при получении параметров URL:', e);
+                }
+                return null;
             }
 
             // Get user ID from Telegram or generate one
@@ -854,9 +872,12 @@
                 }
             }
 
-            // Get referral from URL if exists
-            const urlParams = new URLSearchParams(window.location.search);
-            const referrerId = urlParams.get('ref');
+            // Get referral from URL
+            const referrerId = getReferrerFromUrl();
+            
+            if (referrerId) {
+                console.log('🔗 Реферальный переход! Реферер ID:', referrerId);
+            }
 
             // Economy constants
             const ECONOMY = {
@@ -920,7 +941,7 @@
                 return ECONOMY.energy.baseRecovery * ECONOMY.upgrades.recovery[player.recoveryLevel - 1]; 
             }
 
-            // ============= ПРОСТАЯ БАЗА ДАННЫХ =============
+            // ============= БАЗА ДАННЫХ =============
             const STORAGE_KEY = 'trust_tap_users';
 
             function getAllUsers() {
@@ -941,7 +962,6 @@
                 }
             }
 
-            // Исправленная функция сохранения данных
             function savePlayerData() {
                 try {
                     player.lastActive = Date.now();
@@ -952,17 +972,18 @@
                     // Сохраняем в общую базу данных
                     const allUsers = getAllUsers();
                     
-                    // Проверяем, есть ли уже этот пользователь
+                    // Проверяем, новый это пользователь или нет
                     const isNewUser = !allUsers[userId];
                     
                     // Обновляем данные пользователя
                     allUsers[userId] = { ...player };
                     
-                    // Если это новый пользователь и есть реферер
+                    // ЕСЛИ ЭТО НОВЫЙ ПОЛЬЗОВАТЕЛЬ И ЕСТЬ РЕФЕРЕР
                     if (isNewUser && referrerId && referrerId !== userId) {
-                        console.log('🆕 Новый пользователь через реферала:', referrerId);
+                        console.log('🎯 НОВЫЙ РЕФЕРАЛЬНЫЙ ПЕРЕХОД!');
+                        console.log('Реферер ID:', referrerId);
                         
-                        // Проверяем, существует ли реферер
+                        // Проверяем, существует ли реферер в базе
                         if (allUsers[referrerId]) {
                             // Увеличиваем счетчик рефералов у реферера
                             allUsers[referrerId].referrals = (allUsers[referrerId].referrals || 0) + 1;
@@ -974,11 +995,13 @@
                             // Обновляем данные нового пользователя
                             allUsers[userId] = { ...player };
                             
-                            // Сохраняем обновленные данные реферера в локальный бэкап
-                            localStorage.setItem('trustTap_player_' + referrerId, JSON.stringify(allUsers[referrerId]));
+                            console.log('✅ Реферал засчитан!');
+                            console.log('Теперь у реферера', allUsers[referrerId].referrals, 'рефералов');
                             
-                            console.log('✅ Реферальная система сработала!');
-                            console.log('Реферер:', referrerId, 'теперь имеет', allUsers[referrerId].referrals, 'рефералов');
+                            // Показываем уведомление
+                            setTimeout(() => {
+                                alert(`🎉 Вы перешли по реферальной ссылке!\n✅ Получено +500 энергии!\n👥 Реферер: ${referrerId}`);
+                            }, 1000);
                         } else {
                             console.log('❌ Реферер не найден в базе:', referrerId);
                         }
@@ -989,10 +1012,6 @@
                     
                     console.log('💾 Данные сохранены. Всего пользователей:', Object.keys(allUsers).length);
                     
-                    // Если открыта админ-панель, обновляем её
-                    if (document.getElementById('adminPanel').classList.contains('active')) {
-                        loadAdminData();
-                    }
                 } catch (e) {
                     console.error("Error saving player data:", e);
                 }
@@ -1014,6 +1033,9 @@
                                 console.log('✅ Пользователь загружен из бэкапа');
                             } else {
                                 console.log('🆕 Новый пользователь создан');
+                                if (referrerId) {
+                                    console.log('👆 Пришел по реферальной ссылке от:', referrerId);
+                                }
                             }
                         }
                         
@@ -1069,7 +1091,6 @@
                     totalReferrals: totalReferrals
                 };
                 
-                console.log('📊 Админ данные загружены. Пользователей:', adminData.stats.totalUsers);
                 updateAdminUI();
             }
 
@@ -1100,12 +1121,15 @@
                             usernameDisplay = ` • @${user.userUsername}`;
                         }
                         
+                        // Добавляем индикатор реферала
+                        const referralBadge = user.referrer ? ` 👆 реф:${user.referrer.substring(0, 8)}...` : '';
+                        
                         userEl.innerHTML = `
                             <div class="user-info">
-                                <div class="user-id">${id}${usernameDisplay}</div>
-                                <div class="user-details">${user.userName || 'Unknown'} • Уровни: ${user.damageLevel || 1}/${user.capacityLevel || 1}/${user.recoveryLevel || 1} • Реф: ${user.referrals || 0}</div>
+                                <div class="user-id">${id}${usernameDisplay}${referralBadge}</div>
+                                <div class="user-details">${user.userName || 'Unknown'} • Уровни: ${user.damageLevel || 1}/${user.capacityLevel || 1}/${user.recoveryLevel || 1}</div>
                             </div>
-                            <div class="user-balance">${(user.balance || 0).toFixed(2)} USDT</div>
+                            <div class="user-balance">${(user.balance || 0).toFixed(2)} USDT • 👥 ${user.referrals || 0}</div>
                         `;
                         userEl.onclick = () => showUserDetails(id, user);
                         usersList.appendChild(userEl);
@@ -1327,6 +1351,12 @@
             async function init() {
                 createHandwrittenBg();
                 
+                // Показываем отладочную информацию в консоли
+                console.log('=== ИНИЦИАЛИЗАЦИЯ ===');
+                console.log('User ID:', userId);
+                console.log('Referrer ID из URL:', referrerId);
+                console.log('URL:', window.location.href);
+                
                 await loadPlayerData();
                 
                 player.energy = Math.min(player.energy, getCurrentCapacity());
@@ -1379,10 +1409,11 @@
                 });
                 
                 document.getElementById('topRefBar').addEventListener('click', () => {
-                    const botUsername = 'teosoaodosabot'; // Замените на username вашего бота
+                    // ЗАМЕНИТЕ ЭТО НА USERNAME ВАШЕГО БОТА
+                    const botUsername = 'teosoaodosabot'; // Например: 'MyGameBot'
                     const referralLink = `https://t.me/${botUsername}?start=${userId}`;
                     navigator.clipboard.writeText(referralLink).then(() => {
-                        alert('🔗 Реферальная ссылка скопирована!');
+                        alert('🔗 Реферальная ссылка скопирована!\n' + referralLink);
                     }).catch(() => {
                         prompt('Ваша реферальная ссылка:', referralLink);
                     });
@@ -1411,7 +1442,8 @@
                 const adminTabs = document.querySelectorAll('.admin-tab');
                 const userSearch = document.getElementById('userSearch');
                 
-                const ADMIN_IDS = ['7734938819', '987654321']; // Замените на свои ID
+                // ЗАМЕНИТЕ НА СВОЙ TELEGRAM ID
+                const ADMIN_IDS = ['7734938819', '987654321']; // Ваш ID должен быть здесь
                 const isAdmin = ADMIN_IDS.includes(userId);
                 
                 if (isAdmin) {
@@ -1492,7 +1524,7 @@
                 
                 updateUI();
                 
-                // Важно: сохраняем данные после инициализации
+                // Важное сохранение после инициализации
                 setTimeout(() => {
                     savePlayerData();
                     console.log('💾 Начальное сохранение выполнено');
