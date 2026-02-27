@@ -140,7 +140,7 @@
             animation: modernFloat 5s infinite ease-in-out; 
         }
         
-        .big-coin::after { content: ''; position: absolute; inset: -15px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.6), transparent 70%); z-index: -1; animation: pulseGlow 2.5s infinite alternate; pointer-events: none; }
+        .big-coin::after { content: ''; position: absolute; inset: -15px; border-radius: 50%; background: radial-gradient(circle at 50% 50%, rgba(59, 130, 246, 0.6), transparent 70%); z-1: -1; animation: pulseGlow 2.5s infinite alternate; pointer-events: none; }
         @keyframes pulseGlow { 0% { opacity: 0.5; transform: scale(0.95); } 100% { opacity: 1; transform: scale(1.05); } }
         .big-coin::before { content: ''; position: absolute; inset: 10px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0.1) 60%, transparent 80%); border: 1px solid rgba(255, 255, 255, 0.4); z-index: 1; pointer-events: none; }
         @keyframes modernFloat { 0% { transform: translateY(0px); } 50% { transform: translateY(-8px); } 100% { transform: translateY(0px); } }
@@ -510,24 +510,18 @@
 
     <script>
         (async function() {
-            // --- ТЕЛЕГРАМ ---
+            // --- ТЕЛЕГРАМ ТА БАЗА ---
             let tg = window.Telegram?.WebApp || null;
             if (tg) {
                 tg.ready();
                 tg.expand();
-                try { if (tg.requestFullscreen) tg.requestFullscreen(); } catch(e) {}
                 tg.disableVerticalSwipes();
-                requestAnimationFrame(() => {
-                    window.scrollTo(0, 1);
-                    setTimeout(() => window.scrollTo(0, 0), 50);
-                });
             }
 
-            // --- БАЗА ДАНИХ (RENDER) ---
             const API_URL = 'https://click-9pdn.onrender.com/api'; 
             const tgUser = tg?.initDataUnsafe?.user || { id: 'test_user_1', username: 'Tester' };
+            const refParam = tg?.initDataUnsafe?.start_param || null;
 
-            // --- ЕКОНОМІКА ---
             const ECONOMY = {
                 usdt: { decimals: 6, baseTapValue: 0.0002 },
                 energy: { baseCapacity: 1000, baseRecovery: 1, tapCost: 1 },
@@ -541,34 +535,28 @@
                     capacity: [3.0, 6.0, 12.0, 24.0, 48.0, 96.0, 192.0, 384.0, 768.0, 1536.0],
                     recovery: [1.5, 3.0, 6.0, 12.0, 24.0, 48.0, 96.0, 192.0, 384.0, 768.0]
                 },
-                tasks: { subscription: 0.80, adReward: 0.20, walletReward: 22.50, referralBonusEnergy: 500 }
+                tasks: { subscription: 0.80, adReward: 0.20, walletReward: 22.50 }
             };
 
-            let player = {
-                balance: 10.500000,
-                damageLevel: 1, capacityLevel: 1, recoveryLevel: 1,
-                energy: 1000, referrals: 0
-            };
+            let player = { balance: 0, damageLevel: 1, capacityLevel: 1, recoveryLevel: 1, energy: 1000, referrals: 0 };
 
-            // --- ФУНКЦІЇ ЗВ'ЯЗКУ ---
+            // --- МЕРЕЖЕВА ЛОГІКА ---
             async function loadData() {
                 try {
                     const res = await fetch(`${API_URL}/init`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ telegramId: tgUser.id.toString(), username: tgUser.username })
+                        body: JSON.stringify({ telegramId: tgUser.id.toString(), username: tgUser.username, refId: refParam })
                     });
                     const data = await res.json();
-                    if (data.telegramId) {
-                        player.balance = data.balance;
-                        player.energy = data.energy;
-                        player.damageLevel = data.damageLevel;
-                        player.capacityLevel = data.capacityLevel;
-                        player.recoveryLevel = data.recoveryLevel;
-                        player.referrals = data.referrals;
-                        updateUI();
-                    }
-                } catch (err) { console.log('Підключення до бази...'); }
+                    player.balance = data.balance;
+                    player.energy = data.energy;
+                    player.damageLevel = data.damageLevel;
+                    player.capacityLevel = data.capacityLevel;
+                    player.recoveryLevel = data.recoveryLevel;
+                    player.referrals = data.referrals;
+                    updateUI();
+                } catch (e) { console.log('Спроба з\'єднання...'); }
             }
 
             async function syncData() {
@@ -580,21 +568,17 @@
                             telegramId: tgUser.id.toString(),
                             balance: player.balance,
                             energy: player.energy,
-                            levels: {
-                                damage: player.damageLevel,
-                                capacity: player.capacityLevel,
-                                recovery: player.recoveryLevel
-                            }
+                            levels: { damage: player.damageLevel, capacity: player.capacityLevel, recovery: player.recoveryLevel }
                         })
                     });
-                } catch (err) { console.log('Синхронізація...'); }
+                } catch (e) {}
             }
 
-            // --- ЛОГІКА ТА UI (БЕЗ ЗМІН) ---
+            // --- UI ТА ГЕЙМПЛЕЙ ---
             function vibrate() {
                 try {
-                    if (tg?.HapticFeedback) { tg.HapticFeedback.impactOccurred('light'); } 
-                    else if (navigator.vibrate) { navigator.vibrate(10); }
+                    if (tg?.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+                    else if (navigator.vibrate) navigator.vibrate(10);
                 } catch(e) {}
             }
 
@@ -619,67 +603,29 @@
                 document.getElementById('recoveryLevel').textContent = `ур. ${player.recoveryLevel}`;
             }
 
-            function showFloating(text, color, x, y) {
+            function showFloating(text, x, y) {
                 const div = document.createElement('div');
                 div.className = 'floating-value';
                 div.textContent = text;
-                const randomOffsetX = (Math.random() - 0.5) * 40; 
-                const randomOffsetY = (Math.random() - 0.5) * 40; 
-                div.style.left = `${x + randomOffsetX}px`;
-                div.style.top = `${y + randomOffsetY}px`;
+                div.style.left = `${x}px`; div.style.top = `${y}px`;
                 document.body.appendChild(div);
-                setTimeout(() => { if (div.parentNode) div.remove(); }, 800);
+                setTimeout(() => div.remove(), 800);
             }
 
-            function processTap(clientX, clientY) {
+            function processTap(x, y) {
                 vibrate(); 
-                if (player.energy < ECONOMY.energy.tapCost) {
-                    showFloating('⚡', '#ffa38b', clientX, clientY);
-                    return;
-                }
+                if (player.energy < 1) return;
                 const tapValue = parseFloat(getCurrentTapValue());
-                player.energy -= ECONOMY.energy.tapCost;
-                player.balance = parseFloat((player.balance + tapValue).toFixed(6));
-                showFloating(`+${tapValue.toFixed(4)}`, null, clientX, clientY);
+                player.energy -= 1;
+                player.balance += tapValue;
+                showFloating(`+${tapValue.toFixed(4)}`, x, y);
                 updateUI();
             }
 
-            function purchaseUpgrade(type) {
-                const currentLevel = player[`${type}Level`];
-                if (currentLevel >= 10) { alert('❌ Максимальный уровень'); return; }
-                const price = ECONOMY.upgradePrices[type][currentLevel - 1];
-                if (player.balance < price) { alert(`❌ Нужно еще ${(price - player.balance).toFixed(2)} USDT`); return; }
-                if (confirm(`✅ Улучшить за ${price.toFixed(2)} USDT?`)) {
-                    vibrate(); 
-                    player.balance = parseFloat((player.balance - price).toFixed(6));
-                    player[`${type}Level`]++;
-                    if (type === 'capacity') { player.energy = getCurrentCapacity(); }
-                    showFloating('UP', null, window.innerWidth / 2, window.innerHeight / 2);
-                    updateUI();
-                    syncData(); 
-                }
-            }
-
-            function createHandwrittenBg() {
-                const bgContainer = document.getElementById('handwrittenBg');
-                if (!bgContainer) return;
-                bgContainer.innerHTML = '';
-                for (let i = 0; i < 120; i++) {
-                    const span = document.createElement('span');
-                    span.textContent = 'T';
-                    span.style.left = Math.random() * 100 + '%';
-                    span.style.top = Math.random() * 100 + '%';
-                    span.style.setProperty('--r', (Math.random() * 60) - 30);
-                    span.style.setProperty('--d', Math.random() * 8);
-                    bgContainer.appendChild(span);
-                }
-            }
-
-            // --- ЗАПУСК ---
             async function init() {
                 createHandwrittenBg();
-                await loadData(); // Завантажуємо реальний баланс
-                
+                await loadData(); // Завантажуємо реальний баланс з бази
+
                 const tapZone = document.getElementById('tapButton');
                 const bigCoin = document.querySelector('.big-coin');
 
@@ -695,30 +641,55 @@
                     if (e.touches.length === 0) bigCoin.classList.remove('pressed');
                 });
 
-                tapZone.addEventListener('mousedown', (e) => {
-                    bigCoin.classList.add('pressed');
-                    processTap(e.clientX, e.clientY);
-                });
-                tapZone.addEventListener('mouseup', () => bigCoin.classList.remove('pressed'));
-                tapZone.addEventListener('mouseleave', () => bigCoin.classList.remove('pressed'));
-                
                 document.querySelectorAll('.upgrade-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => { e.stopPropagation(); purchaseUpgrade(e.target.dataset.type); });
+                    btn.addEventListener('click', (e) => {
+                        const type = e.target.dataset.type;
+                        const price = ECONOMY.upgradePrices[type][player[type + 'Level'] - 1];
+                        if (player.balance >= price) {
+                            vibrate();
+                            player.balance -= price;
+                            player[type + 'Level']++;
+                            if (type === 'capacity') player.energy = getCurrentCapacity();
+                            updateUI(); syncData();
+                        }
+                    });
                 });
 
-                // Автозбереження кожні 10 сек
-                setInterval(syncData, 10000); 
+                // --- КНОПКА РЕФЕРАЛІВ ---
+                document.getElementById('topRefBar').addEventListener('click', () => {
+                    vibrate();
+                    // ЗАМІНИ 'TrustTap_Bot' НА ЮЗЕРНЕЙМ СВОГО БОТА
+                    const botUsername = 'TrustTap_Bot'; 
+                    const refLink = `https://t.me/${botUsername}?start=${tgUser.id}`;
+                    
+                    if (tg && tg.openTelegramLink) {
+                        const shareText = encodeURIComponent("Залітай у TRUST TAP і забирай USDT!");
+                        tg.openTelegramLink(`https://t.me/share/url?url=${refLink}&text=${shareText}`);
+                    } else {
+                        alert(`Копіюй код: ${refLink}`);
+                    }
+                });
 
-                // Регенерація енергії
+                setInterval(syncData, 10000); // Автозбереження кожні 10 сек
+
                 setInterval(() => {
-                    const maxEnergy = getCurrentCapacity();
-                    if (player.energy < maxEnergy) {
-                        player.energy = Math.min(maxEnergy, player.energy + getCurrentRecovery());
+                    const max = getCurrentCapacity();
+                    if (player.energy < max) {
+                        player.energy = Math.min(max, player.energy + getCurrentRecovery());
                         updateUI();
                     }
                 }, 1000);
-                
-                updateUI();
+            }
+
+            function createHandwrittenBg() {
+                const bg = document.getElementById('handwrittenBg');
+                for (let i = 0; i < 30; i++) {
+                    const s = document.createElement('span'); s.textContent = 'T';
+                    s.style.left = Math.random() * 100 + '%'; s.style.top = Math.random() * 100 + '%';
+                    s.style.setProperty('--r', (Math.random() * 60) - 30);
+                    s.style.setProperty('--d', Math.random() * 8);
+                    bg.appendChild(s);
+                }
             }
 
             init();

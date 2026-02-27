@@ -7,12 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Підключення до MongoDB Atlas
-mongoose.connect(process.env.MONGODB_URI)
-  .then(() => console.log('✅ База підключена'))
-  .catch(err => console.error('❌ Помилка бази:', err));
+mongoose.connect(process.env.MONGODB_URI).then(() => console.log('✅ База підключена'));
 
-// Схема користувача
 const UserSchema = new mongoose.Schema({
     telegramId: { type: String, unique: true, required: true },
     username: { type: String, default: 'Гравець' },
@@ -27,46 +23,45 @@ const UserSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', UserSchema);
 
-// 1. Вхід в гру та створення користувача
+// ВХІД ТА РЕФЕРАЛЬНА ЛОГІКА
 app.post('/api/init', async (req, res) => {
     try {
-        const { telegramId, username } = req.body;
-        if (!telegramId) return res.status(400).json({ error: "No ID" });
-
+        const { telegramId, username, refId } = req.body;
         let user = await User.findOne({ telegramId });
+        
         if (!user) {
+            // Створюємо нового гравця
             user = new User({ telegramId, username: username || 'Гравець' });
             await user.save();
+
+            // Якщо є ID того, хто запросив, і це не сам гравець
+            if (refId && refId !== telegramId) {
+                await User.findOneAndUpdate(
+                    { telegramId: refId }, 
+                    { $inc: { referrals: 1 } } // Додаємо +1 реферала запрошувачу
+                );
+            }
         }
         res.json(user);
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// 2. Збереження прогресу
 app.post('/api/sync', async (req, res) => {
     try {
         const { telegramId, balance, energy, levels } = req.body;
-        await User.findOneAndUpdate(
-            { telegramId },
-            { 
-                balance, energy, 
-                damageLevel: levels.damage, 
-                capacityLevel: levels.capacity, 
-                recoveryLevel: levels.recovery,
-                lastSync: Date.now() 
-            }
-        );
+        await User.findOneAndUpdate({ telegramId }, { 
+            balance, energy, 
+            damageLevel: levels.damage, capacityLevel: levels.capacity, 
+            lastSync: Date.now() 
+        });
         res.json({ success: true });
     } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
-// 3. Дані для адмінки
 app.get('/api/admin/users', async (req, res) => {
-    try {
-        const users = await User.find().sort({ lastSync: -1 });
-        res.json(users);
-    } catch (e) { res.status(500).json({ error: e.message }); }
+    const users = await User.find().sort({ lastSync: -1 });
+    res.json(users);
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Сервер на порту ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Сервер працює!`));
