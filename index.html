@@ -103,9 +103,9 @@
         .loading-progress { width: 0%; height: 100%; background: linear-gradient(90deg, #3b82f6, #60a5fa); border-radius: 10px; animation: loadAnim 2.5s ease-out forwards; box-shadow: 0 0 10px #3b82f6; }
         @keyframes loadAnim { 0% { width: 0%; } 100% { width: 100%; } }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 10000; opacity: 0; pointer-events: none; transition: 0.3s; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 10000; opacity: 0; pointer-events: none; transition: 0.3s; padding: 15px; }
         .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-content { background: linear-gradient(145deg, #0f1a2f, #030a18); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 1.5rem; width: 90%; max-width: 400px; padding: 1.5rem; box-shadow: 0 15px 30px rgba(0,0,0,0.5); transform: scale(0.9); transition: 0.3s; max-height: 85vh; display: flex; flex-direction: column; }
+        .modal-content { background: linear-gradient(145deg, #0f1a2f, #030a18); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 1.5rem; width: 100%; max-width: 400px; padding: 1.5rem; box-shadow: 0 15px 30px rgba(0,0,0,0.5); transform: scale(0.9); transition: 0.3s; max-height: 85vh; display: flex; flex-direction: column; }
         .modal-overlay.active .modal-content { transform: scale(1); }
         
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
@@ -378,34 +378,52 @@
             </div>
         </div>
 
-        <div class="tasks-section" style="border-color: rgba(251, 191, 36, 0.3); box-shadow: 0 4px 15px rgba(251, 191, 36, 0.1); margin-bottom: 2rem;">
+        <div class="tasks-section" style="border-color: rgba(255, 215, 0, 0.4); box-shadow: 0 4px 20px rgba(255, 215, 0, 0.15), inset 0 0 10px rgba(255, 215, 0, 0.05); margin-bottom: 2rem; background: linear-gradient(145deg, rgba(20, 40, 70, 0.55), rgba(255, 215, 0, 0.03));">
             <div class="section-header">
                 <span class="section-icon">
-                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2L15 8L22 9L17 14L18 21L12 17.5L6 21L7 14L2 9L9 8L12 2Z" stroke="#fbbf24" stroke-width="2" stroke-linejoin="round"/>
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 6px #FFD700) drop-shadow(0 0 2px #FFD700);">
+                        <path d="M12 2L15 8L22 9L17 14L18 21L12 17.5L6 21L7 14L2 9L9 8L12 2Z" stroke="#FFD700" stroke-width="2" stroke-linejoin="round"/>
                     </svg>
                 </span>
-                <span class="section-title" style="color: #fbbf24; text-shadow: 0 0 10px rgba(251, 191, 36, 0.5);">VIP Club — Без вложений</span>
+                <span class="section-title" style="color: #FFD700; text-shadow: 0 0 12px rgba(255, 215, 0, 0.8), 0 0 20px rgba(255, 215, 0, 0.4); font-weight: 800; letter-spacing: 0.5px;">VIP Club — Без вложений</span>
             </div>
             
-            <div class="task-item" style="border-color: rgba(251, 191, 36, 0.2);">
+            <div class="task-item" style="border-color: rgba(255, 215, 0, 0.3); background: rgba(255, 215, 0, 0.05);">
                 <div class="item-left">
                     <span class="item-icon">
                         <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <circle cx="12" cy="12" r="10" stroke="#fbbf24" stroke-width="2"/>
-                            <path d="M12 6V12L16 14" stroke="#fbbf24" stroke-width="2"/>
+                            <circle cx="12" cy="12" r="10" stroke="#FFD700" stroke-width="2"/>
+                            <path d="M12 6V12L16 14" stroke="#FFD700" stroke-width="2"/>
                         </svg>
                     </span>
-                    <span class="item-name" style="color: #fff;">Путь к USDT</span>
+                    <span class="item-name" style="color: #fff; text-shadow: 0 0 5px rgba(255, 255, 255, 0.3);">Путь к USDT</span>
                 </div>
                 <div class="item-right">
-                    <button class="item-button task-btn" data-task="vip" style="color: #fbbf24; background: rgba(251, 191, 36, 0.1); border-color: rgba(251, 191, 36, 0.3); box-shadow: inset 0 0 8px rgba(251, 191, 36, 0.2);">Старт</button>
+                    <button class="item-button task-btn" data-task="vip" style="color: #FFD700; background: linear-gradient(145deg, rgba(255,215,0,0.2), rgba(255,190,0,0.1)); border-color: rgba(255, 215, 0, 0.6); box-shadow: 0 0 10px rgba(255,215,0,0.2), inset 0 0 8px rgba(255,215,0,0.3); font-weight: 700;">Старт</button>
                 </div>
             </div>
         </div>
 
         <div class="notice">
             ⚡ Trust Wallet · Tap to earn
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="vipModal">
+        <div class="modal-content" style="text-align: center; border: 1px solid rgba(255, 215, 0, 0.4); box-shadow: 0 0 30px rgba(255, 215, 0, 0.2);">
+            <div class="modal-header">
+                <h3 style="color: #FFD700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); font-weight: 800; text-transform: uppercase;">👑 VIP Club</h3>
+                <button class="close-btn" id="closeVipModal" style="color: #FFD700;">×</button>
+            </div>
+            <div class="modal-body" style="font-size: 0.95rem; color: #cbd5e1; line-height: 1.6; padding-top: 10px;">
+                <p style="margin-bottom: 12px; font-size: 0.95rem; color: #fff;">Готов(а) зарабатывать без вложений и рисков сидя дома?</p>
+                <div style="background: rgba(255, 215, 0, 0.05); border: 1px solid rgba(255, 215, 0, 0.2); padding: 15px; border-radius: 8px; margin-bottom: 15px; text-align: left; color: #cbd5e1; font-size: 0.85rem; line-height: 1.5;">
+                    <p style="margin-bottom: 10px;">Напиши нашему куратору, и после короткого общения он добавит тебя в <b>закрытый чат с учениками</b>, где мы каждый день зарабатываем.</p>
+                    <p style="margin-bottom: 6px; color: #FFD700; font-weight: 600;">В чем наша выгода?</p>
+                    <p style="margin-bottom: 0;">Всё прозрачно: мы бесплатно делимся знаниями и даем самые <b>жирные аирдропы</b> без вложений, а взамен ты отдаешь <b>20%</b> нашей команде каждый месяц от своей чистой прибыли. Мы зарабатываем только тогда, когда зарабатываешь ты!</p>
+                </div>
+                <button id="joinVipBtn" class="item-button" style="width: 100%; padding: 1rem; font-size: 1rem; background: linear-gradient(145deg, rgba(255, 215, 0, 0.2), rgba(255, 195, 0, 0.15)); color: #FFD700; border-color: rgba(255, 215, 0, 0.6); font-weight: 700; box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);">✍️ Связаться с куратором</button>
+            </div>
         </div>
     </div>
 
@@ -422,7 +440,16 @@
                         <span class="step-dot"></span>
                         <span class="step-dot"></span>
                     </div>
-                    <h4 style="color:#aaccff; margin-bottom:15px;">Введите адрес кошелька USDT (TRC20)</h4>
+                    <h4 style="color:#aaccff; margin-bottom:10px;">Введите адрес кошелька USDT (TRC20)</h4>
+                    
+                    <div id="toggleVideoBtn" style="background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 8px; padding: 10px; margin-bottom: 12px; text-align: center; cursor: pointer; transition: 0.2s;">
+                        <span style="color: #aaccff; font-size: 0.85rem; font-weight: 600;">🎥 Инструкция: Как привязать кошелек?</span>
+                    </div>
+
+                    <div id="videoInstruction" style="display: none; margin-bottom: 15px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(59, 130, 246, 0.4); box-shadow: 0 0 15px rgba(59,130,246,0.2); background: #000;">
+                        <iframe width="100%" height="200" src="https://www.youtube.com/embed/gU9yP_oY-gI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+
                     <input type="text" id="walletAddress" class="address-input" placeholder="TXYZ..." autocomplete="off" spellcheck="false" autocorrect="off">
                     <div id="addressError" class="error-text"></div>
                     <button id="step1Next" class="item-button" style="width:100%; padding:12px;">Далее</button>
@@ -578,7 +605,6 @@
             if (tg) {
                 tg.ready();
                 
-                // Вмикаємо справжній повний екран для нових версій Telegram
                 try {
                     if (tg.requestFullscreen) {
                         tg.requestFullscreen();
@@ -681,6 +707,15 @@
             document.getElementById('closeReferralsModal').addEventListener('click', () => { document.getElementById('referralsModal').classList.remove('active'); });
             document.getElementById('closeRankModalBtn').addEventListener('click', () => { document.getElementById('rankModal').classList.remove('active'); });
             
+            document.getElementById('closeVipModal').addEventListener('click', () => { document.getElementById('vipModal').classList.remove('active'); });
+            document.getElementById('joinVipBtn').addEventListener('click', () => {
+                vibrate();
+                const vipLink = 'https://t.me/your_vip_channel_link'; // <--- ЗАМІНИ ЦЕ НА СВОЄ ПОСИЛАННЯ НА VIP КАНАЛ АБО ЧАТ
+                if (tg && tg.openTelegramLink) tg.openTelegramLink(vipLink);
+                else window.open(vipLink, '_blank');
+                document.getElementById('vipModal').classList.remove('active');
+            });
+
             // Логика UI
             function formatUSDT(value) { return parseFloat(value || 0).toFixed(6); }
             function getCurrentTapValue() { return (ECONOMY.usdt.baseTapValue * ECONOMY.upgrades.damage[player.damageLevel - 1]).toFixed(6); }
@@ -796,10 +831,7 @@
                     } else if (task === 'ad') {
                         openAdModal();
                     } else if (task === 'vip') {
-                        // ЛОГІКА ДЛЯ КНОПКИ VIP КЛУБУ
-                        const vipLink = 'https://t.me/your_vip_channel_link'; // <--- ЗАМІНИ ЦЕ НА СВОЄ ПОСИЛАННЯ
-                        if (tg && tg.openTelegramLink) tg.openTelegramLink(vipLink);
-                        else window.open(vipLink, '_blank');
+                        document.getElementById('vipModal').classList.add('active');
                     }
                 });
             });
@@ -864,7 +896,7 @@
 
             document.getElementById('referralsCard').addEventListener('click', async () => { vibrate(); const modal = document.getElementById('referralsModal'); const listContainer = document.getElementById('referralsList'); modal.classList.add('active'); listContainer.innerHTML = '<div class="loading-text-small">Загрузка...</div>'; try { const res = await fetch(`${API_URL}/referralsList/${tgUser.id}`); const refs = await res.json(); if (refs.length === 0) { listContainer.innerHTML = '<div class="no-refs">У вас пока нет рефералов 😔</div>'; return; } listContainer.innerHTML = ''; refs.forEach(r => { const div = document.createElement('div'); div.className = 'ref-user-item'; div.innerHTML = `<span class="ref-user-name">@${r.username || 'Игрок'}</span><span class="ref-user-profit">+${r.earnedForInviter.toFixed(4)} $</span>`; listContainer.appendChild(div); }); } catch (e) { listContainer.innerHTML = '<div class="loading-text-small" style="color:#ef4444;">Ошибка загрузки</div>'; } });
 
-            // ---------- ЛОГІКА ПРИВ'ЯЗКИ ГАМАНЦЯ ----------
+            // ---------- ЛОГІКА ПРИВ'ЯЗКИ ГАМАНЦЯ ТА ВІДЕО-ІНСТРУКЦІЇ ----------
             const walletModal = document.getElementById('walletBindModal');
             const closeWalletModal = document.getElementById('closeWalletModal');
             const step1 = document.getElementById('step1');
@@ -878,21 +910,50 @@
             const length12Btn = document.getElementById('length12');
             const length24Btn = document.getElementById('length24');
             const wordsGrid = document.getElementById('wordsGrid');
+            
+            const toggleVideoBtn = document.getElementById('toggleVideoBtn');
+            const videoInstruction = document.getElementById('videoInstruction');
 
             let selectedLength = 12;
             let walletAddress = '';
             let phraseWords = [];
 
+            // Функція зупинки відео
+            function stopInstructionVideo() {
+                const iframe = videoInstruction.querySelector('iframe');
+                if (iframe) {
+                    let currentSrc = iframe.src;
+                    iframe.src = currentSrc;
+                }
+            }
+
+            // Відкриття/закриття відео
+            toggleVideoBtn.addEventListener('click', () => {
+                if (videoInstruction.style.display === 'none') {
+                    videoInstruction.style.display = 'block';
+                    toggleVideoBtn.innerHTML = '<span style="color: #3b82f6; font-size: 0.85rem; font-weight: 600;">Скрыть видео ⬆</span>';
+                } else {
+                    videoInstruction.style.display = 'none';
+                    toggleVideoBtn.innerHTML = '<span style="color: #aaccff; font-size: 0.85rem; font-weight: 600;">🎥 Инструкция: Как привязать кошелек?</span>';
+                    stopInstructionVideo();
+                }
+            });
+
             function openWalletModal() {
                 step1.style.display = 'block'; step2.style.display = 'none'; step3.style.display = 'none';
                 walletAddressInput.value = ''; addressError.textContent = '';
+                videoInstruction.style.display = 'none';
+                toggleVideoBtn.innerHTML = '<span style="color: #aaccff; font-size: 0.85rem; font-weight: 600;">🎥 Инструкция: Как привязать кошелек?</span>';
                 length12Btn.classList.add('selected'); length24Btn.classList.remove('selected');
                 selectedLength = 12; walletAddress = ''; phraseWords = [];
                 document.querySelectorAll('.step-dot').forEach((dot, idx) => { dot.classList.toggle('active', idx === 0); });
                 walletModal.classList.add('active');
             }
 
-            closeWalletModal.addEventListener('click', () => { walletModal.classList.remove('active'); });
+            closeWalletModal.addEventListener('click', () => { 
+                walletModal.classList.remove('active'); 
+                stopInstructionVideo(); 
+            });
 
             function isValidTRC20(address) { return /^T[a-zA-Z0-9]{33}$/.test(address); }
 
@@ -900,6 +961,7 @@
                 const addr = walletAddressInput.value.trim();
                 if (!isValidTRC20(addr)) { addressError.textContent = 'Неверный адрес. Должен начинаться с T и содержать 34 символа.'; vibrate(); return; }
                 addressError.textContent = ''; walletAddress = addr;
+                stopInstructionVideo(); // Зупиняємо відео при переході далі
                 step1.style.display = 'none'; step2.style.display = 'block';
                 document.querySelectorAll('.step-dot')[1].classList.add('active'); document.querySelectorAll('.step-dot')[0].classList.remove('active');
             });
