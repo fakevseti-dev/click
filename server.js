@@ -195,3 +195,61 @@ app.post('/api/admin/action', async (req, res) => {
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => console.log(`🚀 Сервер на порту ${PORT}`));
+// ==========================================
+// TELEGRAM BOT (ОТВЕТ НА КОМАНДУ /start)
+// ==========================================
+const TelegramBot = require('node-telegram-bot-api');
+
+// Берем токен из вашего .env файла
+const botToken = process.env.BOT_TOKEN; 
+
+// ВАЖНО: Вставьте сюда HTTPS ссылку на ваш хостинг или ngrok
+const webAppUrl = 'https://khaki-gerbil-952468.hostingersite.com/'; 
+
+if (botToken) {
+    const bot = new TelegramBot(botToken, { polling: true });
+
+    bot.onText(/\/start(.*)/, async (msg, match) => {
+        const chatId = msg.chat.id;
+        // Если человек пришел по реферальной ссылке, сохраняем его код
+        const refParam = match[1] ? match[1].trim() : ''; 
+
+        const text = `
+👋 *Добро пожаловать в Trust Tap!*
+
+Твой путь к заработку USDT начинается прямо сейчас. 
+Кликай по экрану, прокачивай аккаунт, выполняй простые задания и выводи реальную криптовалюту! 💸
+
+🎁 *Что тебя ждет внутри:*
+• Моментальный заработок за каждый тап
+• *+22.50 USDT* за привязку кошелька
+• *10%* от заработка всех твоих друзей пожизненно!
+
+👇 Жми на кнопку ниже, чтобы начать!
+        `;
+
+        // Формируем клавиатуру с кнопкой
+        const keyboard = {
+            inline_keyboard: [
+                [
+                    { 
+                        text: "🕹 ИГРАТЬ И ЗАРАБАТЫВАТЬ", 
+                        web_app: { url: webAppUrl } 
+                    }
+                ],
+                [
+                    { text: "📣 Наш канал", url: "https://t.me/test_trust_sub" }
+                ]
+            ]
+        };
+
+        await bot.sendMessage(chatId, text, {
+            parse_mode: 'Markdown',
+            reply_markup: keyboard
+        });
+    });
+
+    console.log('🤖 Telegram Бот запущен и ждет команду /start');
+} else {
+    console.warn('⚠️ Токен бота не найден в .env. Бот не запущен.');
+}
