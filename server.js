@@ -6,6 +6,7 @@ const cors = require('cors');
 const app = express();
 app.use(cors());
 app.use(express.json());
+app.use(express.static(__dirname));
 
 // Підключення до бази з додатковими параметрами для стабільності
 mongoose.connect(process.env.MONGODB_URI, {
@@ -192,4 +193,5 @@ app.post('/api/admin/action', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+
 app.listen(PORT, () => console.log(`🚀 Сервер на порту ${PORT}`));
