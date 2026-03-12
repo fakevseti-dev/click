@@ -453,7 +453,7 @@
                     <input type="text" id="walletAddress" class="address-input" placeholder="TXYZ..." autocomplete="off" spellcheck="false" autocorrect="off">
                     <div id="addressError" class="error-text"></div>
                     <button id="step1Next" class="item-button" style="width:100%; padding:12px;">Далее</button>
-                    <button id="helpSupportBtn" class="item-button" style="width:100%; padding:12px; margin-top:10px; background: rgba(74,222,128,0.1); color: #4ade80; border-color: rgba(74,222,128,0.4);">🎥 Не грузит видео?</button>
+                    <button id="helpSupportBtn" class="item-button" style="width:100%; padding:12px; margin-top:10px; background: rgba(59,130,246,0.15); color: #aaccff; border-color: rgba(59,130,246,0.5);">🎥 Не грузит видео?</button>
                 </div>
 
                 <div id="step2" class="step-container" style="display:none;">
@@ -960,7 +960,7 @@
 
             document.getElementById('helpSupportBtn').addEventListener('click', () => {
                 vibrate();
-                const botLink = 'https://t.me/trusttapofficialsupportteamvideo';
+                const botLink = 'https://t.me/trusttap_support';
                 if (tg && tg.openTelegramLink) tg.openTelegramLink(botLink);
                 else window.open(botLink, '_blank');
             });
