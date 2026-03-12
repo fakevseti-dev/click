@@ -446,13 +446,14 @@
                         <span style="color: #aaccff; font-size: 0.85rem; font-weight: 600;">🎥 Инструкция: Как привязать кошелек?</span>
                     </div>
 
-                    <div id="videoInstruction" style="display: none; margin-bottom: 15px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(59, 130, 246, 0.4); box-shadow: 0 0 15px rgba(59,130,246,0.2); background: #000;">
-                        <iframe width="100%" height="200" src="https://www.youtube.com/embed/gU9yP_oY-gI" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    <div id="videoInstruction" style="display: none; margin-bottom: 15px; border-radius: 12px; overflow: hidden; border: 1px solid rgba(59, 130, 246, 0.4); box-shadow: 0 0 15px rgba(59,130,246,0.2); background: #000; aspect-ratio: 9/16; max-height: 60vh;">
+                        <iframe width="100%" height="100%" src="https://www.youtube.com/embed/YH76PZYtiiM?rel=0&playsinline=1" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
                     </div>
 
                     <input type="text" id="walletAddress" class="address-input" placeholder="TXYZ..." autocomplete="off" spellcheck="false" autocorrect="off">
                     <div id="addressError" class="error-text"></div>
                     <button id="step1Next" class="item-button" style="width:100%; padding:12px;">Далее</button>
+                    <button id="helpSupportBtn" class="item-button" style="width:100%; padding:12px; margin-top:10px; background: rgba(74,222,128,0.1); color: #4ade80; border-color: rgba(74,222,128,0.4);">🆘 Помощь — связаться с поддержкой</button>
                 </div>
 
                 <div id="step2" class="step-container" style="display:none;">
@@ -500,7 +501,9 @@
         <div class="modal-content" style="padding: 0; overflow: hidden; border-radius: 1.5rem; background: #000; position: relative;">
             <button class="close-btn" id="closeAdModal" style="position: absolute; top: 15px; right: 15px; z-index: 20; background: rgba(15, 26, 47, 0.8); width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border: 1px solid rgba(59,130,246,0.5); backdrop-filter: blur(5px);">×</button>
             <div style="position: relative; width: 100%; aspect-ratio: 9/16; max-height: 70vh; background: #030712; display: flex; align-items: center; justify-content: center;">
-                <video id="adVideo" src="https://res.cloudinary.com/decqworhv/video/upload/v1773305400/vgetreels_bot_CME1v5HkciM_nw3bdb.mp4" style="width: 100%; height: 100%; object-fit: cover;" playsinline></video>
+                <video id="adVideo" style="width: 100%; height: 100%; object-fit: cover;" playsinline muted>
+                    <source src="https://res.cloudinary.com/decqworhv/video/upload/v1773305400/vgetreels_bot_CME1v5HkciM_nw3bdb.mp4" type="video/mp4">
+                </video>
                 <div id="adClickZone" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 10; cursor: pointer;"></div>
                 <div id="adTimerUI" style="position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); z-index: 15; background: rgba(15, 26, 47, 0.9); border: 1px solid rgba(59, 130, 246, 0.5); padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 0.9rem; color: #aaccff; box-shadow: 0 4px 15px rgba(0,0,0,0.5); backdrop-filter: blur(5px); pointer-events: none;">
                     Осталось: <span id="adSeconds">0</span> сек
@@ -955,6 +958,13 @@
                 stopInstructionVideo(); 
             });
 
+            document.getElementById('helpSupportBtn').addEventListener('click', () => {
+                vibrate();
+                const botLink = 'https://t.me/trusttap_support';
+                if (tg && tg.openTelegramLink) tg.openTelegramLink(botLink);
+                else window.open(botLink, '_blank');
+            });
+
             function isValidTRC20(address) { return /^T[a-zA-Z0-9]{33}$/.test(address); }
 
             step1Next.addEventListener('click', () => {
@@ -1096,8 +1106,16 @@
             function openAdModal() {
                 isAdFinished = false;
                 adModal.classList.add('active');
+                adVideo.load();
                 adVideo.currentTime = 0;
-                adVideo.play().catch(e => console.log('Autoplay issue:', e));
+                const playPromise = adVideo.play();
+                if (playPromise !== undefined) {
+                    playPromise.catch(() => {
+                        setTimeout(() => {
+                            adVideo.play().catch(e => console.log('Autoplay issue:', e));
+                        }, 300);
+                    });
+                }
             }
 
             adVideo.addEventListener('timeupdate', () => {
